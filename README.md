@@ -1,18 +1,21 @@
-# HXLX
-New Computing Paradigm
+# HXLX - New Computing Paradigm
 
-## EMGits (For local use only)
+A semantic commit system using EM spectrum color-coding for better project visualization and workflow tracking.
 
-This system gives commits **color-coded visual signals** following an EM spectrum analogy. Each commit includes:
+## EMGits14 (For local use only)*
 
-- **Emoji color** (semantic)
+*: This system is designed for local repository use and visualizes workflow progression through color-coded commits.
+
+This system provides **color-coded visual signals** for commits following an electromagnetic spectrum analogy. Each commit includes:
+
+- **Color emoji** (semantic meaning)
 - **Auto-incremented counter** (0001, 0002…)
-- Works in **Scrum, Waterfall, or hybrid methodologies**
+- Works with **Scrum, Waterfall, or hybrid methodologies**
 - Includes **special colors** for errors and solutions
 
----
+## Color Mapping
 
-### Color Mapping (EM Spectrum + special cases)
+### EM Spectrum Phases
 
 | Square | Color | Emoji | Meaning / Phase | Typical Methodology Use |
 |--------|-------|-------|----------------|------------------------|
@@ -24,7 +27,7 @@ This system gives commits **color-coded visual signals** following an EM spectru
 | 6 | Reddish / Dark Pink | 🟫 | Maintenance / Documentation / Knowledge | Retrospective fixes, Docs, Knowledge |
 | 7 | Indigo | 🟪 | Deployment / Release / CI/CD | Release & Deployment |
 
-#### Special Cases
+### Special Cases
 
 | Color | Emoji | Meaning |
 |-------|-------|---------|
@@ -33,19 +36,19 @@ This system gives commits **color-coded visual signals** following an EM spectru
 
 > EM spectrum flow: 🟥 → 🟧 → 🟨 → 🟩 → 🟦 → 🟫 → 🟪
 
----
+## Visual Representation
 
-### Visual Box Row Example
+🟥 🟧 🟨 🟩 🟦 🟫 🟪
+⬛ ⬜
 
-	🟥 🟧 🟨 🟩 🟦 🟫 🟪
-	⬛ ⬜
 
-	- Top row → EM progression  
-	- Bottom row → special cases (errors/solutions)
+- **Top row** → EM progression (normal workflow)
+- **Bottom row** → special cases (errors/solutions)
 
-### Usage Examples
+## Usage Examples
 
-```text
+### Commit Examples
+
 🟥 0010: init project skeleton
 🟧 0011: gather requirements
 🟨 0012: design svg manager
@@ -57,22 +60,24 @@ This system gives commits **color-coded visual signals** following an EM spectru
 ⬜ 0018: patch applied
 
 
-```
-	# Initialize commit counter
-	git config commit.counter 0
+### Git Configuration
 
-	# Helper alias: auto-increment counter
-	git config alias.nextcommit '!f() { \
-	  n=$(git config --get commit.counter || echo 0); \
-	  n=$((n+1)); \
-	  git config commit.counter "$n"; \
-	  printf "%04d" "$n"; \
-	}; f'
+```bash
+# Initialize commit counter
+git config commit.counter 0
 
-	# Commit aliases by color / phase
-	git config alias.cinit '!f() { id=$(git nextcommit); git commit -m "🟥 $id: $*"; }; f'
-	git config alias.crequirements '!f() { id=$(git nextcommit); git commit -m "🟧 $id: $*"; }; f'
-	git config alias.cdesign '!f() { id=$(git nextcommit); git commit -m "🟨 $id: $*"; }; f'
+# Helper alias: auto-increment counter
+git config alias.nextcommit '!f() { \
+  n=$(git config --get commit.counter || echo 0); \
+  n=$((n+1)); \
+  git config commit.counter "$n"; \
+  printf "%04d" "$n"; \
+}; f'
+
+# Commit aliases by color / phase
+git config alias.cinit '!f() { id=$(git nextcommit); git commit -m "🟥 $id: $*"; }; f'
+git config alias.crequirements '!f() { id=$(git nextcommit); git commit -m "🟧 $id: $*"; }; f'
+git config alias.cdesign '!f() { id=$(git nextcommit); git commit -m "🟨 $id: $*"; }; f'
 git config alias.cfeat '!f() { id=$(git nextcommit); git commit -m "🟩 $id: $*"; }; f'
 git config alias.ctest '!f() { id=$(git nextcommit); git commit -m "🟦 $id: $*"; }; f'
 git config alias.cmaint '!f() { id=$(git nextcommit); git commit -m "🟫 $id: $*"; }; f'
@@ -82,6 +87,14 @@ git config alias.csolution '!f() { id=$(git nextcommit); git commit -m "⬜ $id:
 
 # Optional: list all aliases
 git config --get-regexp '^alias\.'
-```
+
+# Quick Reference Commands
+
+# Make commits using aliases
+git cinit "project initialization"
+git crequirements "user authentication requirements"
+git cfeat "add login functionality"
+git cerror "fix null pointer exception"
+git csolution "apply security patch"
 
 
