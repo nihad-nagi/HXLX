@@ -1,7 +1,7 @@
 # HXLX
 New Computing Paradigm
 
-# EM Commits — EM Methodology
+## EM Commits — EM Methodology
 
 This system gives commits **color-coded visual signals** following an EM spectrum analogy. Each commit includes:
 
@@ -12,7 +12,7 @@ This system gives commits **color-coded visual signals** following an EM spectru
 
 ---
 
-## Color Mapping (EM Spectrum + special cases)
+### Color Mapping (EM Spectrum + special cases)
 
 | Square | Color | Emoji | Meaning / Phase | Typical Methodology Use |
 |--------|-------|-------|----------------|------------------------|
@@ -24,7 +24,7 @@ This system gives commits **color-coded visual signals** following an EM spectru
 | 6 | Reddish / Dark Pink | 🟫 | Maintenance / Documentation / Knowledge | Retrospective fixes, Docs, Knowledge |
 | 7 | Indigo | 🟪 | Deployment / Release / CI/CD | Release & Deployment |
 
-### Special Cases
+#### Special Cases
 
 | Color | Emoji | Meaning |
 |-------|-------|---------|
@@ -35,7 +35,7 @@ This system gives commits **color-coded visual signals** following an EM spectru
 
 ---
 
-## Visual Box Row Example
+### Visual Box Row Example
 
 	🟥 🟧 🟨 🟩 🟦 🟫 🟪
 	⬛ ⬜
@@ -43,7 +43,7 @@ This system gives commits **color-coded visual signals** following an EM spectru
 	- Top row → EM progression  
 	- Bottom row → special cases (errors/solutions)
 
-## Usage Examples
+### Usage Examples
 
 ```text
 🟥 0010: init project skeleton
@@ -56,22 +56,24 @@ This system gives commits **color-coded visual signals** following an EM spectru
 ⬛ 0017: fix critical crash
 ⬜ 0018: patch applied
 
-```bash
-	# Initialize commit counter
-	git config commit.counter 0
 
-	# Helper alias: auto-increment counter
-	git config alias.nextcommit '!f() { \
-	  n=$(git config --get commit.counter || echo 0); \
-	  n=$((n+1)); \
-	  git config commit.counter "$n"; \
-	  printf "%04d" "$n"; \
-	}; f'
 
-	# Commit aliases by color / phase
-	git config alias.cinit '!f() { id=$(git nextcommit); git commit -m "🟥 $id: $*"; }; f'
-	git config alias.crequirements '!f() { id=$(git nextcommit); git commit -m "🟧 $id: $*"; }; f'
-	git config alias.cdesign '!f() { id=$(git nextcommit); git commit -m "🟨 $id: $*"; }; f'
+	```
+		# Initialize commit counter
+		git config commit.counter 0
+
+		# Helper alias: auto-increment counter
+		git config alias.nextcommit '!f() { \
+		  n=$(git config --get commit.counter || echo 0); \
+		  n=$((n+1)); \
+		  git config commit.counter "$n"; \
+		  printf "%04d" "$n"; \
+		}; f'
+
+		# Commit aliases by color / phase
+		git config alias.cinit '!f() { id=$(git nextcommit); git commit -m "🟥 $id: $*"; }; f'
+		git config alias.crequirements '!f() { id=$(git nextcommit); git commit -m "🟧 $id: $*"; }; f'
+		git config alias.cdesign '!f() { id=$(git nextcommit); git commit -m "🟨 $id: $*"; }; f'
 	git config alias.cfeat '!f() { id=$(git nextcommit); git commit -m "🟩 $id: $*"; }; f'
 	git config alias.ctest '!f() { id=$(git nextcommit); git commit -m "🟦 $id: $*"; }; f'
 	git config alias.cmaint '!f() { id=$(git nextcommit); git commit -m "🟫 $id: $*"; }; f'
@@ -82,3 +84,5 @@ This system gives commits **color-coded visual signals** following an EM spectru
 	# Optional: list all aliases
 	git config --get-regexp '^alias\.'
 ```
+
+
