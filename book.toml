@@ -8,10 +8,10 @@ default-theme = "coal"
 preferred-dark-theme = "coal"
 
 additional-js = [
-  "assets/mermaid.min.js",
-  "assets/panzoom-bundle.js"
+  "src/assets/mermaid.min.js",
+  "src/assets/panzoom-bundle.js"
 ]
-additional-css = ["assets/panzoom.css"]
+additional-css = ["src/assets/panzoom.css"]
 
 [preprocessor.mermaid-panzoom]
 command = "mdbook-mermaid-panzoom"
