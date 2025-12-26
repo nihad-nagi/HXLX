@@ -1,3 +1,17 @@
 [book]
-authors = ["Nihads-Nagis"]
+title = "HXLX"
 language = "en"
+src = "src"
+
+[output.html]
+default-theme = "coal"
+preferred-dark-theme = "coal"
+
+additional-js = [
+  "assets/mermaid.min.js",
+  "assets/panzoom-bundle.js"
+]
+additional-css = ["assets/panzoom.css"]
+
+[preprocessor.mermaid-panzoom]
+command = "mdbook-mermaid-panzoom"
