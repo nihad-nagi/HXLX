@@ -2,7 +2,7 @@
 
 ## Back to the Future
 
-{{#include chapter_6.md:Market}}
+{{#include 06-Matter.md:Market}}
 
 > We are building the computational nervous system for planetary consciousness - a complete reinvention of computing where light becomes understanding, pixels become logic cells, and human attention becomes the fundamental currency of a new economic system.
 
