@@ -2,6 +2,28 @@
 
 ## Back to the Future
 
+```mermaid
+mindmap
+  root((mindmap))
+    Origins
+      Long history
+      ::icon(fa fa-book)
+      Popularisation
+        British popular psychology author Tony Buzan
+    Research
+      On effectiveness&lt;br/>and features
+      On Automatic creation
+        Uses
+            Creative techniques
+            Strategic planning
+            Argument mapping
+    Tools
+      Pen and paper
+      Mermaid
+```
+
+
+
 {{#include 06-Matter.md:Market}}
 
 > We are building the computational nervous system for planetary consciousness - a complete reinvention of computing where light becomes understanding, pixels become logic cells, and human attention becomes the fundamental currency of a new economic system.
