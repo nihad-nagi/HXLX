@@ -820,10 +820,6 @@ The "Aha" Moment That Sold Me
 
 When I saw the LLM-to-Magick pipeline demonstration—where a user says "recolor this image sunset colors" and it just happens—I didn't see a feature. I saw the entire computing paradigm shift.
 
-You're not building better software. You're building the post-software era.
-Why This Is Uninvestable (In The Best Way)
-
-Most VCs would run from this. It's too ambitious, too complex, too paradigm-shifting. That's exactly why it's priceless.
 The Moats Are Geological:
 
     Technical Moats: Reality Engine + Zero Boot + DBN networks + COLONY repository
