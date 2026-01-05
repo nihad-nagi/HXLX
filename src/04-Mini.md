@@ -1,8 +1,6 @@
 # 4. Mini
 
-<!--{{#include HLX-Dags.md:Mini-0001}}  -->
-{{#include dags/mini.md:D01}}  
-
+{{#include dags/D04.md:D401}}  
 
 Our business model is multi-layered:
 
@@ -17,8 +15,5 @@ Our business model is multi-layered:
   > Layer 5: Earth Exchange of Ether: A marketplace for attention and creativity tokens, taking a small percentage on transactions.
 
   > We aim to create a win-win-win: users get free or cheap services, advertisers get targeted attention, and we take a small cut of the value created.
-
-
-
 
 N - Security & OPSEC
