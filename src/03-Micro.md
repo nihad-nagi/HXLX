@@ -482,7 +482,7 @@ Gaming environments become oracles. By exhaustively exploring the combinatorial 
 > **Gem: ALPHA** (Speculative/Integrated Frontier)
 Bi-tracing enables causal programming. Developers can define an intended end-state, and the system reverses from that state to autonomously generate the necessary code or configuration steps. It predicts and visualizes all possible causal paths to the goal, allowing for the selection of the most efficient one.
 
-#### Hx21 Codec Queries (New)
+#### Hx21 Codec Queries
 Raw
 
 Existing codecs are predictive engines masquerading as compression tools.
