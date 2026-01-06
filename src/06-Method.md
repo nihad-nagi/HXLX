@@ -611,7 +611,7 @@ Git is document control. Mermaid is the normative language.
 A. ORGANIZATION IDENTITY (Policy Replacement)
 
 Mermaid: graph TD
-
+```mermaid
 graph TD
     Board["Law & Ethics Operator"]
     Operator["Technical Operator"]
@@ -620,7 +620,7 @@ graph TD
     Board -->|Authority| Operator
     Operator -->|Orchestrates| LLM
     Board -->|Oversight| LLM
-
+```
 
 This graph is the policy:
 
@@ -637,7 +637,7 @@ ISO 9001 §5 and ISO 38500 satisfied by topology.
 B. HYBRID ROLE MATRIX (Who Can Do What)
 
 Mermaid: graph LR (Hybrid Matrix)
-
+```mermaid
 graph LR
     H[Human]
     L[LLM]
@@ -648,7 +648,7 @@ graph LR
     L -->|Propose| G
     G -->|Record| A
     A -->|Review| H
-
+```
 
 This replaces:
 
@@ -661,7 +661,7 @@ Authority tables
 C. PROCEDURES AS SEQUENCE DIAGRAMS (Executable Governance)
 
 Mermaid: sequenceDiagram
-
+```mermaid
 sequenceDiagram
     participant Operator
     participant LLM
@@ -671,7 +671,7 @@ sequenceDiagram
     LLM->>LLM: Validate scope & controls
     LLM->>Git: Commit output
     Git-->>Operator: Commit ID
-
+```
 
 This is the procedure.
 If it diverges → nonconformity.
@@ -679,21 +679,21 @@ If it diverges → nonconformity.
 D. TASKS AS FLOWCHARTS (Work Instructions)
 
 Mermaid: flowchart TD
-
+```mermaid
 flowchart TD
     Start --> ValidateInput
     ValidateInput -->|OK| ExecuteTask
     ValidateInput -->|Fail| Refuse
     ExecuteTask --> SelfCheck
     SelfCheck --> Commit
-
+```
 
 Every LLM task must map to one of these.
 
 E. ROLES AS CLASS DIAGRAMS (JD = Executable Object)
 
 Mermaid: classDiagram
-
+```mermaid
 classDiagram
     class LLM_Role {
         +RoleID
@@ -704,7 +704,7 @@ classDiagram
         +RefusalConditions()
         +SelfCheck()
     }
-
+```
 
 This is the Job Description.
 Nothing outside this class is allowed.
@@ -761,7 +761,7 @@ B. Role Branch Emergence (Very Important)
 
 A new role must branch from:
 
-main → roles/<ROLE-ID>
+main → roles/ROLE-ID>
 
 
 Never from another role.
@@ -782,9 +782,9 @@ Tag = record classification
 
 Example:
 
-git tag OUT-REPORT-V1 <commit>
-git tag NC-DETECTED <commit>
-git tag REFUSAL <commit>
+git tag OUT-REPORT-V1 commit
+git tag NC-DETECTED commit
+git tag REFUSAL commit
 
 
 This replaces:
@@ -920,7 +920,7 @@ Authority edges must be directional
 Every role must trace to Law node
 
 Example:
-
+```mermaid
 graph TD
     Law[Large Law Model]
     Human1[Tech Operator]
@@ -930,7 +930,7 @@ graph TD
     Law --> Human1
     Law --> Human2
     Law --> Roles
-
+```
 
 If it’s not here, it has no right to act.
 
@@ -945,7 +945,7 @@ sequenceDiagram
 Hard rule
 
 Every message must correspond to a Git event or a refusal
-
+```mermaid
 sequenceDiagram
     participant Role
     participant Law
@@ -954,7 +954,7 @@ sequenceDiagram
     Role->>Law: Proposed action
     Law-->>Role: Allowed
     Role->>Git: Commit (SHA)
-
+```
 
 The commit SHA and timestamp must appear verbatim.
 
@@ -974,13 +974,14 @@ No “silent success”
 
 No implicit transitions
 
+```mermaid
 flowchart TD
     Start --> CheckScope
     CheckScope -->|Fail| Refuse
     CheckScope -->|Pass| Execute
     Execute --> SelfCheck
     SelfCheck --> Commit
-
+```
 RESP-ROLE — What is this actor allowed to be?
 
 (Job Description)
@@ -988,7 +989,7 @@ RESP-ROLE — What is this actor allowed to be?
 Allowed Mermaid types
 
 classDiagram
-
+```mermaid
 classDiagram
     class Role {
         Scope
@@ -998,7 +999,7 @@ classDiagram
         Controls
         RefusalRules()
     }
-
+```
 
 This is the JD, training, delegation, and liability boundary in one.
 
@@ -1018,12 +1019,13 @@ Timestamp
 
 Tag(s)
 
+```mermaid
 sequenceDiagram
     participant Role
     participant Git
 
     Role->>Git: Commit SHA abc123 @ 2026-01-06T21:12Z
-
+```
 
 If there is no RESP-REC, the action did not happen.
 
@@ -1046,14 +1048,14 @@ REFUSE
 ESCALATE
 
 Example:
-
+```mermaid
 sequenceDiagram
     participant Role
     participant Law
 
     Role->>Law: Intent + Context
     Law-->>Role: REFUSE (ISO27001 A.8 breach)
-
+```
 
 This replaces:
 
@@ -1181,7 +1183,7 @@ Mermaid is the semantic bus
 Every role — human or model — is a listener, not a callee.
 
 This is why your diagram:
-
+```mermaid
 graph TD
     Law[Large Law Model]
     Human1[Tech Operator]
@@ -1191,7 +1193,7 @@ graph TD
     Law --> Human1
     Law --> Human2
     Law --> Roles
-
+```
 
 is not causal.
 It is normative.
@@ -1489,10 +1491,10 @@ That’s the critical distinction.
 3. How a Mermaid Edge Becomes an Execution Trigger
 
 Take this again:
-
+```mermaid
 graph TD
     Law --> Human1
-
+```
 
 In your system, this means:
 
@@ -2341,6 +2343,7 @@ That second one is often missing in orgs. You made it explicit.
 
 QA’s sequence diagram is something like:
 
+```mermaid
 sequenceDiagram
     participant QA
     participant Sandbox
@@ -2351,7 +2354,7 @@ sequenceDiagram
     Sandbox->>Review: Validation results
     Review-->>QA: Approved
     QA->>Main: Merge updated sequence
-
+```
 
 This is not optional — this is Clause 6 + 10 of ISO 9001 encoded.
 
