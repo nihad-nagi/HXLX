@@ -11,6 +11,6 @@
   - [META](./HLX/HLX-Meta.md)
   - [ABST](./HLX/HLX-Abstract.md)
   - [GADR](./HLX/HLX-Gadr.md)
-  - [XX08](./HLX/HLX-08.md)
-  - [XX26](./HLX/HLX-26.md)
+  - [XX08](./HLX/HX-08.md)
+  - [XX26](./HLX/HX-26.md)
   - [DFT1](./00-Drafts.md)
