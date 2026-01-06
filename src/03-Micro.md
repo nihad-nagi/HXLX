@@ -2,7 +2,7 @@
 
 This is a unified theory of computation based on photometry, bandwidth semantics, multiverse sampling, and genetic version-controlled memory.
 
-## Core Principle
+## Seed Hx
 
 The pixel is the seed.
 
@@ -13,6 +13,22 @@ Pixels are not visual artifacts. They are 4D computational atoms carrying state,
 - A: Out‑of‑world / latent potential
 
 All higher systems recurse from this unit.
+  
+### Hx00: Pixel — 4D Computation Atoms
+**Status:** Active  
+**Summary:** Multi-dimensional computational atoms using RGB(A) channels as parallel data transport layers.
+
+> **Gem: RED** (Physical/Conceptual)  
+> Pixels are repurposed from visual color units into multi-dimensional computational atoms using RGB(A) channels as parallel data transport layers for state, memory, and directionality.
+
+> **Gem: GREEN** (Middle Ground)  
+> RGBA channels are extended into four generalized parallel data transport layers, forming a 256³ × alpha distributed compute mesh. Pixels are logic cells capable of local computation.
+
+> **Gem: BLUE** (Advanced/Virtual)  
+> Pixels can perform bidirectional state propagation, act as nodes in a distributed neural substrate, and store temporal history for predictive computation.
+
+> **Gem: ALPHA** (Speculative/Integrated Frontier)
+> Pixels achieve computational self-awareness, negotiating state changes with neighboring pixels to form emergent, transient logic gates. They can predict and reverse local computation paths to maintain consensus with the broader manifold, becoming quasi-conscious cells in a larger synthetic tissue.
 
 ### Audience & Comprehension Model (RGBA)
 
@@ -38,23 +54,7 @@ The Hexes below define the foundational computational primitives of the framewor
 
 ---
 ## Core Hexes
-### Hx00–Hx04 · Foundational Substrate
-
-#### Hx00: Pixel — 4D Computation Atoms
-**Status:** Active  
-**Summary:** Multi-dimensional computational atoms using RGB(A) channels as parallel data transport layers.
-
-> **Gem: RED** (Physical/Conceptual)  
-> Pixels are repurposed from visual color units into multi-dimensional computational atoms using RGB(A) channels as parallel data transport layers for state, memory, and directionality.
-
-> **Gem: GREEN** (Middle Ground)  
-> RGBA channels are extended into four generalized parallel data transport layers, forming a 256³ × alpha distributed compute mesh. Pixels are logic cells capable of local computation.
-
-> **Gem: BLUE** (Advanced/Virtual)  
-> Pixels can perform bidirectional state propagation, act as nodes in a distributed neural substrate, and store temporal history for predictive computation.
-
-> **Gem: ALPHA** (Speculative/Integrated Frontier)
-> Pixels achieve computational self-awareness, negotiating state changes with neighboring pixels to form emergent, transient logic gates. They can predict and reverse local computation paths to maintain consensus with the broader manifold, becoming quasi-conscious cells in a larger synthetic tissue.
+### Hx01–Hx04 · Foundational Substrate
 ---
 
 #### Hx01: Framebuffers → Data Directing Buffers
