@@ -1,11 +1,44 @@
 # 4. Mini
 
-{{#include dags/D04.md:D401}}  
+{{#include dags/D04.md:D401}} 
 
-## Zero Boot:
+{{#include dags/D04.md:D402}}
+
+
+
+## LX0: Zero Boot
 Freemium model (ad-supported free tier and subscription for power users). This is the entry point for user acquisition.
 
-### B00T: Pixel Processing Engine
+Technical Execution:
+```yaml
+  7-State Consciousness Calibration:
+
+    DORMANT - Pre-existence
+
+    AWAKENING - State injection
+
+    CALIBRATING - Reality testing
+
+    SENSING - Perceptual activation
+
+    UNDERSTANDING - Context loading
+
+    READY - Operational preparedness
+
+    CREATING - Purpose fulfillment
+```
+    Frame-Based Booting: Compressed memory states as boot "frames"
+
+    7-State Consciousness Calibration: Nominal vs. actual state diffs for hardware tolerance
+
+    MP4 Containers: Using video codecs as state compression/encryption
+  
+
+Monetization: Per-device licensing for instant-on capability + state mirroring subscriptions
+
+### LX00: B00T
+Pixel Processing Engine
+
 #### Purpose
 > The Fundamental media and state processing foundation for instant operating state loading and state management with git-like versioning of computational states.
  
@@ -25,7 +58,10 @@ Freemium model (ad-supported free tier and subscription for power users). This i
    
 > **B00TS:** Zero B00T store for all of the distro images to be tried and tested on the spot as long as the device supports it.
 
-### B01T: Security & Control Framework
+### LX01: B01T
+
+#### Security & Control Framework
+
 #### Purpose 
 Secure application structure and process management
   
@@ -42,18 +78,19 @@ Secure application structure and process management
   
 #### Deliverables
   
-> **B01T**: 0B00T User secured data and apps in a github like repo.
+> **B01T:** 0B00T User secured data and apps in a github like repo.
 
-> **BOAT**: 0B00T App Store with all apps for installing and testing
+> **BOAT:** 0B00T App Store with all apps for installing and testing
 
-### B02T: Network & Communication Layer
+### LX02: B02T
+#### Network & Communication Layer
 #### Purpose
   Distributed communication and data exchange protocols
   
 #### Components
-> RESProto (Custom): Resource exchange protocol foundation
+> Redis Protocol: RESP as communication bus. 
 
-> DragonFly Git (Custom): Advanced distributed version control system
+> DragonFly Git (Custom): Advanced distributed version control system based on customised RESP.
 
 > **Hx08** Torrents: Distributed file sharing and caching
  
@@ -63,91 +100,169 @@ Secure application structure and process management
   
 > Web (Custom): Web compatibility and integration layer
 
-### B03T: Advanced Processing & Marketplace
+#### Deliverables
+
+> **B02T:** Zeroboot v2 with file storage, browsing, chat, streaming and torrenting.
+
+### LX03: B03T
+
+#### Advanced Processing & Marketplace
 
 #### Purpose
 High-performance computing and economic layer
 
 #### Components
 
-> **Hx18G** Codec Query: Advanced media processing and query system
+> **Hx21** Codec Query: Advanced media processing and query system
 
 > **Hx12** Data Prog: Dataflow programming model
 
 > **Hx13** WebMod: Web module system and packaging
 
-> **Hx14** RayTracer: Real-time ray tracing engine
 
-> **Hx20** BiTracer: Biological data tracing and analysis
 
 > **Hx15** LBR: Location-based rendering and services
 
 #### Deliverables
 
-MarketPlace (Custom): Distributed marketplace for digital assets. Economic transaction layer (DELIVERABLE)
+> **B03T:** ZeroB00Tv3 becomes an ide for developers and graphic designers.
 
-## Physical AI
+> **Z00M:** Distributed marketplace for digital assets, economic transaction layer.
+
+## LX1: Physical AI
 ### B00M: True Intelligence
 #### Purpose 
 Advanced AI and machine learning infrastructure
 
 #### Components
-**Hx24** SPL: Symbolic Programming Language for AI
+**Hx24** SPL: Semantic Photonic Language for AI
 
-**Hx25** LPM: Learning Process Management system
+**Hx25** LPM: Large Perception Models
 
-**Hx23** Booster: Performance optimization and acceleration
+**Hx23** Booster: Encode once, decode many.
 
-**Hx26** PNN: Probabilistic Neural Network framework
+**Hx26** PNN: Physical Neural Network framework
 
-## Serious Gaming
-### 0VV1
+## LX2: Serious Gaming
+### 0EE1: Ether Exchange
+
+#### Purpose
 > Earth Exchange of Ether: A marketplace for attention and creativity tokens, taking a small percentage on transactions fees on the creativity economy (carat development and value exchange)
+
 > We aim to create a win-win-win: users get free or cheap services, advertisers get targeted attention, and we take a small cut of the value created.
 
-## Zero Operating States
-Operating System Core
+#### Components
+> **Hx14** RayTracer: Real-time ray tracing engine
 
-### Purpose 
-Minimalist OS kernel and runtime environment
+> **Hx20** BiTracer: Biological data tracing and analysis
 
-### Components
-**Hx12** POST: Power-On Self-Test and initialization system
+> **Hx27** PiP:
+
+> **Hx28** Seed Mining: Distributed computation mining system
+
+> **Hx19** Gaming: Advanced gaming frameworks and toolkits
+
+#### Deliverables
+
+> ##
+
+## LX3: Zero Operating States
+
 The Paradigm Shift:
 
     "We don't boot operating systems; we transition between computational states."
-
+---
 ### Z00S: Universal State Management
 #### Purpose 
 Cross-platform state synchronization and management
 #### Components
+
 **Hx19** Broardway: State broadcasting and synchronization protocol
 
-**Hx18U** Universes UCRS: Universal Content Rating System (Multi-verse)
+**Hx18U** Universes UCRS: Universal Coordinate Reference System (Multi-verse)
 
+#### Deliverables:
+
+**Z00S Description**
+
+The IDE That Became an OS:
+```yaml
+
+Zero_OS_Architecture:
+  Control_Plane: "IDE-as-Portal (Kate-based MDX views)"
+  Execution_Engine: "QEMU-wrapper with monolithic container process"
+  Interface: "Markdown-driven workflows + visual programming"
+  Desktop_Replacement: "TODO Kanbans + creation canvases"
+
+Revolutionary Features:
+
+    QEMU-IDE Fusion:
+
+        IDE loads entire kernels as QEMU instances
+
+        Main window = development portal + system control plane
+
+        Desktops replaced by creation spaces (Kanbans, sticky notes, idea boards)
+
+    Visual Creation Stack:
+
+        Integrated diagramming (Mermaid, Draw.io)
+
+        Geometry nodes as visual programming (Blender integration)
+
+        Orange3 widgets for data science
+
+        Real-time collaborative editing
+
+    Git-Native Living System:
+
+        Every file versioned, every change tracked
+
+        CHRONICS branch for anomaly quarantine
+
+        MORPHS branch for experimental features
+
+        VAX branch for verified stable commits
+```
+---
 ### Z01S
 
-## Digital Hive
-HiveOS and HoT: Ecosystem fees for device manufacturers and developers (like Android but for the hive).
-### H0T
+#### Purpose:
+Gamified Operating Universes
 
-### H0S: Hive Operating System
+#### Components:
+**Hx12** POST: Power-On Self-Test and initialization system loading our flavor
+
+#### Deliverables:
+**Z01S:** 
+---
+
+## LX4: Digital Hive
+Ecosystem for device manufacturers and developers (like Android but for the hive).
+### H0T: Hive Of Things
+
+#### Purpose
+
+#### Components
+
+#### Deliverables
+**H
+
+### H0S: Hive Operating States
 #### Purpose
 Complete operating system for hive devices
 
 #### Components
 Hx31 H0S: Core operating system components
 
-Deliverables:
+#### Deliverables:
 
-0111 (Custom): Core gaming engine and physics system
+0EE1 (Custo: Core gaming engine and physics system
 
 ASleuth (Custom): Analytics and player behavior tracking
 Future Subprojects:
 
-Seed Mining (Hx28): Distributed computation mining system
 
-Gaming (Hx19): Advanced gaming frameworks and toolkits
 
 APS (Hx16): Automated Playback System for replays
 
@@ -156,12 +271,6 @@ ABBA (Hx17): Adaptive Behavior and Balancing Algorithm
 Global UCRS (Hx18G): Universal Content Rating System (Global)
 Status: Gaming engine operational, economic systems in development
 
-Zero Operating States
-Z00S: 
-
-Z01S: 
-Integration: Merges Z00S state management into core OS
-Status: Kernel development, pre-alpha
 
 Digital Hive
 HiveOS and HoT: Ecosystem fees for device manufacturers and developers (like Android but for the hive).
