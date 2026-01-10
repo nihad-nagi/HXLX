@@ -16,3 +16,5 @@ Cargo.lock
 
 docs/
 .hide/
+/book/000-Drafts.md
+/book/00-Drafts.md
