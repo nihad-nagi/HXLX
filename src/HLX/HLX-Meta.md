@@ -362,3 +362,20 @@ Frame Buffer Metrics:
 - 4K = 8.3M pixels/frame = 33MB
 - 60 FPS = 2GB/s throughput
 - 240 FPS = 8.3GB/s throughput
+
+
+### The 7 Time Orbits:
+
+    Atomic: Quantum fluctuations, femto-second operations
+
+    Biological: Heartbeats, breaths, circadian rhythms
+
+    Psychological: Thought rhythms, attention spans
+
+    Social: Cultural cycles, network effects
+
+    Planetary: Seasons, migrations, environmental patterns
+
+    Solar: Sun cycles, galactic years
+
+    Cosmic: Universal expansion, consciousness evolution
