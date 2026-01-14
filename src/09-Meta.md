@@ -1,4 +1,5 @@
-# MINI LX: LLM-TRANSFORMER ORGANIZATIONAL STRUCTURE & QUALITY PLAN ADJUSTMENTS
+# CYBERNETICS GOVERNANCE
+
 1. Executive Summary of Organizational Transformation
 
 The MINI LX project adopts a revolutionary organizational structure where Large Language Models (LLMs) and Transformers serve as autonomous agents, managed through ISO-compliant prompt-based job descriptions. This transforms traditional human-centric project management into a cybernetic orchestration system where:
@@ -710,3 +711,18 @@ LLM Strengths: Pattern recognition, data analysis, consistent execution
 Synergistic Combination: Humans guide direction, LLMs execute and optimize
 
 Evolutionary Partnership: Co-evolution of human and machine capabilities
+
+<!--THE META LAYER: CYBERNETIC GOVERNANCE
+How the system manages itself without human bottlenecks.
+
+Prompts as Job Descriptions: The organization is staffed by LLM-agents (CEO, CTO, ISO-Compliance) whose roles are defined by rigid, version-controlled, ISO-compliant prompts.
+
+The Execution Cycle:
+
+MORPHS: Experimental forks in the code/logic.
+
+VAX: Unit-test verification of the fork.
+
+CHRONICS: Forensic analysis of failures to update the "Genetic DNA" of the system.
+
+Mermaid as Language: Diagrams are not static; they are the machine-readable instructions that LLM agents use to hand off jobs.-->
