@@ -1,6 +1,14 @@
 # 2. Concepts
 
-PROOF OF CONCEPT IMPLEMENTATIONS
+PROOF OF CONCEPTS
+
+## 2.1 River to Pixel
+
+## 2.2 1M Million hands (Frame)
+
+### 2.3 
+
+
 A. Poker Hand Evaluation Engine
     Encoding: Each hand in one pixel (16-bit × 4 channels)
     Scale: 1M hands = 1000×1000 RGBA16 image (1.1MB compressed)
