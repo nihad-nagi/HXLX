@@ -369,7 +369,7 @@ Photometry becomes causal manipulation. The system can cast "rays" not just to c
 ---
 
 ### Hx15: Location Based Rendering
-**Status:** Active  
+**Status:** Locked 
 **Summary:** Spatially-aware rendering.
 
 > **Gem:** RED (Physical/Conceptual)  
@@ -388,7 +388,7 @@ Rendering becomes context-aware prophecy. The system doesn't just adapt to locat
 ---
 
 ### Hx16: RLAmbience Positioning System
-**Status:** Active  
+**Status:** Locked 
 **Summary:** Triangulates reality using visual and auditory signatures.
 
 > **Gem:** RED (Physical/Conceptual)  
@@ -405,7 +405,7 @@ Positioning evolves into reality fingerprinting. The system develops a conscious
 ---
 
 ### Hx17: ABBA — Ambience & Behavioral Security Metrics
-**Status:** Active  
+**Status:** Locked  
 **Summary:** Profiles user/device behavior.
 
 > **Gem:** RED (Physical/Conceptual)  
@@ -537,7 +537,7 @@ Compression becomes inference; decoding becomes answer generation
 ---
 
 ### Hx23: Codec Booster
-**Status:** Locked  
+**Status:** Locked
 **Summary:** Generative universes from ultra-dense encoded seeds.
 
 > **Gem:** RED (Physical/Conceptual)  
