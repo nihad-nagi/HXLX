@@ -23,22 +23,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Debug file structure
-        run: |
-          echo "=== Current directory ==="
-          pwd
-          echo "=== Listing all files ==="
-          ls -la
-          echo "=== Looking for Glossary files ==="
-          find . -name "*Glossary*" -type f 2>/dev/null
-          echo "=== Checking src/ directory ==="
-          ls -la src/ || echo "src/ directory not found"
-          echo "=== Contents of src/ (if exists) ==="
-          ls -la src/*.md 2>/dev/null || echo "No markdown files in src/"
-
-      - name: Use CI-specific configuration
-        run: cp book.CI.toml book.toml
-
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
