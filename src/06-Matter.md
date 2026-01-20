@@ -1,6 +1,7 @@
-ENHANCED MATTER
-Civilization-Scale Impact & Valuation Framework
-TOTAL ADDRESSABLE REALITY (TAR)
+# MATTER
+# Civilization-Scale Impact & Valuation Framework
+
+## TOTAL ADDRESSABLE REALITY (TAR)
 
 BASIC: We don't measure markets—we measure how much of reality we can improve. Our potential isn't just software sales, but a percentage of everything civilization does.
 
@@ -18,7 +19,8 @@ Global Baseline Reality:
     True Ceiling: $3.5-10.5T annual economic impact
 
 This isn't market capture—it's reality enhancement.
-CORE MARKET DOMAINS DISRUPTION
+
+## CORE MARKET DOMAINS DISRUPTION
 
 BASIC: We don't just compete in markets—we make old categories irrelevant by creating new ones.
 
@@ -39,7 +41,7 @@ Environmental Tech	$1.5T	B00M planetary systems	$50B planetary security
 Aggregate Core Impact: $500B+ Annual Direct Economic Impact
 
 Second-Order Effects: 3-5× multiplier through productivity gains and network effects.
-REVENUE TRAJECTORY SCENARIOS
+## REVENUE TRAJECTORY SCENARIOS
 
 BASIC: Three paths: slow but profitable, realistic and transformative, or civilization-changing.
 
