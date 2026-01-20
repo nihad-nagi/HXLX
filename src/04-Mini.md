@@ -2,8 +2,147 @@
 # Product Layer: From Primitives to Reality
 
 ## PIPELINE MASTER MAP: PRODUCT GENESIS
+<!-- ANCHOR:D401 -->
+<!--Please note we dont use git the way you know it, its genetics to us -->
+```mermaid
+%%{init:{ 'logLevel':'debug', 'theme':'dark', 'gitGraph':{'showBranches':true, 'showCommitLabel':true, 'mainBranchName':'PIPE'} } }%%
+gitGraph  
+commit id:"INIT"
+commit id:"Cybernetics MS" tag:"HLX"
+commit id:"GITS" tag:"Hx28" type:REVERSE
+%%
+%% H0S Branch
+branch H0S
+commit id:"Git H0S"
+%%
+%% H0T Branch
+branch H0T
+commit id:"Git H0T"
+%%
+%% Z01S Branch
+branch Z01S
+checkout Z01S
+commit id:"Git Z01S"
+%%
+%% Z00S Branch
+branch Z00S
+checkout Z00S
+commit id:"Git Z00S"
+%%
+%% B00M Branch
+branch B00M
+checkout B00M
+commit id:"Git B00M"
+%%
+%% B00T Branch
+branch B00T
+checkout B00T
+commit id:"Git B00T"
+commit id:"4D Pixels" tag:"Hx00" type:REVERSE
+commit id:"FrameBuffers" tag:"Hx01" type:REVERSE
+commit id:"Operating States" tag:"Hx02" type:REVERSE
+commit id:"Native Testers" tag:"Hx10" type:REVERSE
+commit id:"B00T" tag:"0B00T" type:HIGHLIGHT
+commit id:"B00TStore" tag:"0B00TS" type:HIGHLIGHT
+%%
+%% B01T Branch
+branch B01T
+checkout B01T
+commit id:"MultiModal Triplet" tag:"Hx03" type:REVERSE
+commit id:"Bandwidth Hierarchy" tag:"Hx04" type:REVERSE
+commit id:"Process Container" tag:"Hx05" type:REVERSE
+commit id:"Tripartite Security" tag:"Hx06" type:REVERSE
+commit id:"FrameBuffer Control" tag:"Hx07" type:REVERSE
+commit id:"ZB00Tv1" tag:"B01T" type:HIGHLIGHT
+commit id:"App Store" tag:"B0AT" type:HIGHLIGHT
+%%
+%% B02T Branch
+branch B02T
+checkout B02T
+commit id:"Redis Protocol" tag:"Custom" type:REVERSE
+commit id:"DragonGit" tag:"Custom" type:REVERSE
+commit id:"Pixel Torrents" tag:"Hx08" type:REVERSE
+commit id:"Chat" tag:"Custom" type:HIGHLIGHT
+commit id:"Streaming" tag:"Custom" type:HIGHLIGHT
+commit id:"Web" tag:"Custom" type:HIGHLIGHT
+commit id:"World News" tag:"Custom" type:HIGHLIGHT
+commit id:"ZB00Tv2" tag:"B02T" type:HIGHLIGHT
+%%
+%% B03T Branch
+branch B03T
+checkout B03T
+commit id:"Global UCRS" tag:"Hx18G" type:REVERSE
+commit id:"Universal Data Programming" tag:"Hx12" type:REVERSE
+commit id:"WebMod" tag:"Hx13" type:REVERSE
+commit id:"Codec Query" tag:"Hx21" type:REVERSE
+commit id:"Lunar Rendering" tag:"Hx15" type:REVERSE
+commit id:"ZB00Tv3" tag:"B03T" type:HIGHLIGHT
+commit id:"Z00Marche" tag:"Custom" type:HIGHLIGHT
+%%
+%% 0W1 Branch
+branch 0W1
+checkout 0W1
+commit id:"RayTracer" tag:"Hx14" type:REVERSE
+commit id:"BiTracer" tag:"Hx20" type:REVERSE
+commit id:"4D PiP" tag:"Hx27" type:REVERSE
+commit id:"Seed Mining" tag:"Hx28" type:REVERSE
+commit id:"Gaming" tag:"Hx19" type:REVERSE
+commit id:"0W1" tag:"Custom" type:HIGHLIGHT
+checkout B00M
+commit id:"Ambience Positioning" tag:"Hx16" type:REVERSE
+commit id:"Ambience Sleuth" tag:"Custom" type:HIGHLIGHT 
+commit id:"ABBA" tag:"Hx17" type:REVERSE
+commit id:"Semantic Photonic Language" tag:"Hx24" type:REVERSE
+commit id:"Large Perception" tag:"Hx25" type:REVERSE
+commit id:"Codec Booster" tag:"Hx23" type:REVERSE
+commit id:"Physical Networks" tag:"Hx26" type:REVERSE
+%% 0VV1 Branch
+checkout 0W1
+commit id:"Earth Labs" tag: "Custom" type: HIGHLIGHT
+commit id: "Earth Git" tag: "Custom" type: HIGHLIGHT
+%%
+%% ZOOS Branch
+checkout Z00S
+commit id:"Broadway" tag:"Hx09" type:REVERSE
+commit id:"Universes UCRS" tag:"Hx18U" type:REVERSE
+%%
+%% ZO1S Branch
+checkout Z01S
+merge Z00S
+commit id:"POST" tag:"Hx12" type:REVERSE
+checkout H0T
+merge Z01S
+commit id:"H0T" tag:"Hx30" type:REVERSE
+%%
+%% H0S Branch
+checkout H0S
+merge H0T
+commit id:"H0S" tag:"Hx31" type:REVERSE
+commit id:"H0T Sensory" tag:"Hx32" type:REVERSE
+checkout PIPE
+merge H0S
+%%
+%% B00M Branch
+checkout B00M
+commit id:"7D Crystals" tag:"Hx33" type:REVERSE
+commit id: "Planetary Femto-Quanta" tag: "Custom" type: HIGHLIGHT
+commit id:"Advanced Sensory" tag:"Hx34" type:REVERSE
+commit id:"Migration Networks" tag:"Hx35" type:REVERSE
+commit id:"Species Programming" tag:"Hx36" type:REVERSE
+commit id:"Nature Harnessing" tag:"Hx37" type:REVERSE
+commit id:"LSM Earthband" tag:"Hx38" type:REVERSE
+commit id:"Matter Programming" tag:"Hx39" type:REVERSE
+commit id:"Eclipses Programming" tag:"Hx40" type:REVERSE
+%%
+%% PIPE Branch
+checkout PIPE
+merge 0W1
+```
+<!-- ANCHOR_END:D401 -->
 
-{{#include dags/D04.md:D401}} 
+
+
+<!--{{#include dags/D04.md:D401}} -->
 
 ### BASIC
 This is our development timeline. Each branch is a product being built from the foundational discoveries. The main line (PIPE) is where stable releases merge.
@@ -14,8 +153,8 @@ The pipeline map shows the evolutionary development of products from foundationa
 ### TECHNICAL
 Version-controlled product genesis pipeline using Git semantics. Branches represent product lines, REVERSE commits represent Hex primitive integration, HIGHLIGHT commits represent product releases. The graph shows dependency relationships and parallel development streams.
 
-### Key Pipeline Architecture:
-
+#### Architecture:
+    
     PIPE Branch: Main release pipeline - all product lines eventually merge here
 
     REVERSE Commits: Hex primitive integrations (Hx00, Hx01, etc.)
@@ -41,7 +180,7 @@ Instant operating state loading through memory frame injection, bypassing tradit
 #### TECHNICAL
 Deterministic state injection engine using framebuffer semantics for direct memory loading. Achieves <1s boot by eliminating sequential initialization in favor of holistic state snapshot restoration.
 
-#### Hex Assembly Logic:
+#### Assembly
 
 ```text
 
@@ -54,7 +193,7 @@ Hx02 (OS States): State management and restoration
 Hx10 (Native Testers): Hardware calibration and validation
 ```
 
-#### Product Architecture:
+#### Architecture
 
     State Encoding: System state as MP4 container (Hx05 adaptation)
 
@@ -98,7 +237,7 @@ Application containerization with multimodal security and deterministic process 
 #### TECHNICAL
 Tripartite container security system where execution requires consensus across visual (code), auditory (checksum), and textual (command) streams within MP4 process containers.
 
-#### Hex Assembly Logic:
+#### Assembly
 
 ```text
 
@@ -111,7 +250,7 @@ Hx06 (Tripartite): Three-modality consensus security
 Hx07 (Framebuffer): Execution orchestration control
 ```
 
-#### Product Architecture:
+#### Architecture
 
     Container Format: MP4 with three synchronized channels
 
@@ -153,7 +292,7 @@ Distributed communication protocols and Earth-scale data exchange using percepti
 #### TECHNICAL
 Pixel torrent network implementing swarm-based state propagation with attention-driven flow optimization and GPS-independent positioning.
 
-#### Hex Assembly Logic:
+#### Assembly
 
 ```text
 
@@ -165,7 +304,7 @@ Custom: DragonFly Git for distributed version control
 Components: Chat, Streaming, Web, World News layers
 ```
 
-#### Product Architecture:
+#### Architecture
 
     Propagation Model: Swarm diffusion based on attention gradients
 
@@ -207,7 +346,7 @@ High-performance computing environment and economic transaction layer combining 
 #### TECHNICAL
 WebMod geometry engine for browser-based 3D design combined with Bitcoin-settled marketplace for digital assets, using codec-based query processing for optimization.
 
-#### Hex Assembly Logic:
+#### Assembly
 ```text
 
 B03T = Hx21 + Hx12 + Hx13 + Hx15 + Hx18G
@@ -218,7 +357,7 @@ Hx13 (WebMod): Browser-native 3D modeling engine
 Hx15 (Location Rendering): Spatially-aware output adaptation
 Hx18G (Global UCRS): Asset tracking and color-coded multiverse management
 ```
-#### Product Architecture:
+#### Architecture
 
     Processing: GPU-accelerated codec queries (H.264/H.265 as compute)
 
@@ -263,7 +402,7 @@ Ambient intelligence and physical neural network deployment at planetary scale, 
 #### TECHNICAL
 Physical neural substrates (LED arrays) with semantic photonic language encoding and femto-quantum bridges for environmental sensing and prediction.
 
-#### Hex Assembly Logic:
+#### Assembly
 ```text
 
 B00M = Hx16 + Hx24 + Hx25 + Hx23 + Hx26
@@ -275,7 +414,7 @@ Hx23 (Codec Booster): Generative universe creation for simulation
 Hx26 (Physical NNs): LED-sheet neural computation substrates
 ```
 
-#### Product Architecture
+#### Product #### Architecture
 
     Positioning: Environmental signature triangulation
 
@@ -325,7 +464,7 @@ Core gaming/physics engine and attention economy marketplace combining computati
 #### TECHNICAL
 Reality engine using light as truth-discovery instrument with bidirectional causal tracing and parallel universe seed mining for generative world creation.
 
-#### Hex Assembly Logic:
+#### Assembly
 ```text
 
 0VV1 = Hx14 + Hx20 + Hx27 + Hx28 + Hx19
@@ -336,7 +475,7 @@ Hx27 (4D PiP): Forward-backward handshake operations
 Hx28 (Seed Mining): Parallel universe discovery
 Hx19 (Serious Gaming): Finite combinatorial universes as testbeds
 ```
-#### Product Architecture
+#### Product #### Architecture
 
     Computation: Light-shadow equilibrium detection for truth discovery
 
@@ -378,9 +517,9 @@ Computer that heals itself and grows smarter with use, where the programming env
 Git-native, self-healing operating system where the IDE serves as the primary control plane, with visual programming and colony-wide learning.
 
 #### TECHNICAL
-Living OS with IDE-as-portal architecture, QEMU-IDE fusion for kernel management, and Git-native everything with autonomous healing capabilities.
+Living OS with IDE-as-portal #### Architecture, QEMU-IDE fusion for kernel management, and Git-native everything with autonomous healing capabilities.
 
-#### Hex Assembly Logic:
+#### Assembly
 ```text
 
 Z00S = Hx09 + Hx18U + System Evolution Models
@@ -389,7 +528,7 @@ Hx09 (Broadway): 1024-stage framebuffer multiplication
 Hx18U (Universes UCRS): Color-coded multiverse state management
 System: MORPHS/CHRONICS/VAX branching for evolutionary development
 ```
-#### Product Architecture:
+#### Architecture
 
     Interface: Kate-based MDX views replacing traditional desktop
 
@@ -431,7 +570,7 @@ Operating system as game, where system operations become gamified experiences wi
 #### TECHNICAL
 Gamified OS with custom POST sequences, universe navigation metaphors, and achievement-based administration with educational integration.
 
-#### Hex Assembly Logic:
+#### Assembly
 ```text
 
 Z01S = Hx12 + Hx19 + Educational Frameworks
@@ -440,7 +579,7 @@ Hx12 (POST): Boot sequence customization and override
 Hx19 (Serious Gaming): Gaming mechanics applied to system administration
 Educational: Progressive learning frameworks and assessment integration
 ```
-#### Product Architecture:
+#### Architecture
 
     Boot: Custom POST sequences with narrative elements
 
@@ -483,7 +622,7 @@ Semantic device ecosystem replacing traditional IoT with consciousness-aware coo
 #### TECHNICAL
 Color Positioning System (CPS) for device classification with multi-orbit visualization and hive communication protocols for distributed coordination.
 
-#### Hex Assembly Logic:
+#### Assembly
 ```text
 
 H0T = Hx30 + Hx32 + Color Positioning System
@@ -492,7 +631,7 @@ Hx30 (HoT Core): Genetic hive transport protocol
 Hx32 (Sensory): Multi-modal sensor integration
 CPS: EM spectrum as global device classifier
 
-#### Product Architecture:
+#### Architecture
 
     Classification: Red (Input), Green (Processing), Blue (Computation), Violet (Output)
 
@@ -532,9 +671,9 @@ Operating system built for graphics cards that runs entire universes as apps, le
 GPU-centric, convolution-native OS for universe-scale computation with colony-wide learning and autonomous healing.
 
 #### TECHNICAL
-GPU-native microkernel with universe execution as first-class process type, convolution-first architecture, and colony synchronization for distributed learning.
+GPU-native microkernel with universe execution as first-class process type, convolution-first #### Architecture, and colony synchronization for distributed learning.
 
-#### Hex Assembly Logic:
+#### Assembly
 ```text
 
 H0S = Hx31 + Hx33 + Hx17 + Hx18G + Hx32
@@ -545,7 +684,7 @@ Hx17 (ABBA): Behavioral security profiling
 Hx18G (Global UCRS): Content rating and management
 Hx32 (Sensory): Environmental integration
 ```
-#### Product Architecture:
+#### Architecture
 
     Kernel: GPU-native microkernel with CPU elimination where possible
 
