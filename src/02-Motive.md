@@ -330,6 +330,8 @@ The two BVH circuits formed a 19-layer deep neural network for hierarchical stat
 
     Intersection points = verified truth
 
+### BANDWIDTH PYRAMID
+<!--Add here, that having the pixel alone reduced our space from 2.6m to ~550k based on lexico indices, so i thought i want to store meta and the sequence as a wave sample? and voila the rest-->
 
 ### THE LIGHT-SPEED SEARCH ALGORITHM
 
