@@ -1,10 +1,34 @@
 # MANUAL
-CYBERNETICS GOVERNANCE
+CYBERNETICS GOVERNANCE MANUAL
+
+<!--This is the homepage of HXLX cybernetics governance system homepage. It serves as the system's manual -->
+
+<!--any software methodology inherits from the continuous improvement cycle-->
+<!--For example, lets map the DEVOPS which subs the PDCA
+PLAN = Plan
+DO = Code -> Build
+CHECK = Test -> Release -> Deploy
+ACT = Operate -> Improve (Monitor is passive, each cycle must be a lesson learned, reflected and updated, maybe a central todo pool is the best thing for me and take action on how to immediately update the business process. I am assuming the role of the Management Representative which is a common requirement for any iso managemet system, in reality, i always saw middle management getting appointed as the MR, to be scapegoated on failure, an the consultant i always saw that as poor understanding of the potential and benefits that can be reaped from quality, therefore, you will never see the founder acting as a Management Representative, which must be stressed out as a sign of deep understanding, hypothetically speaking, if microsoft is certified, do you expect bill gates to be in opening and closing meeting? i dont think so )
+-->
+<!--Internal auditing will be implemented by making the entire system records available during those audits,in essense i am weaponizing these 1st and third party audits as compliance artifacts from an American,European (TUV) and Asian classes, any exellence awards countries are more preferable to the system to be located in, free marketing and more importanly any regulation body cant negate the same class it refers to in cases -->
+
+<!--Prompted roles need to be defined with the task and not the position nonsense bloats
+PLANner
+DOers
+ANALYSEr (instead of check)
+ACTor (back to planner)
+one thing for sure, the DEVOPS doesnt suit all projects, so instead of specifying the metholodogies, we use the PDCA cycle and each project details the tasks under each, so the methodolgy skeleton remains intact, whether you devops, agile or spiral, the PDCA applies, where these are only derivatives of it after a closer look, so why the jargons and bloats, one super cycle for any project.
+-->
+
+<!--Services/Subcontractors List 
 
 
-## 1. Executive Summary of Organizational Transformation
+-->
 
-The MINI LX project adopts a revolutionary organizational structure where Large Language Models (LLMs) and Transformers serve as autonomous agents, managed through ISO-compliant prompt-based job descriptions. This transforms traditional human-centric project management into a cybernetic orchestration system where:
+
+## 1. Organizational Transformation
+
+HXLX adopts a revolutionary organizational structure where Large Language Models (LLMs) and Transformers serve as autonomous agents, managed through ISO-compliant prompt-based job descriptions. This transforms traditional human-centric project management into a cybernetic orchestration system where:
 
   - Every role is an LLM instance with precisely defined capabilities
   
