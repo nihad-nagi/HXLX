@@ -1,13 +1,12 @@
 // /HXLX/plugins/hxbook-admonish/src/markdown.rs
 use crate::config::parse_config;
 use crate::parse::parse_admonition;
-use crate::render::{generate_custom_css, render_admonition};
+use crate::render::render_admonition;
 use crate::types::AdmonishConfig;
 use mdbook::{
     book::{Book, BookItem},
     errors::Result,
     preprocess::{Preprocessor, PreprocessorContext},
-    utils::fs::write_file,
 };
 use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag};
 use std::ops::Range;
@@ -16,7 +15,7 @@ pub struct AdmonishPreprocessor;
 
 impl Preprocessor for AdmonishPreprocessor {
     fn name(&self) -> &str {
-        "admonish"
+        "hxbook-admonish"
     }
 
     fn supports_renderer(&self, renderer: &str) -> bool {
@@ -29,11 +28,6 @@ impl Preprocessor for AdmonishPreprocessor {
         }
 
         let config = parse_config(ctx)?;
-
-        // Write CSS to build directory
-        let build_dir = &ctx.config.build.build_dir;
-        let css = generate_custom_css(&config);
-        write_file(build_dir, "hxbook-admonish.css", css.as_bytes())?;
 
         book.for_each_mut(|item| {
             if let BookItem::Chapter(chapter) = item {

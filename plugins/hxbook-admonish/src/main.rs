@@ -119,7 +119,7 @@ fn handle_install(sub_args: &ArgMatches) -> ! {
     };
 
     // Parse TOML document for editing
-    let mut doc = match toml_content.parse::<toml_edit::DocumentMut>() {
+    let mut doc = match toml_content.parse::<toml_edit::Document>() {
         Ok(doc) => doc,
         Err(e) => {
             log::error!("Invalid TOML syntax in '{}': {}", config_path.display(), e);
@@ -134,6 +134,8 @@ fn handle_install(sub_args: &ArgMatches) -> ! {
         .and_then(|s| s.as_str())
         .map(|s| proj_dir.join(s))
         .unwrap_or_else(|| proj_dir.join("src"));
+    // Create assets directory inside src
+    let assets_dir = src_dir.join("assets");
 
     // 2. Add preprocessor configuration if missing
     if !has_preprocessor(&doc, PREPROCESSOR_NAME) {
@@ -155,7 +157,7 @@ fn handle_install(sub_args: &ArgMatches) -> ! {
     }
 
     // 5. Write embedded asset files to the source directory
-    deploy_assets(&src_dir, ASSETS);
+    deploy_assets(&assets_dir, ASSETS);
 
     log::info!("✅ Installation complete for '{}'.", PREPROCESSOR_NAME);
     log::info!("  -> Assets are now local in {}.", src_dir.display());
@@ -197,7 +199,7 @@ fn deploy_assets(target_dir: &PathBuf, assets: &[(&str, &[u8])]) {
 /// --- HELPER FUNCTIONS (Boilerplate) ---
 
 /// Check if a preprocessor is already configured in the TOML document.
-fn has_preprocessor(doc: &toml_edit::DocumentMut, name: &str) -> bool {
+fn has_preprocessor(doc: &toml_edit::Document, name: &str) -> bool {
     doc.get("preprocessor")
         .and_then(|p| p.get(name))
         .map(|entry| entry.is_table())
@@ -205,7 +207,7 @@ fn has_preprocessor(doc: &toml_edit::DocumentMut, name: &str) -> bool {
 }
 
 /// Add a preprocessor configuration to the TOML document.
-fn add_preprocessor(doc: &mut toml_edit::DocumentMut, name: &str, command: &str) {
+fn add_preprocessor(doc: &mut toml_edit::Document, name: &str, command: &str) {
     use toml_edit::{value, Item, Table};
     let preprocessors = doc
         .as_table_mut()
@@ -224,7 +226,7 @@ fn add_preprocessor(doc: &mut toml_edit::DocumentMut, name: &str, command: &str)
 }
 
 /// Add asset references to the book configuration.
-fn add_assets_to_config(doc: &mut toml_edit::DocumentMut, assets: &[(&str, &[u8])]) -> bool {
+fn add_assets_to_config(doc: &mut toml_edit::Document, assets: &[(&str, &[u8])]) -> bool {
     use toml_edit::{Array, Item, Table, Value};
     let mut config_changed = false;
 
@@ -243,19 +245,19 @@ fn add_assets_to_config(doc: &mut toml_edit::DocumentMut, assets: &[(&str, &[u8]
 
     // Add .css files to `additional-css`
     for (filename, _) in assets.iter().filter(|(f, _)| f.ends_with(".css")) {
+        // Path relative to src directory: assets/filename
+        let css_path = format!("assets/{}", filename);
         let css_array = html_section
             .entry("additional-css")
             .or_insert(Item::Value(Value::Array(Array::new())))
             .as_array_mut()
             .unwrap();
 
-        // The CSS file is in the source directory, so we just need the filename
-        // since additional-css is relative to the source directory.
         if !css_array
             .iter()
-            .any(|item| item.as_str() == Some(*filename))
+            .any(|item: &toml_edit::Value| item.as_str() == Some(&css_path))
         {
-            css_array.push(*filename);
+            css_array.push(css_path);
             config_changed = true;
         }
     }
