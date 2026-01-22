@@ -38,7 +38,7 @@ Whether you are an innovator looking for a peaceful environment to nourish a "Be
 We have the blueprint. We have the 2564 universal grammar. We have the 50-year track record of excellence. The system is functional. The "Ceiling" is reviewed.
 
 our question is not the traditional are you in rather
-DO YOU BELIEVE?
+DO YOU BELIEVE WE CAN DO IT?
 
 To Believers:
   We aim to the best return on carats every existed.
