@@ -19,3 +19,14 @@ docs/
 /src/000-Drafts.md
 /src/00-Drafts.md
 hidden/
+
+# Binary files (can be rebuilt)
+vendor/bin/
+
+# Build artifacts
+vendor/target/
+book/
+
+# But DO commit:
+# vendor/plugins/           # Plugin source code
+# .cargo/config.toml       # Cargo config
