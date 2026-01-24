@@ -19,3 +19,17 @@ fn main() {
     println!("The Selection is {}", square);  // Shows just one colored block
 }
 ```
+
+### Basic Syntax
+```admonish note
+This is a note admonition with default styling.
+```
+
+```admonish details collapsible=true title="Click to expand"
+Hidden content that can be revealed.
+More details here...
+```
+
+```admonish title="Sneaky", collapsible=true
+Content will be hidden initially.
+```
