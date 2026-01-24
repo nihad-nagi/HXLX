@@ -1,3 +1,4 @@
+# /HXLX/book.toml
 [book]
 title = "HXLX"
 language = "en"
@@ -11,8 +12,9 @@ additional-js = [
   "src/assets/mermaid.min.js",
   "src/assets/panzoom-bundle.js"
 ]
-additional-css = ["src/assets/panzoom.css"]
-
+additional-css = [
+ "src/assets/panzoom.css",
+]
 
 [preprocessor.mermaid-panzoom]
 command = "mdbook-mermaid-panzoom"
