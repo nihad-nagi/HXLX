@@ -27,13 +27,13 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install mdBook
-        run: cargo install mdbook --locked
+        run: cargo install mdbook --version 0.4.52 --locked
 
       - name: Install mdbook-mermaid-panzoom
-        run: cargo install --path mdbook-mermaid-panzoom
+        run: cargo install --path plugins/mdbook-mermaid-panzoom
 
-      - name: Install mdbook-termlink
-        run: cargo install mdbook-termlink # Add this step
+      # - name: Install mdbook-termlink
+      # run: cargo install mdbook-termlink # Add this step
 
       - name: Build book
         run: mdbook build
