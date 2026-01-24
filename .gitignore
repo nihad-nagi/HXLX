@@ -30,3 +30,6 @@ book/
 # But DO commit:
 # vendor/plugins/           # Plugin source code
 # .cargo/config.toml       # Cargo config
+
+# Temp
+/plugins/hxbook-admonishs/
