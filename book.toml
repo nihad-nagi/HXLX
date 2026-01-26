@@ -18,3 +18,18 @@ additional-css = [
 
 [preprocessor.mermaid-panzoom]
 command = "mdbook-mermaid-panzoom"
+
+[preprocessor.components]
+command = "mdbook-components"
+namespace = "mybook"
+strict = false
+debug = true
+
+[preprocessor.components.components.admonition]
+template = "./components/admonition/model.html"
+css = "./components/admonition/view.css"
+js = "./components/admonition/control.js"
+
+[preprocessor.components.components.admonition.schema]
+required = ["type", "title"]
+optional = ["icon", "collapsible"]
