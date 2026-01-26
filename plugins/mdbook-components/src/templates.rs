@@ -1,3 +1,4 @@
+// src/templates.rs
 use crate::registry::{ComponentDefinition, ComponentSource};
 use std::collections::HashMap;
 use std::path::Path;
@@ -17,7 +18,7 @@ impl ComponentManager {
         let mut js_bundle = String::new();
         let mut component_defs = HashMap::new();
 
-        // Load built-in components
+        // Load built-in components from src/components/
         Self::load_builtin_components(
             &mut tera,
             &mut css_bundle,
@@ -25,7 +26,7 @@ impl ComponentManager {
             &mut component_defs,
         )?;
 
-        // Load user components
+        // Load user components from project's components/ directory
         let user_components_dir = base_dir.join("components");
         if user_components_dir.exists() {
             Self::load_user_components(
@@ -54,7 +55,7 @@ impl ComponentManager {
         js_bundle: &mut String,
         component_defs: &mut HashMap<String, ComponentDefinition>,
     ) -> Result<(), anyhow::Error> {
-        // Now components are in src/components, so paths are simple
+        // Built-in components are now in src/components/
         let builtin_components = [
             (
                 "admonition",
@@ -120,6 +121,7 @@ impl ComponentManager {
     ) -> Result<(), anyhow::Error> {
         use crate::registry::load_components_from_directory;
 
+        // Auto-discover components from directory
         let components = load_components_from_directory(components_dir)?;
 
         for (name, def) in components {

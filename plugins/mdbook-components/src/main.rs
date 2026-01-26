@@ -125,7 +125,7 @@ fn handle_install(sub_args: &ArgMatches) -> Result<()> {
 
     log::info!("Installing mdbook-components to {}", proj_dir.display());
 
-    // Update book.toml configuration using simple string manipulation
+    // Update book.toml configuration
     let config_path = proj_dir.join("book.toml");
     if config_path.exists() {
         let original_content = fs::read_to_string(&config_path)?;
@@ -157,11 +157,10 @@ command = "mdbook-components"
     if !components_dir.exists() {
         fs::create_dir_all(&components_dir)?;
 
-        // Copy example component
+        // Copy example component - show users how to create components
         let example_dir = components_dir.join("example");
         fs::create_dir_all(&example_dir)?;
 
-        // Since components is now in src/, use correct path
         fs::write(
             example_dir.join("model.html"),
             include_str!("components/example/model.html"),
@@ -176,6 +175,32 @@ command = "mdbook-components"
         )?;
 
         log::info!("Created example component in {}", example_dir.display());
+
+        // Also create a README explaining the structure
+        fs::write(
+            components_dir.join("README.md"),
+            r#"# Custom Components Directory
+
+This directory contains custom components for your mdBook.
+
+## Component Structure
+Each component should be in its own directory with:
+
+1. `model.html` - Template (required)
+2. `view.css` - Styles (optional)
+3. `control.js` - JavaScript (optional)
+
+## Example
+{% component "example" title="My Title" %}
+Markdown content here
+{% endcomponent %}
+
+## Creating a New Component
+1. Create a new directory: `mkdir components/my-component`
+2. Create the 3 files above
+3. Use in markdown: `{% component "my-component" attr="value" %}...{% endcomponent %}`
+"#,
+        )?;
     }
 
     // Generate assets after installation
@@ -184,14 +209,19 @@ command = "mdbook-components"
 
     log::info!("✅ Installation complete!");
     log::info!("");
-    log::info!("Next steps:");
-    log::info!("1. Add components to your markdown:");
-    log::info!("   {{% component \"admonition\" type=\"warning\" title=\"Alert\" %}}");
-    log::info!("   This is a warning");
-    log::info!("   {{% endcomponent %}}");
+    log::info!("Components will be auto-discovered from the 'components/' directory.");
     log::info!("");
-    log::info!("2. Create custom components in `components/` directory");
-    log::info!("3. Run `mdbook build` to build your book");
+    log::info!("Built-in components available immediately:");
+    log::info!("  • admonition - Note/warning/tip/danger callouts");
+    log::info!("  • example - Interactive example with toggle");
+    log::info!("");
+    log::info!("Usage in markdown:");
+    log::info!("  {{% component \"admonition\" type=\"warning\" title=\"Alert\" %}}");
+    log::info!("  This is a warning");
+    log::info!("  {{% endcomponent %}}");
+    log::info!("");
+    log::info!("Create custom components in 'components/' directory");
+    log::info!("Run 'mdbook build' to see your components in action!");
 
     Ok(())
 }
@@ -199,14 +229,18 @@ command = "mdbook-components"
 fn update_book_config(original: &str) -> String {
     let mut content = original.to_string();
 
-    // Ensure [output.html] section exists with assets
+    // Simple check: if we don't have [output.html] section at all, add it
     if !content.contains("[output.html]") {
         content.push_str("\n[output.html]\n");
         content.push_str("additional-js = [\"static/scripts/components.js\"]\n");
         content.push_str("additional-css = [\"static/styles/components.css\"]\n");
     } else {
-        // Check for additional-js
-        if !content.contains("additional-js") {
+        // Check for additional-js - add if missing
+        let needs_js = !content.contains("additional-js")
+            || (content.contains("additional-js")
+                && !content.contains("static/scripts/components.js"));
+
+        if needs_js {
             if let Some(pos) = content.find("[output.html]") {
                 let insert_pos = pos + "[output.html]".len();
                 content.insert_str(
@@ -216,8 +250,12 @@ fn update_book_config(original: &str) -> String {
             }
         }
 
-        // Check for additional-css
-        if !content.contains("additional-css") {
+        // Check for additional-css - add if missing
+        let needs_css = !content.contains("additional-css")
+            || (content.contains("additional-css")
+                && !content.contains("static/styles/components.css"));
+
+        if needs_css {
             if let Some(pos) = content.find("[output.html]") {
                 let insert_pos = pos + "[output.html]".len();
                 content.insert_str(

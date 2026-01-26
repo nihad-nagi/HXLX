@@ -100,6 +100,7 @@ pub struct PropSchema {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ComponentDefinition {
     /// Source of the component (inline, files, or directory)
+    #[serde(flatten)]
     pub source: ComponentSource,
 
     /// Schema for validation
@@ -147,7 +148,7 @@ impl ComponentDefinition {
 
             Ok(def)
         } else {
-            // Auto-discover MVC files
+            // Auto-discover MVC files - this is the main path!
             Ok(Self {
                 source: ComponentSource::Directory(dir.to_path_buf()),
                 schema: None,
@@ -201,12 +202,26 @@ pub fn load_components_from_directory<P: AsRef<Path>>(
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct ComponentConfig {
+    #[serde(default)]
     pub namespace: String,
+
+    #[serde(default)]
     pub strict: bool,
+
+    #[serde(default)]
     pub strict_hydration: bool,
+
+    #[serde(default)]
     pub debug: bool,
+
+    #[serde(default)]
     pub warnings_as_errors: bool,
+
+    #[serde(default)]
     pub templates: HashMap<String, String>,
+
+    // This field is optional in the TOML - users don't define components here!
+    #[serde(default)]
     pub components: HashMap<String, ComponentDefinition>,
 }
 
@@ -221,14 +236,15 @@ impl ComponentConfig {
             return Ok(Self::default());
         };
 
-        // Convert to string and parse
+        // Convert to string
         let config_str = config_value.to_string();
 
-        // First parse as a generic Value to handle the components field specially
-        let mut config: Self = toml::from_str(&config_str)
+        // Parse the TOML - components field will be empty (which is what we want!)
+        let config: Self = toml::from_str(&config_str)
             .map_err(|e| anyhow::anyhow!("Failed to parse component config: {}", e))?;
 
         // Set defaults
+        let mut config = config;
         if config.namespace.is_empty() {
             config.namespace = "mdbook".to_string();
         }
@@ -237,18 +253,7 @@ impl ComponentConfig {
     }
 
     pub fn validate(&self) -> Result<(), crate::errors::ComponentError> {
-        // Validate component names
-        for name in self.components.keys() {
-            if !name
-                .chars()
-                .all(|c| c.is_alphanumeric() || c == '-' || c == '_')
-            {
-                return Err(crate::errors::ComponentError::ValidationError(
-                    format!("Invalid component name: '{}'. Only alphanumeric, dash, and underscore allowed.", name)
-                ));
-            }
-        }
-
+        // No validation needed for auto-discovered components
         Ok(())
     }
 }
