@@ -1,0 +1,24 @@
+/*/home/enzi/HXLX/plugins/mdbook-components/src/components/admonition/view.css*/
+.admonition {
+    border: 2px solid;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.admonition-note {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.admonition-warning {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.admonition-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
