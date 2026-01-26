@@ -1,7 +1,17 @@
+// /home/enzi/HXLX/plugins/mdbook-components/assets/Component.js
 class Component {
   static registry = new WeakMap();
 
-  constructor(el, { props = {}, state = {}, autoMount = true } = {}) {
+  constructor(
+    el,
+    {
+      props = {},
+      state = {},
+      autoMount = true,
+      _serverHTML = null,
+      _mode = "mount",
+    } = {},
+  ) {
     this.el = typeof el === "string" ? document.querySelector(el) : el;
     if (!this.el) return;
 
@@ -13,13 +23,20 @@ class Component {
 
     this.props = props;
     this.state = state;
+    this._serverHTML = _serverHTML;
+    this._mode = _mode;
     this._prevState = Object.freeze({ ...state });
     this._prevProps = Object.freeze({ ...props });
     this._listeners = [];
     this._mounted = false;
+    this._dynamicMarkers = new Map();
 
     if (autoMount) {
-      this.mount();
+      if (this._mode === "hydrate") {
+        this._hydrate();
+      } else {
+        this.mount();
+      }
     }
   }
 
@@ -34,10 +51,9 @@ class Component {
     this._prevProps = Object.freeze({ ...this.props });
     this.props = { ...this.props, ...nextProps };
     this.update({}, { fromProps: true });
-    // No direct hook call here - update() is the single source of truth
   }
 
-  update(patch = {}, { fromProps = false } = {}) {
+  update(patch = {}, { fromProps = false, silent = false } = {}) {
     if (!this.el) return;
 
     this._prevState = Object.freeze({ ...this.state });
@@ -55,20 +71,48 @@ class Component {
 
     // SINGLE SOURCE OF TRUTH: Only update() calls these hooks
     const phase = fromProps ? "props" : "state";
-    this["update:" + phase]?.(this._prevProps, this._prevState);
+    if (!silent) {
+      this["update:" + phase]?.(this._prevProps, this._prevState);
+    }
 
     const rendered = this.render?.();
 
     if (rendered !== undefined && this.shouldRender?.(phase) !== false) {
-      this.el.innerHTML = rendered;
+      // In hydration mode, only update dynamic parts
+      if (this._mode === "hydrate" && this._serverHTML) {
+        this._updateDynamicParts(rendered);
+      } else {
+        this.el.innerHTML = rendered;
+      }
     }
+  }
+
+  // Hydration-specific initialization
+  _hydrate() {
+    this._mounted = true;
+
+    // Extract dynamic markers from server HTML
+    if (this._serverHTML) {
+      this._extractDynamicMarkers();
+    }
+
+    // Bind events without re-rendering
+    this.bindEvents();
+
+    // Call hydration hook if defined
+    if (this.onHydrate) {
+      this.onHydrate(this.props, this.state);
+    }
+
+    // Update only dynamic parts
+    this.update({}, { silent: true });
   }
 
   mount() {
     if (this._mounted || !this.el) return;
     this._mounted = true;
 
-    this["update:mount"]?.(); // Normalized mount hook
+    this["update:mount"]?.();
     const rendered = this.render?.();
 
     if (rendered !== undefined && this.shouldRender?.("mount") !== false) {
@@ -82,12 +126,42 @@ class Component {
     if (!this.el) return;
 
     this.unbindEvents();
-    this["update:destroy"]?.(this.props, this.state); // Pass current state
+    this["update:destroy"]?.(this.props, this.state);
     Component.registry.delete(this.el);
     this._mounted = false;
   }
 
-  // === Event System (unchanged) ===
+  // Extract dynamic markers for hydration
+  _extractDynamicMarkers() {
+    const markers = this.el.querySelectorAll("[data-dynamic]");
+    markers.forEach((marker) => {
+      const markerId = marker.dataset.dynamic || marker.dataset.id;
+      if (markerId) {
+        this._dynamicMarkers.set(markerId, marker);
+      }
+    });
+  }
+
+  // Update only dynamic parts of the component
+  _updateDynamicParts(rendered) {
+    if (this._dynamicMarkers.size === 0) return;
+
+    // Create a temporary element to parse the rendered content
+    const temp = document.createElement("div");
+    temp.innerHTML = rendered;
+
+    // Update each dynamic marker
+    this._dynamicMarkers.forEach((marker, markerId) => {
+      const dynamicContent =
+        temp.querySelector(`[data-dynamic="${markerId}"]`) ||
+        temp.querySelector(`[data-id="${markerId}"]`);
+      if (dynamicContent) {
+        marker.innerHTML = dynamicContent.innerHTML;
+      }
+    });
+  }
+
+  // === Event System ===
   bindEvents() {
     if (!this.el) return;
 
@@ -122,7 +196,7 @@ class Component {
     this._listeners = [];
   }
 
-  // === Normalized Hooks Only ===
+  // === Normalized Hooks ===
   render() {}
   get events() {
     return {};
@@ -131,9 +205,12 @@ class Component {
     return true;
   }
 
-  // All lifecycle through normalized hooks
+  // Lifecycle hooks
   ["update:mount"]() {} // Mounting phase
-  ["update:props"]() {} // Props update (receives prevProps, prevState)
-  ["update:state"]() {} // State update (receives prevProps, prevState)
-  ["update:destroy"]() {} // Destruction (receives current props, state)
+  ["update:props"](prevProps, prevState) {} // Props update
+  ["update:state"](prevProps, prevState) {} // State update
+  ["update:destroy"](props, state) {} // Destruction
+
+  // Optional hydration hook
+  onHydrate(props, state) {}
 }

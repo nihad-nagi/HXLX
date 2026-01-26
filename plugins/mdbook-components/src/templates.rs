@@ -1,4 +1,4 @@
-// src/templates.rs - Updated for MVC loading
+// src/templates.rs - Fixed paths
 use crate::registry::{ComponentDefinition, ComponentSource};
 use std::collections::HashMap;
 use std::path::Path;
@@ -18,7 +18,7 @@ impl ComponentManager {
         let mut js_bundle = String::new();
         let mut component_defs = HashMap::new();
 
-        // Load built-in components from embedded directory
+        // Load built-in components
         Self::load_builtin_components(
             &mut tera,
             &mut css_bundle,
@@ -26,7 +26,7 @@ impl ComponentManager {
             &mut component_defs,
         )?;
 
-        // Load user components from project directory
+        // Load user components
         let user_components_dir = base_dir.join("components");
         if user_components_dir.exists() {
             Self::load_user_components(
@@ -38,9 +38,8 @@ impl ComponentManager {
             )?;
         }
 
-        // Register filters and functions
+        // Register filters
         Self::register_default_filters(&mut tera);
-        Self::register_default_functions(&mut tera);
 
         Ok(Self {
             tera,
@@ -56,45 +55,35 @@ impl ComponentManager {
         js_bundle: &mut String,
         component_defs: &mut HashMap<String, ComponentDefinition>,
     ) -> Result<(), anyhow::Error> {
+        // CORRECTED PATHS: From src/templates.rs -> ../components/...
         let builtin_components = [
             (
                 "admonition",
-                include_str!("../../components/admonition/model.html"),
+                include_str!("../components/admonition/model.html"),
+                include_str!("../components/admonition/view.css"),
+                include_str!("../components/admonition/control.js"),
             ),
-            ("tabs", include_str!("../../components/tabs/model.html")),
             (
-                "callout",
-                include_str!("../../components/callout/model.html"),
+                "example",
+                include_str!("../components/example/model.html"),
+                include_str!("../components/example/view.css"),
+                include_str!("../components/example/control.js"),
             ),
         ];
 
-        for (name, template) in builtin_components.iter() {
+        for (name, template, css, js) in builtin_components.iter() {
             // Register template
             let template_name = format!("components/{}.html", name);
             tera.add_raw_template(&template_name, template)?;
 
-            // Load CSS
-            let css = match *name {
-                "admonition" => include_str!("../../components/admonition/view.css"),
-                "tabs" => include_str!("../../components/tabs/view.css"),
-                "callout" => include_str!("../../components/callout/view.css"),
-                _ => "",
-            };
-
+            // Add CSS to bundle
             if !css.is_empty() {
                 css_bundle.push_str(&format!("/* Component: {} */\n", name));
                 css_bundle.push_str(css);
                 css_bundle.push_str("\n\n");
             }
 
-            // Load JS
-            let js = match *name {
-                "admonition" => include_str!("../../components/admonition/control.js"),
-                "tabs" => include_str!("../../components/tabs/control.js"),
-                "callout" => include_str!("../../components/callout/control.js"),
-                _ => "",
-            };
-
+            // Add JS to bundle
             if !js.is_empty() {
                 js_bundle.push_str(&format!("// Component: {}\n", name));
                 js_bundle.push_str(js);
@@ -113,6 +102,8 @@ impl ComponentManager {
                 version: Some("1.0.0".to_string()),
                 dependencies: None,
                 builtin: true,
+                css_deps: None,
+                js_deps: None,
             };
 
             component_defs.insert(name.to_string(), def);
@@ -159,6 +150,77 @@ impl ComponentManager {
         Ok(())
     }
 
+    fn register_default_filters(tera: &mut Tera) {
+        // Markdown filter
+        tera.register_filter(
+            "markdown",
+            |value: &tera::Value, _: &HashMap<String, tera::Value>| {
+                use pulldown_cmark::{html, Options, Parser};
+
+                if let Some(s) = value.as_str() {
+                    let options = Options::empty();
+                    let parser = Parser::new_ext(s, options);
+                    let mut html_output = String::new();
+                    html::push_html(&mut html_output, parser);
+                    Ok(tera::Value::String(html_output))
+                } else {
+                    Err(tera::Error::msg(
+                        "Input to markdown filter must be a string",
+                    ))
+                }
+            },
+        );
+
+        // JSON filter
+        tera.register_filter(
+            "tojson",
+            |value: &tera::Value, _: &HashMap<String, tera::Value>| match serde_json::to_string(
+                value,
+            ) {
+                Ok(s) => Ok(tera::Value::String(s)),
+                Err(e) => Err(tera::Error::msg(format!("JSON error: {}", e))),
+            },
+        );
+
+        // Default filter
+        tera.register_filter(
+            "default",
+            |value: &tera::Value, args: &HashMap<String, tera::Value>| {
+                if value.is_null() || (value.is_string() && value.as_str().unwrap().is_empty()) {
+                    if let Some(default_value) = args.get("value") {
+                        Ok(default_value.clone())
+                    } else {
+                        Ok(tera::Value::Null)
+                    }
+                } else {
+                    Ok(value.clone())
+                }
+            },
+        );
+
+        // Capitalize filter
+        tera.register_filter(
+            "capitalize",
+            |value: &tera::Value, _: &HashMap<String, tera::Value>| {
+                if let Some(s) = value.as_str() {
+                    let mut chars = s.chars();
+                    match chars.next() {
+                        None => Ok(tera::Value::String(String::new())),
+                        Some(first) => {
+                            let capitalized =
+                                first.to_uppercase().collect::<String>() + chars.as_str();
+                            Ok(tera::Value::String(capitalized))
+                        }
+                    }
+                } else {
+                    Err(tera::Error::msg(
+                        "Input to capitalize filter must be a string",
+                    ))
+                }
+            },
+        );
+    }
+
     pub fn tera(&self) -> &Tera {
         &self.tera
     }
@@ -173,5 +235,9 @@ impl ComponentManager {
 
     pub fn component_defs(&self) -> &HashMap<String, ComponentDefinition> {
         &self.component_defs
+    }
+
+    pub fn has_component(&self, name: &str) -> bool {
+        self.component_defs.contains_key(name)
     }
 }

@@ -1,16 +1,14 @@
-// /home/enzi/HXLX/plugins/mdbook-components/src/lib.rs
 pub mod errors;
-pub mod hydration;
-// pub mod hydration_queue;
 pub mod parser;
 pub mod preprocessor;
 pub mod registry;
 pub mod templates;
 
 pub use errors::ComponentError;
-pub use preprocessor::TeraComponents;
+pub use preprocessor::ComponentPreprocessor;
 pub use registry::ComponentConfig;
+pub use templates::ComponentManager;
 
-// Re-exports for convenience
+// Re-exports
 pub use mdbook;
 pub use tera;

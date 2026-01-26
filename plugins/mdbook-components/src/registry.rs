@@ -1,4 +1,4 @@
-// src/registry.rs - Updated for MVC structure
+// src/registry.rs - Fixed
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -62,12 +62,6 @@ impl ComponentSource {
                 let css = std::fs::read_to_string(&css_path).ok();
                 let js = std::fs::read_to_string(&js_path).ok();
 
-                // Also check for component.toml for configuration
-                let config_path = dir_path.join("component.toml");
-                if config_path.exists() {
-                    // Configuration will be merged by registry
-                }
-
                 Ok(LoadedComponent { template, css, js })
             }
         }
@@ -79,6 +73,28 @@ pub struct LoadedComponent {
     pub template: String,
     pub css: Option<String>,
     pub js: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct ComponentSchema {
+    #[serde(default)]
+    pub required: Option<Vec<String>>,
+
+    #[serde(default)]
+    pub optional: Option<Vec<String>>,
+
+    #[serde(default)]
+    pub props: Option<HashMap<String, PropSchema>>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct PropSchema {
+    #[serde(rename = "type")]
+    pub type_: String,
+    #[serde(default)]
+    pub default: Option<TeraValue>,
+    #[serde(default)]
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -105,17 +121,26 @@ pub struct ComponentDefinition {
     /// Whether this is a built-in component
     #[serde(default)]
     pub builtin: bool,
+
+    /// CSS dependencies
+    #[serde(default)]
+    pub css_deps: Option<Vec<String>>,
+
+    /// JavaScript dependencies
+    #[serde(default)]
+    pub js_deps: Option<Vec<String>>,
 }
 
 impl ComponentDefinition {
-    pub fn from_directory<P: AsRef<Path>>(dir: P) -> Result<Self, std::io::Error> {
+    pub fn from_directory<P: AsRef<Path>>(dir: P) -> Result<Self, anyhow::Error> {
         let dir = dir.as_ref();
 
         // Check if component.toml exists
         let config_path = dir.join("component.toml");
         if config_path.exists() {
             let config_content = std::fs::read_to_string(&config_path)?;
-            let mut def: Self = toml::from_str(&config_content)?;
+            let mut def: Self = toml::from_str(&config_content)
+                .map_err(|e| anyhow::anyhow!("Failed to parse component.toml: {}", e))?;
 
             // Ensure source is set to directory
             def.source = ComponentSource::Directory(dir.to_path_buf());
@@ -130,6 +155,8 @@ impl ComponentDefinition {
                 version: None,
                 dependencies: None,
                 builtin: false,
+                css_deps: None,
+                js_deps: None,
             })
         }
     }
@@ -138,7 +165,7 @@ impl ComponentDefinition {
 // Helper to load all components from a directory
 pub fn load_components_from_directory<P: AsRef<Path>>(
     dir: P,
-) -> Result<HashMap<String, ComponentDefinition>, std::io::Error> {
+) -> Result<HashMap<String, ComponentDefinition>, anyhow::Error> {
     let mut components = HashMap::new();
 
     let entries = std::fs::read_dir(dir.as_ref())?;
@@ -170,4 +197,51 @@ pub fn load_components_from_directory<P: AsRef<Path>>(
     }
 
     Ok(components)
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct ComponentConfig {
+    pub namespace: String,
+    pub strict: bool,
+    pub strict_hydration: bool,
+    pub debug: bool,
+    pub warnings_as_errors: bool,
+    pub templates: HashMap<String, String>,
+    pub components: HashMap<String, ComponentDefinition>,
+}
+
+impl ComponentConfig {
+    pub fn from_context(
+        ctx: &mdbook::preprocess::PreprocessorContext,
+    ) -> Result<Self, anyhow::Error> {
+        let cfg = if let Some(config) = ctx.config.get("preprocessor.components") {
+            config.clone().try_into()?
+        } else {
+            Self::default()
+        };
+
+        // Set defaults
+        let mut cfg = cfg;
+        if cfg.namespace.is_empty() {
+            cfg.namespace = "mdbook".to_string();
+        }
+
+        Ok(cfg)
+    }
+
+    pub fn validate(&self) -> Result<(), crate::errors::ComponentError> {
+        // Validate component names
+        for name in self.components.keys() {
+            if !name
+                .chars()
+                .all(|c| c.is_alphanumeric() || c == '-' || c == '_')
+            {
+                return Err(crate::errors::ComponentError::ValidationError(
+                    format!("Invalid component name: '{}'. Only alphanumeric, dash, and underscore allowed.", name)
+                ));
+            }
+        }
+
+        Ok(())
+    }
 }

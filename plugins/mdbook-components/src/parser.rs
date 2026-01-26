@@ -1,7 +1,5 @@
-// /home/enzi/HXLX/plugins/mdbook-components/src/parser.rs
+// src/parser.rs - Complete fixed version
 use crate::errors::ComponentError;
-use parking_lot::Mutex;
-use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 use std::str::Chars;
 use tera::Value as TeraValue;
@@ -44,17 +42,17 @@ impl<'a> ComponentParser<'a> {
         let mut nodes = Vec::new();
 
         while self.pos < self.input.len() {
-            self.skip_whitespace();
-
             if self.peek() == Some('{') && self.peek_n(1) == Some('%') {
-                if let Some(node) = self.try_parse_component()? {
-                    nodes.push(node);
-                } else {
-                    // Not a component tag, consume as text
-                    let text = self.consume_until("{%");
-                    if !text.is_empty() {
-                        nodes.push(Node::Text(text));
+                match self.try_parse_component() {
+                    Ok(Some(node)) => nodes.push(node),
+                    Ok(None) => {
+                        // Not a component, consume as text
+                        let text = self.consume_until("{%");
+                        if !text.is_empty() {
+                            nodes.push(Node::Text(text));
+                        }
                     }
+                    Err(e) => return Err(e),
                 }
             } else {
                 let text = self.consume_until("{%");
@@ -68,11 +66,11 @@ impl<'a> ComponentParser<'a> {
     }
 
     fn try_parse_component(&mut self) -> Result<Option<Node>, ComponentError> {
-        let start_pos = self.pos;
+        let _start_pos = self.pos;
         let start_line = self.line;
         let start_col = self.col;
 
-        // Check if it's a component tag
+        // Check for component tag
         if !self.consume_exact("{%") {
             return Ok(None);
         }
@@ -81,24 +79,39 @@ impl<'a> ComponentParser<'a> {
 
         if !self.consume_exact("component") {
             // Not a component tag, rewind
-            self.pos = start_pos;
-            self.line = start_line;
-            self.col = start_col;
-            self.chars = self.input[start_pos..].chars();
-            self.peeked = None;
+            self.rewind_to(_start_pos, start_line, start_col);
             return Ok(None);
         }
 
         self.skip_whitespace();
 
-        // Parse component name
-        let name = self.parse_identifier()?;
+        // Parse component name (in quotes)
+        if self.peek() != Some('"') {
+            return Err(ComponentError::ParseError(
+                "Expected component name in quotes".to_string(),
+            ));
+        }
+        self.consume_char(); // "
+
+        let mut name = String::new();
+        while let Some(c) = self.peek() {
+            if c == '"' {
+                self.consume_char(); // "
+                break;
+            }
+            name.push(c);
+            self.consume_char();
+        }
 
         // Parse attributes
         let mut attrs = HashMap::new();
-        while self.peek() != Some('%') && self.peek_n(1) != Some('}') {
+        while self.peek() != Some('%') {
             self.skip_whitespace();
+            if self.peek() == Some('%') {
+                break;
+            }
 
+            // Parse key
             let key = self.parse_identifier()?;
             self.skip_whitespace();
 
@@ -110,33 +123,39 @@ impl<'a> ComponentParser<'a> {
                 // Boolean attribute
                 attrs.insert(key, TeraValue::Bool(true));
             }
+
+            self.skip_whitespace();
         }
 
         // Expect %}
         if !self.consume_exact("%}") {
-            return Err(ComponentError::ParseError(format!(
-                "Expected '%}}' at line {}, col {}",
-                self.line, self.col
-            )));
+            return Err(ComponentError::ParseError(
+                "Expected %} after component".to_string(),
+            ));
         }
 
-        // Parse children
+        // Parse children until {% endcomponent %}
         let mut children = Vec::new();
-        loop {
-            self.skip_whitespace();
+        let end_marker = "{% endcomponent %}";
 
-            if self.consume_exact("{% endcomponent %}") {
+        while self.pos < self.input.len() {
+            if self.input[self.pos..].starts_with(end_marker) {
+                // Consume the end marker
+                for _ in end_marker.chars() {
+                    self.consume_char();
+                }
                 break;
             }
 
             if self.peek() == Some('{') && self.peek_n(1) == Some('%') {
-                if let Some(child) = self.try_parse_component()? {
-                    children.push(child);
-                } else {
-                    // Could be a different template tag, consume as text
-                    let text = self.consume_until("{%");
-                    if !text.is_empty() {
-                        children.push(Node::Text(text));
+                match self.try_parse_component()? {
+                    Some(child) => children.push(child),
+                    None => {
+                        // Some other template tag, skip it
+                        let text = self.consume_until("{%");
+                        if !text.is_empty() {
+                            children.push(Node::Text(text));
+                        }
                     }
                 }
             } else {
@@ -151,7 +170,7 @@ impl<'a> ComponentParser<'a> {
             }
         }
 
-        // Generate unique ID for hydration
+        // Generate ID
         let id = format!("comp-{}-{}", name, uuid::Uuid::new_v4().simple());
 
         Ok(Some(Node::Component {
@@ -162,6 +181,15 @@ impl<'a> ComponentParser<'a> {
             col: start_col,
             id,
         }))
+    }
+
+    // Helper methods
+    fn rewind_to(&mut self, pos: usize, line: usize, col: usize) {
+        self.pos = pos;
+        self.line = line;
+        self.col = col;
+        self.chars = self.input[pos..].chars();
+        self.peeked = None;
     }
 
     fn parse_identifier(&mut self) -> Result<String, ComponentError> {
@@ -177,10 +205,9 @@ impl<'a> ComponentParser<'a> {
         }
 
         if ident.is_empty() {
-            Err(ComponentError::ParseError(format!(
-                "Expected identifier at line {}, col {}",
-                self.line, self.col
-            )))
+            Err(ComponentError::ParseError(
+                "Expected identifier".to_string(),
+            ))
         } else {
             Ok(ident)
         }
@@ -188,179 +215,51 @@ impl<'a> ComponentParser<'a> {
 
     fn parse_value(&mut self) -> Result<TeraValue, ComponentError> {
         match self.peek() {
-            Some('"') => self.parse_string(),
-            Some('[') => self.parse_array(),
-            Some('{') => self.parse_object(),
-            Some(c) if c.is_digit(10) || c == '-' => self.parse_number(),
-            _ => self.parse_bool_or_identifier(),
-        }
-    }
-
-    fn parse_string(&mut self) -> Result<TeraValue, ComponentError> {
-        self.consume_char(); // "
-        let mut s = String::new();
-
-        while let Some(c) = self.peek() {
-            if c == '"' {
-                self.consume_char(); // "
-                break;
-            } else if c == '\\' {
-                self.consume_char(); // \
-                if let Some(next) = self.peek() {
-                    match next {
-                        'n' => s.push('\n'),
-                        't' => s.push('\t'),
-                        'r' => s.push('\r'),
-                        '"' => s.push('"'),
-                        '\\' => s.push('\\'),
-                        _ => {
-                            s.push('\\');
-                            s.push(next);
-                        }
+            Some('"') => {
+                self.consume_char();
+                let mut s = String::new();
+                while let Some(c) = self.peek() {
+                    if c == '"' {
+                        self.consume_char();
+                        break;
                     }
+                    s.push(c);
                     self.consume_char();
                 }
-            } else {
-                s.push(c);
-                self.consume_char();
+                Ok(TeraValue::String(s))
             }
-        }
-
-        Ok(TeraValue::String(s))
-    }
-
-    fn parse_number(&mut self) -> Result<TeraValue, ComponentError> {
-        let mut num_str = String::new();
-        let mut has_dot = false;
-
-        if self.peek() == Some('-') {
-            num_str.push('-');
-            self.consume_char();
-        }
-
-        while let Some(c) = self.peek() {
-            if c.is_digit(10) {
-                num_str.push(c);
-                self.consume_char();
-            } else if c == '.' && !has_dot {
-                num_str.push('.');
-                has_dot = true;
-                self.consume_char();
-            } else {
-                break;
+            Some(c) if c.is_digit(10) => {
+                let mut num = String::new();
+                while let Some(c) = self.peek() {
+                    if c.is_digit(10) {
+                        num.push(c);
+                        self.consume_char();
+                    } else {
+                        break;
+                    }
+                }
+                if let Ok(n) = num.parse::<i64>() {
+                    Ok(TeraValue::Number(n.into()))
+                } else {
+                    Ok(TeraValue::String(num))
+                }
             }
-        }
-
-        if has_dot {
-            num_str
-                .parse::<f64>()
-                .map(TeraValue::Number)
-                .map_err(|e| ComponentError::ParseError(e.to_string()))
-        } else {
-            num_str
-                .parse::<i64>()
-                .map(|n| TeraValue::Number(n.into()))
-                .map_err(|e| ComponentError::ParseError(e.to_string()))
+            Some('t') if self.input[self.pos..].starts_with("true") => {
+                self.consume_exact("true");
+                Ok(TeraValue::Bool(true))
+            }
+            Some('f') if self.input[self.pos..].starts_with("false") => {
+                self.consume_exact("false");
+                Ok(TeraValue::Bool(false))
+            }
+            _ => {
+                // Try to parse as identifier
+                let ident = self.parse_identifier()?;
+                Ok(TeraValue::String(ident))
+            }
         }
     }
 
-    fn parse_bool_or_identifier(&mut self) -> Result<TeraValue, ComponentError> {
-        let ident = self.parse_identifier()?;
-
-        match ident.as_str() {
-            "true" => Ok(TeraValue::Bool(true)),
-            "false" => Ok(TeraValue::Bool(false)),
-            "null" => Ok(TeraValue::Null),
-            _ => Ok(TeraValue::String(ident)),
-        }
-    }
-
-    fn parse_array(&mut self) -> Result<TeraValue, ComponentError> {
-        self.consume_char(); // [
-        self.skip_whitespace();
-
-        let mut array = Vec::new();
-
-        if self.peek() == Some(']') {
-            self.consume_char(); // ]
-            return Ok(TeraValue::Array(array));
-        }
-
-        loop {
-            let value = self.parse_value()?;
-            array.push(value);
-
-            self.skip_whitespace();
-
-            if self.peek() == Some(',') {
-                self.consume_char(); // ,
-                self.skip_whitespace();
-            } else if self.peek() == Some(']') {
-                self.consume_char(); // ]
-                break;
-            } else {
-                return Err(ComponentError::ParseError(format!(
-                    "Expected ',' or ']' at line {}, col {}",
-                    self.line, self.col
-                )));
-            }
-        }
-
-        Ok(TeraValue::Array(array))
-    }
-
-    fn parse_object(&mut self) -> Result<TeraValue, ComponentError> {
-        self.consume_char(); // {
-        self.skip_whitespace();
-
-        let mut map = serde_json::Map::new();
-
-        if self.peek() == Some('}') {
-            self.consume_char(); // }
-            return Ok(TeraValue::Object(map));
-        }
-
-        loop {
-            let key = if self.peek() == Some('"') {
-                self.parse_string()?.as_str().unwrap().to_string()
-            } else {
-                self.parse_identifier()?
-            };
-
-            self.skip_whitespace();
-
-            if !self.consume_exact(":") {
-                return Err(ComponentError::ParseError(format!(
-                    "Expected ':' at line {}, col {}",
-                    self.line, self.col
-                )));
-            }
-
-            self.skip_whitespace();
-
-            let value = self.parse_value()?;
-            map.insert(key, JsonValue::from(value));
-
-            self.skip_whitespace();
-
-            if self.peek() == Some(',') {
-                self.consume_char(); // ,
-                self.skip_whitespace();
-            } else if self.peek() == Some('}') {
-                self.consume_char(); // }
-                break;
-            } else {
-                return Err(ComponentError::ParseError(format!(
-                    "Expected ',' or '}}' at line {}, col {}",
-                    self.line, self.col
-                )));
-            }
-        }
-
-        Ok(TeraValue::Object(map))
-    }
-
-    // Helper methods
     fn peek(&mut self) -> Option<char> {
         if let Some(c) = self.peeked {
             Some(c)
@@ -370,28 +269,16 @@ impl<'a> ComponentParser<'a> {
         }
     }
 
-    fn peek_n(&mut self, n: usize) -> Option<char> {
-        let mut cloned = self.chars.clone();
-        if let Some(peeked) = self.peeked {
-            if n == 1 {
-                return Some(peeked);
-            }
-            // For n > 1, we need to look ahead from the iterator
-            let mut result = None;
-            for i in 0..n {
-                if i == 0 {
-                    result = Some(peeked);
-                } else {
-                    result = cloned.next();
-                }
-            }
-            result
+    fn peek_n(&self, n: usize) -> Option<char> {
+        // Simple implementation
+        if n == 1 {
+            self.peeked
         } else {
-            let mut result = None;
+            let mut cloned = self.chars.clone();
             for _ in 0..n {
-                result = cloned.next();
+                cloned.next();
             }
-            result
+            cloned.next()
         }
     }
 
@@ -414,18 +301,14 @@ impl<'a> ComponentParser<'a> {
     }
 
     fn consume_exact(&mut self, s: &str) -> bool {
-        let start_pos = self.pos;
+        let _start_pos = self.pos; // Already has underscore
         let start_line = self.line;
         let start_col = self.col;
 
         for expected in s.chars() {
             if self.consume_char() != Some(expected) {
-                // Reset state
-                self.pos = start_pos;
-                self.line = start_line;
-                self.col = start_col;
-                self.chars = self.input[start_pos..].chars();
-                self.peeked = None;
+                // Reset
+                self.rewind_to(_start_pos, start_line, start_col);
                 return false;
             }
         }
@@ -434,7 +317,6 @@ impl<'a> ComponentParser<'a> {
     }
 
     fn consume_until(&mut self, delimiter: &str) -> String {
-        let start_pos = self.pos;
         let mut result = String::new();
 
         while self.pos < self.input.len() {
@@ -459,56 +341,3 @@ impl<'a> ComponentParser<'a> {
         }
     }
 }
-
-// Cargo.toml
-// [dependencies]
-// regex-lite = "0.1"  # Lightweight regex without Unicode
-// once_cell = "1.19"
-
-// // src/parser.rs - Updated regex usage
-// use once_cell::sync::Lazy;
-// use regex_lite::Regex;
-
-// static COMPONENT_REGEX: Lazy<Regex> = Lazy::new(|| {
-//     Regex::new(r"\{\%\s*component\s+([^\s}]+)(.*?)\%\}(.*?)\{\%\s*endcomponent\s*%\}")
-//         .expect("Invalid component regex")
-// });
-
-// static ATTR_REGEX: Lazy<Regex> = Lazy::new(|| {
-//     // Simple, fast attribute parsing
-//     Regex::new(r#"(\w+)=(?:"([^"]*)"|'([^']*)'|([^\s}]+))"#)
-//         .expect("Invalid attribute regex")
-// });
-
-// static WHITESPACE_REGEX: Lazy<Regex> = Lazy::new(|| {
-//     // Only matches 2+ whitespace chars (more efficient)
-//     Regex::new(r"\s{2,}").expect("Invalid whitespace regex")
-// });
-
-// impl ComponentParser {
-//     pub fn parse_efficient(&mut self) -> Result<Vec<Node>, ComponentError> {
-//         // Use regex in chunks for large content
-//         let chunk_size = 10_000; // 10KB chunks
-//         let mut nodes = Vec::new();
-//         let mut pos = 0;
-
-//         while pos < self.input.len() {
-//             let chunk_end = (pos + chunk_size).min(self.input.len());
-//             let chunk = &self.input[pos..chunk_end];
-
-//             // Find all components in this chunk
-//             for cap in COMPONENT_REGEX.captures_iter(chunk) {
-//                 // ... parsing logic
-//             }
-
-//             pos = chunk_end;
-//         }
-
-//         Ok(nodes)
-//     }
-
-//     fn strip_whitespace_efficient(html: &str) -> String {
-//         // Only collapse multiple whitespace, don't remove all
-//         WHITESPACE_REGEX.replace_all(html, " ").to_string()
-//     }
-// }
