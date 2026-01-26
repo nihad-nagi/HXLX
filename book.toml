@@ -1,4 +1,3 @@
-# /HXLX/book.toml
 [book]
 title = "HXLX"
 language = "en"
@@ -9,11 +8,14 @@ default-theme = "coal"
 preferred-dark-theme = "coal"
 
 additional-js = [
+  "static/scripts/components.js",
   "src/assets/mermaid.min.js",
   "src/assets/panzoom-bundle.js"
 ]
 additional-css = [
- "src/assets/panzoom.css",
+  "static/styles/components.css",
+  "src/assets/panzoom.css",
+  "css/fancy_table.css",
 ]
 
 [preprocessor.mermaid-panzoom]
@@ -24,12 +26,3 @@ command = "mdbook-components"
 namespace = "mybook"
 strict = false
 debug = true
-
-[preprocessor.components.components.admonition]
-template = "./components/admonition/model.html"
-css = "./components/admonition/view.css"
-js = "./components/admonition/control.js"
-
-[preprocessor.components.components.admonition.schema]
-required = ["type", "title"]
-optional = ["icon", "collapsible"]
