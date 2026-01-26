@@ -1,0 +1,37 @@
+<!--components/example/model.html-->
+<div
+    class="example-component example-{{ type | default(value='info') }}"
+    data-component="example"
+    data-component-id="{{ id }}"
+>
+    <div class="example-header">
+        {% if icon %}
+        <span class="example-icon">{{ icon }}</span>
+        {% endif %}
+
+        <h3>{{ title }}</h3>
+
+        {% if collapsible %}
+        <button class="example-toggle" aria-label="Toggle content">
+            <span class="toggle-icon">▼</span>
+        </button>
+        {% endif %}
+    </div>
+
+    <div
+        class="example-content"
+        {%
+        if
+        collapsible
+        %}data-dynamic="content"
+        {%
+        endif
+        %}
+    >
+        {{ children | markdown | safe }}
+    </div>
+
+    {% if footer %}
+    <div class="example-footer">{{ footer }}</div>
+    {% endif %}
+</div>
