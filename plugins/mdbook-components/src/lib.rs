@@ -1,9 +1,11 @@
+pub mod asset_generator;
 pub mod errors;
 pub mod parser;
 pub mod preprocessor;
 pub mod registry;
 pub mod templates;
 
+pub use asset_generator::{generate_assets, AssetGenerator};
 pub use errors::ComponentError;
 pub use preprocessor::ComponentPreprocessor;
 pub use registry::ComponentConfig;

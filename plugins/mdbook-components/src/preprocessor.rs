@@ -1,9 +1,10 @@
+use crate::asset_generator::AssetGenerator;
 use crate::parser::ComponentParser;
 use crate::registry::ComponentConfig;
 use crate::templates::ComponentManager;
 use mdbook::book::{Book, BookItem};
 use mdbook::preprocess::{Preprocessor, PreprocessorContext};
-use std::fs;
+// use std::fs;
 use std::path::Path;
 use tera::Context;
 
@@ -39,7 +40,14 @@ impl ComponentPreprocessor {
                 } => {
                     // Check if component exists
                     if !self.manager.component_defs().contains_key(&name) {
-                        return Err(crate::errors::ComponentError::UnknownComponent(name));
+                        if self.config.strict {
+                            return Err(crate::errors::ComponentError::UnknownComponent(name));
+                        } else {
+                            // In non-strict mode, render as plain text
+                            log::warn!("Unknown component '{}', rendering as text", name);
+                            result.push_str(&format!("[Component: {}]", name));
+                            continue;
+                        }
                     }
 
                     // Render children
@@ -58,9 +66,30 @@ impl ComponentPreprocessor {
                         context.insert(key, value);
                     }
 
+                    // Add default attributes from component definition
+                    if let Some(def) = self.manager.component_defs().get(&name) {
+                        if let Some(default_attrs) = &def.default_attrs {
+                            for (key, value) in default_attrs {
+                                if !context.contains_key(key) {
+                                    context.insert(key, value);
+                                }
+                            }
+                        }
+                    }
+
                     // Render template
                     let template_name = format!("components/{}.html", name);
-                    let server_html = self.manager.tera().render(&template_name, &context)?;
+                    let server_html = match self.manager.tera().render(&template_name, &context) {
+                        Ok(html) => html,
+                        Err(e) => {
+                            if self.config.strict {
+                                return Err(crate::errors::ComponentError::TemplateError(e));
+                            } else {
+                                log::error!("Failed to render component '{}': {}", name, e);
+                                format!("<div class='component-error'>Error rendering component: {}</div>", name)
+                            }
+                        }
+                    };
 
                     // Create final HTML
                     let final_html = format!(
@@ -104,8 +133,32 @@ impl ComponentPreprocessor {
                     context.insert(key, value);
                 }
 
+                // Add default attributes
+                if let Some(def) = self.manager.component_defs().get(&name) {
+                    if let Some(default_attrs) = &def.default_attrs {
+                        for (key, value) in default_attrs {
+                            if !context.contains_key(key) {
+                                context.insert(key, value);
+                            }
+                        }
+                    }
+                }
+
                 let template_name = format!("components/{}.html", name);
-                let html = self.manager.tera().render(&template_name, &context)?;
+                let html = match self.manager.tera().render(&template_name, &context) {
+                    Ok(html) => html,
+                    Err(e) => {
+                        if self.config.strict {
+                            return Err(crate::errors::ComponentError::TemplateError(e));
+                        } else {
+                            log::error!("Failed to render component '{}': {}", name, e);
+                            format!(
+                                "<div class='component-error'>Error rendering component: {}</div>",
+                                name
+                            )
+                        }
+                    }
+                };
 
                 Ok(format!(
                     r#"<div data-component="{}" data-component-id="{}">{}</div>"#,
@@ -113,41 +166,6 @@ impl ComponentPreprocessor {
                 ))
             }
         }
-    }
-
-    pub fn generate_assets(&self, build_dir: &Path) -> Result<(), anyhow::Error> {
-        // Create static directories in build output
-        let static_dir = build_dir.join("static");
-        let styles_dir = static_dir.join("styles");
-        let scripts_dir = static_dir.join("scripts");
-
-        fs::create_dir_all(&styles_dir)?;
-        fs::create_dir_all(&scripts_dir)?;
-
-        // Generate combined CSS bundle
-        let css_bundle = format!(
-            "/* mdBook Components CSS Bundle */\n{}",
-            self.manager.css_bundle()
-        );
-
-        fs::write(styles_dir.join("components.css"), css_bundle)?;
-
-        // Generate combined JS bundle
-        let js_bundle = format!(
-            "// mdBook Components JavaScript Bundle\n{}\n\n// Auto-initialize\ndocument.addEventListener('DOMContentLoaded', function() {{\n    console.log('mdBook components loaded');\n}});",
-            self.manager.js_bundle()
-        );
-
-        fs::write(scripts_dir.join("components.js"), js_bundle)?;
-
-        // Also copy individual component assets for development/debugging
-        let components_static = static_dir.join("components");
-        fs::create_dir_all(&components_static)?;
-
-        // This is where we could copy individual component CSS/JS files
-        // For now, we just generate the bundles
-
-        Ok(())
     }
 }
 
@@ -157,16 +175,42 @@ impl Preprocessor for ComponentPreprocessor {
     }
 
     fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> mdbook::errors::Result<Book> {
-        // Generate assets
-        let build_dir = Path::new(&ctx.config.build.build_dir);
-        if let Err(e) = self.generate_assets(build_dir) {
-            log::error!("Failed to generate assets: {}", e);
-            if self.config.strict {
-                return Err(mdbook::errors::Error::msg(format!(
-                    "Failed to generate assets: {}",
-                    e
-                )));
+        // Generate assets in the source directory so they're available for mdbook
+        let book_root = &ctx.root;
+        let src_dir = book_root.join("src");
+
+        if src_dir.exists() {
+            // Generate assets in src/static
+            match AssetGenerator::new(book_root) {
+                Ok(generator) => {
+                    if let Err(e) = generator.generate_all_assets(&src_dir) {
+                        log::error!("Failed to generate assets: {}", e);
+                        if self.config.strict {
+                            return Err(mdbook::errors::Error::msg(format!(
+                                "Failed to generate assets: {}",
+                                e
+                            )));
+                        } else {
+                            log::warn!("Continuing without generated assets");
+                        }
+                    } else {
+                        log::debug!("Generated component assets in src/static/");
+                    }
+                }
+                Err(e) => {
+                    log::error!("Failed to create asset generator: {}", e);
+                    if self.config.strict {
+                        return Err(mdbook::errors::Error::msg(format!(
+                            "Failed to create asset generator: {}",
+                            e
+                        )));
+                    } else {
+                        log::warn!("Continuing without asset generator");
+                    }
+                }
             }
+        } else {
+            log::warn!("Source directory 'src/' not found. Skipping asset generation.");
         }
 
         // Process book content
@@ -175,10 +219,16 @@ impl Preprocessor for ComponentPreprocessor {
                 match self.process_content(&chapter.content) {
                     Ok(content) => chapter.content = content,
                     Err(e) => {
-                        log::warn!("Failed to process chapter {}: {}", chapter.name, e);
+                        let error_msg =
+                            format!("Failed to process chapter {}: {}", chapter.name, e);
 
                         if self.config.strict {
-                            log::error!("Strict mode: component error in chapter {}", chapter.name);
+                            log::error!("Strict mode: {}", error_msg);
+                            // In strict mode, we could return an error here
+                            // but we'll just log and continue for now
+                        } else {
+                            log::warn!("{}", error_msg);
+                            // In non-strict mode, keep original content
                         }
                     }
                 }

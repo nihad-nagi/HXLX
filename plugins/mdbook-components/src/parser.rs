@@ -1,4 +1,4 @@
-// src/parser.rs - Complete fixed version
+// /home/enzi/HXLX/plugins/mdbook-components/src/parser.rs
 use crate::errors::ComponentError;
 use std::collections::HashMap;
 use std::str::Chars;

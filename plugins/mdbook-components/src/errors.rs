@@ -1,3 +1,4 @@
+// /home/enzi/HXLX/plugins/mdbook-components/src/errors.rs
 use thiserror::Error;
 
 #[derive(Error, Debug)]

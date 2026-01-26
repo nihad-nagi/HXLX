@@ -1,4 +1,4 @@
-// src/registry.rs - Fixed
+// src/registry.rs
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -214,19 +214,26 @@ impl ComponentConfig {
     pub fn from_context(
         ctx: &mdbook::preprocess::PreprocessorContext,
     ) -> Result<Self, anyhow::Error> {
-        let cfg = if let Some(config) = ctx.config.get("preprocessor.components") {
-            config.clone().try_into()?
+        // Try to get the preprocessor.components section
+        let config_value = if let Some(config) = ctx.config.get("preprocessor.components") {
+            config.clone()
         } else {
-            Self::default()
+            return Ok(Self::default());
         };
 
+        // Convert to string and parse
+        let config_str = config_value.to_string();
+
+        // First parse as a generic Value to handle the components field specially
+        let mut config: Self = toml::from_str(&config_str)
+            .map_err(|e| anyhow::anyhow!("Failed to parse component config: {}", e))?;
+
         // Set defaults
-        let mut cfg = cfg;
-        if cfg.namespace.is_empty() {
-            cfg.namespace = "mdbook".to_string();
+        if config.namespace.is_empty() {
+            config.namespace = "mdbook".to_string();
         }
 
-        Ok(cfg)
+        Ok(config)
     }
 
     pub fn validate(&self) -> Result<(), crate::errors::ComponentError> {

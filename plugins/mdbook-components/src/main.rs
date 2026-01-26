@@ -1,12 +1,14 @@
+// src/main.rs (Simplified version without toml_edit)
 use anyhow::{Context, Result};
 use clap::{crate_authors, crate_description, crate_version, Arg, ArgMatches, Command};
 use mdbook::preprocess::{CmdPreprocessor, Preprocessor};
+use mdbook_components::asset_generator;
 use mdbook_components::preprocessor::ComponentPreprocessor;
 use mdbook_components::registry::ComponentConfig;
 use serde_json;
 use std::fs;
 use std::io::{self};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process;
 
 pub fn make_app() -> Command {
@@ -28,6 +30,15 @@ pub fn make_app() -> Command {
                 )
                 .about("Install required assets and update configuration"),
         )
+        .subcommand(
+            Command::new("generate")
+                .arg(
+                    Arg::new("dir")
+                        .default_value(".")
+                        .help("Root directory for the book (contains book.toml)"),
+                )
+                .about("Generate consolidated component assets (CSS/JS bundles)"),
+        )
         .subcommand(Command::new("list").about("List all available built-in components"))
         .subcommand(
             Command::new("init")
@@ -48,6 +59,7 @@ fn main() -> Result<()> {
     match matches.subcommand() {
         Some(("supports", sub_args)) => handle_supports(sub_args),
         Some(("install", sub_args)) => handle_install(sub_args)?,
+        Some(("generate", sub_args)) => handle_generate(sub_args)?,
         Some(("list", _)) => handle_list(),
         Some(("init", sub_args)) => handle_init(sub_args)?,
         _ => handle_preprocessing()?,
@@ -80,6 +92,18 @@ fn handle_preprocessing() -> Result<()> {
     Ok(())
 }
 
+fn handle_generate(sub_args: &ArgMatches) -> Result<()> {
+    let dir = sub_args.get_one::<String>("dir").unwrap();
+    let project_dir = PathBuf::from(dir);
+
+    log::info!("Generating component assets in {}", project_dir.display());
+
+    // Generate assets
+    asset_generator::generate_assets(&project_dir)?;
+
+    Ok(())
+}
+
 fn handle_supports(sub_args: &ArgMatches) -> ! {
     let renderer = sub_args
         .get_one::<String>("renderer")
@@ -96,205 +120,129 @@ fn handle_supports(sub_args: &ArgMatches) -> ! {
 }
 
 fn handle_install(sub_args: &ArgMatches) -> Result<()> {
-    let _proj_dir = sub_args.get_one::<String>("dir").unwrap();
-    let proj_dir = PathBuf::from(_proj_dir);
+    let proj_dir = sub_args.get_one::<String>("dir").unwrap();
+    let proj_dir = PathBuf::from(proj_dir);
 
     log::info!("Installing mdbook-components to {}", proj_dir.display());
 
-    // Create necessary directories
-    let static_dir = proj_dir.join("static");
-    let styles_dir = static_dir.join("styles");
-    let scripts_dir = static_dir.join("scripts");
-
-    fs::create_dir_all(&styles_dir)?;
-    fs::create_dir_all(&scripts_dir)?;
-
-    // Copy JavaScript assets
-    let js_files = [
-        ("Component.js", include_str!("../assets/Component.js")),
-        (
-            "ComponentRegistry.js",
-            include_str!("../assets/ComponentRegistry.js"),
-        ),
-        (
-            "HydrationManager.js",
-            include_str!("../assets/HydrationManager.js"),
-        ),
-        (
-            "mdbook-components.js",
-            include_str!("../assets/mdbook-components.js"),
-        ),
-    ];
-
-    for (filename, content) in js_files {
-        let path = scripts_dir.join(filename);
-        if !path.exists() {
-            fs::write(&path, content)?;
-            log::debug!("Created: {}", path.display());
-        }
-    }
-
-    // Update book.toml configuration
+    // Update book.toml configuration using simple string manipulation
     let config_path = proj_dir.join("book.toml");
     if config_path.exists() {
-        let mut doc = fs::read_to_string(&config_path)?
-            .parse::<toml_edit::Document>()
-            .context("Invalid TOML in configuration")?;
+        let original_content = fs::read_to_string(&config_path)?;
+        let updated_content = update_book_config(&original_content);
 
-        let added = update_book_config(&mut doc, &scripts_dir, &styles_dir);
-
-        if added {
-            log::info!("Updating configuration file");
-            fs::write(&config_path, doc.to_string()).context("Failed to write configuration")?;
+        if original_content != updated_content {
+            log::info!("Updating book.toml configuration");
+            fs::write(&config_path, updated_content)?;
         }
     } else {
-        log::warn!(
-            "No book.toml found at {}. You'll need to manually configure.",
-            config_path.display()
-        );
+        log::warn!("No book.toml found. Creating minimal configuration...");
+        let config = r#"[book]
+title = "My Book"
+authors = ["Author"]
+src = "src"
+
+[output.html]
+additional-js = ["static/scripts/components.js"]
+additional-css = ["static/styles/components.css"]
+
+[preprocessor.components]
+command = "mdbook-components"
+"#;
+        fs::write(&config_path, config)?;
     }
 
     // Create components directory with example
     let components_dir = proj_dir.join("components");
     if !components_dir.exists() {
-        log::info!(
-            "Creating components directory: {}",
-            components_dir.display()
-        );
         fs::create_dir_all(&components_dir)?;
 
         // Copy example component
-        copy_component("example", &components_dir)?;
-        log::info!("Created example component");
+        let example_dir = components_dir.join("example");
+        fs::create_dir_all(&example_dir)?;
+
+        // Since components is now in src/, use correct path
+        fs::write(
+            example_dir.join("model.html"),
+            include_str!("components/example/model.html"),
+        )?;
+        fs::write(
+            example_dir.join("view.css"),
+            include_str!("components/example/view.css"),
+        )?;
+        fs::write(
+            example_dir.join("control.js"),
+            include_str!("components/example/control.js"),
+        )?;
+
+        log::info!("Created example component in {}", example_dir.display());
     }
+
+    // Generate assets after installation
+    log::info!("Generating component assets...");
+    asset_generator::generate_assets(&proj_dir)?;
 
     log::info!("✅ Installation complete!");
     log::info!("");
-    log::info!("Usage:");
-    log::info!("  1. Add components to your markdown:");
-    log::info!("     {{% component \"admonition\" type=\"warning\" title=\"Alert\" %}}");
-    log::info!("     This is a warning");
-    log::info!("     {{% endcomponent %}}");
+    log::info!("Next steps:");
+    log::info!("1. Add components to your markdown:");
+    log::info!("   {{% component \"admonition\" type=\"warning\" title=\"Alert\" %}}");
+    log::info!("   This is a warning");
+    log::info!("   {{% endcomponent %}}");
     log::info!("");
-    log::info!("  2. Create custom components in `components/` directory");
-    log::info!("     Each component needs: model.html, view.css, control.js");
-    log::info!("");
-    log::info!("  3. Add to book.toml:");
-    log::info!("     [output.html]");
-    log::info!("     additional-js = [\"scripts/mdbook-components.js\"]");
-    log::info!("     additional-css = [\"styles/components.css\"]");
+    log::info!("2. Create custom components in `components/` directory");
+    log::info!("3. Run `mdbook build` to build your book");
 
     Ok(())
 }
 
-fn copy_component(name: &str, components_dir: &Path) -> Result<()> {
-    let component_dir = components_dir.join(name);
-    fs::create_dir_all(&component_dir)?;
+fn update_book_config(original: &str) -> String {
+    let mut content = original.to_string();
 
-    // Copy MVC files
-    let files = [
-        (
-            "model.html",
-            include_str!("../components/example/model.html"),
-        ),
-        ("view.css", include_str!("../components/example/view.css")),
-        (
-            "control.js",
-            include_str!("../components/example/control.js"),
-        ),
-    ];
+    // Ensure [output.html] section exists with assets
+    if !content.contains("[output.html]") {
+        content.push_str("\n[output.html]\n");
+        content.push_str("additional-js = [\"static/scripts/components.js\"]\n");
+        content.push_str("additional-css = [\"static/styles/components.css\"]\n");
+    } else {
+        // Check for additional-js
+        if !content.contains("additional-js") {
+            if let Some(pos) = content.find("[output.html]") {
+                let insert_pos = pos + "[output.html]".len();
+                content.insert_str(
+                    insert_pos,
+                    "\nadditional-js = [\"static/scripts/components.js\"]",
+                );
+            }
+        }
 
-    for (filename, content) in files {
-        let path = component_dir.join(filename);
-        fs::write(&path, content)?;
-    }
-
-    Ok(())
-}
-
-fn update_book_config(
-    doc: &mut toml_edit::Document,
-    scripts_dir: &Path,
-    styles_dir: &Path,
-) -> bool {
-    use toml_edit::{Array, Item, Table, Value};
-    let mut changed = false;
-
-    let scripts_rel = scripts_dir
-        .strip_prefix(
-            doc.as_table()
-                .get("book")
-                .and_then(|b| b.get("src"))
-                .and_then(|s| s.as_str())
-                .map(Path::new)
-                .unwrap_or(Path::new(".")),
-        )
-        .unwrap_or(scripts_dir);
-
-    let styles_rel = styles_dir
-        .strip_prefix(
-            doc.as_table()
-                .get("book")
-                .and_then(|b| b.get("src"))
-                .and_then(|s| s.as_str())
-                .map(Path::new)
-                .unwrap_or(Path::new(".")),
-        )
-        .unwrap_or(styles_dir);
-
-    // Ensure output.html section exists
-    let output = doc
-        .as_table_mut()
-        .entry("output")
-        .or_insert(Item::Table(Table::new()))
-        .as_table_mut()
-        .unwrap();
-
-    let html = output
-        .entry("html")
-        .or_insert(Item::Table(Table::new()))
-        .as_table_mut()
-        .unwrap();
-
-    // Add JavaScript files
-    let js_array = html
-        .entry("additional-js")
-        .or_insert(Item::Value(Value::Array(Array::new())))
-        .as_array_mut()
-        .unwrap();
-
-    let js_paths = [scripts_rel
-        .join("mdbook-components.js")
-        .to_string_lossy()
-        .to_string()];
-
-    for js_path in &js_paths {
-        if !js_array.iter().any(|item| item.as_str() == Some(js_path)) {
-            js_array.push(js_path);
-            changed = true;
+        // Check for additional-css
+        if !content.contains("additional-css") {
+            if let Some(pos) = content.find("[output.html]") {
+                let insert_pos = pos + "[output.html]".len();
+                content.insert_str(
+                    insert_pos,
+                    "\nadditional-css = [\"static/styles/components.css\"]",
+                );
+            }
         }
     }
 
-    // Add CSS files
-    let css_array = html
-        .entry("additional-css")
-        .or_insert(Item::Value(Value::Array(Array::new())))
-        .as_array_mut()
-        .unwrap();
-
-    let css_path = styles_rel
-        .join("components.css")
-        .to_string_lossy()
-        .to_string();
-    if !css_array
-        .iter()
-        .any(|item| item.as_str() == Some(&css_path))
-    {
-        css_array.push(css_path);
-        changed = true;
+    // Ensure [preprocessor.components] section exists
+    if !content.contains("[preprocessor.components]") {
+        content.push_str("\n[preprocessor.components]\n");
+        content.push_str("command = \"mdbook-components\"\n");
+    } else {
+        // Check for command
+        if !content.contains("command =") {
+            if let Some(pos) = content.find("[preprocessor.components]") {
+                let insert_pos = pos + "[preprocessor.components]".len();
+                content.insert_str(insert_pos, "\ncommand = \"mdbook-components\"");
+            }
+        }
     }
 
-    changed
+    content
 }
 
 fn handle_list() -> ! {

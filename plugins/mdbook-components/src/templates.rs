@@ -1,4 +1,3 @@
-// src/templates.rs - Fixed paths
 use crate::registry::{ComponentDefinition, ComponentSource};
 use std::collections::HashMap;
 use std::path::Path;
@@ -55,19 +54,19 @@ impl ComponentManager {
         js_bundle: &mut String,
         component_defs: &mut HashMap<String, ComponentDefinition>,
     ) -> Result<(), anyhow::Error> {
-        // CORRECTED PATHS: From src/templates.rs -> ../components/...
+        // Now components are in src/components, so paths are simple
         let builtin_components = [
             (
                 "admonition",
-                include_str!("../components/admonition/model.html"),
-                include_str!("../components/admonition/view.css"),
-                include_str!("../components/admonition/control.js"),
+                include_str!("components/admonition/model.html"),
+                include_str!("components/admonition/view.css"),
+                include_str!("components/admonition/control.js"),
             ),
             (
                 "example",
-                include_str!("../components/example/model.html"),
-                include_str!("../components/example/view.css"),
-                include_str!("../components/example/control.js"),
+                include_str!("components/example/model.html"),
+                include_str!("components/example/view.css"),
+                include_str!("components/example/control.js"),
             ),
         ];
 
@@ -133,15 +132,19 @@ impl ComponentManager {
 
             // Add to bundles
             if let Some(css) = loaded.css {
-                css_bundle.push_str(&format!("/* Component: {} */\n", name));
-                css_bundle.push_str(&css);
-                css_bundle.push_str("\n\n");
+                if !css.is_empty() {
+                    css_bundle.push_str(&format!("/* Component: {} */\n", name));
+                    css_bundle.push_str(&css);
+                    css_bundle.push_str("\n\n");
+                }
             }
 
             if let Some(js) = loaded.js {
-                js_bundle.push_str(&format!("// Component: {}\n", name));
-                js_bundle.push_str(&js);
-                js_bundle.push_str("\n\n");
+                if !js.is_empty() {
+                    js_bundle.push_str(&format!("// Component: {}\n", name));
+                    js_bundle.push_str(&js);
+                    js_bundle.push_str("\n\n");
+                }
             }
 
             component_defs.insert(name, def);
