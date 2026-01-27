@@ -1,6 +1,5 @@
-use clap::{crate_version, Arg, ArgMatches, Command};
+use clap::{Arg, ArgMatches, Command, crate_version};
 use mdbook_mermaid_panzoom::MermaidPanZoom;
-use mdbook_preprocessor::errors::Error;
 use mdbook_preprocessor::Preprocessor;
 use std::fs;
 use std::io::{self};
@@ -35,6 +34,15 @@ pub fn make_app() -> Command {
                 )
                 .about("Install required assets and update configuration"),
         )
+        .subcommand(
+            Command::new("update")
+                .arg(
+                    Arg::new("dir")
+                        .default_value(".")
+                        .help("Root directory for the book (contains book.toml)"),
+                )
+                .about("Rebuild and update everything (assets + binary)"),
+        )
 }
 
 fn main() {
@@ -46,22 +54,16 @@ fn main() {
         handle_supports(sub_args);
     } else if let Some(sub_args) = matches.subcommand_matches("install") {
         handle_install(sub_args);
+    } else if let Some(sub_args) = matches.subcommand_matches("update") {
+        handle_update(sub_args);
     } else if let Err(e) = handle_preprocessing() {
         eprintln!("{}", e);
         process::exit(1);
     }
 }
 
-fn handle_preprocessing() -> Result<(), Error> {
+fn handle_preprocessing() -> Result<(), mdbook_preprocessor::errors::Error> {
     let (ctx, book) = mdbook_preprocessor::parse_input(io::stdin())?;
-
-    if ctx.mdbook_version != mdbook_preprocessor::MDBOOK_VERSION {
-        eprintln!(
-            "Warning: Built against mdbook {}, called from {}",
-            mdbook_preprocessor::MDBOOK_VERSION,
-            ctx.mdbook_version
-        );
-    }
 
     let processor = MermaidPanZoom;
     let processed_book = processor.run(&ctx, book)?;
@@ -104,7 +106,7 @@ fn handle_install(sub_args: &ArgMatches) -> ! {
         add_preprocessor(&mut doc);
     }
 
-    // Add assets to additional-js/css
+    // Update the add_assets_to_config function call
     let added = add_assets_to_config(&mut doc);
 
     if added {
@@ -116,39 +118,80 @@ fn handle_install(sub_args: &ArgMatches) -> ! {
         }
     }
 
-    // Extract assets
-    let mut printed = false;
-    for (name, content) in ASSETS {
-        let filepath = proj_dir.join(name);
-        
-        if let Some(parent) = filepath.parent() {
-            fs::create_dir_all(parent).ok();
-        }
-        
-        if filepath.exists() {
-            log::debug!("'{}' already exists, skipping", name);
-        } else {
-            if !printed {
-                printed = true;
-                log::info!("Writing assets to {}", proj_dir.display());
-            }
-            
-            log::debug!("Writing '{}'", name);
-            if let Err(e) = fs::write(&filepath, content) {
-                log::error!("Failed to write '{}': {}", name, e);
-                process::exit(1);
-            }
-        }
-    }
+    // Generate assets
+    let assets_dir = proj_dir.join("src").join("assets");
+    generate_assets(&assets_dir);
 
     log::info!("✅ Installation complete!");
+    log::info!("Assets are stored in 'src/assets/' directory");
     log::info!("Add mermaid code blocks to your markdown:");
     log::info!("```mermaid");
     log::info!("graph TD");
     log::info!("  A[Start] --> B[End]");
     log::info!("```");
-    
+
     process::exit(0);
+}
+
+fn handle_update(sub_args: &ArgMatches) -> ! {
+    let proj_dir = sub_args.get_one::<String>("dir").unwrap();
+    let proj_dir = PathBuf::from(proj_dir);
+
+    log::info!("🔄 Updating mdbook-mermaid-panzoom...");
+
+    // Step 1: Build and install the preprocessor
+    log::info!("Building and installing preprocessor...");
+    let output = std::process::Command::new("cargo")
+        .args(["install", "--force", "--path", "."])
+        .output();
+
+    match output {
+        Ok(output) if output.status.success() => {
+            log::info!("✅ Preprocessor rebuilt and installed");
+        }
+        Ok(output) => {
+            log::error!("Failed to build preprocessor:");
+            eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            process::exit(1);
+        }
+        Err(e) => {
+            log::error!("Failed to run cargo install: {}", e);
+            process::exit(1);
+        }
+    }
+
+    // Step 2: Update assets in the book
+    let assets_dir = proj_dir.join("src").join("assets");
+    generate_assets(&assets_dir);
+
+    log::info!("✅ Update complete!");
+    log::info!("Now run: mdbook build");
+
+    process::exit(0);
+}
+
+// Simple function to generate assets - always overwrite
+fn generate_assets(assets_dir: &PathBuf) {
+    // Create assets directory if it doesn't exist
+    if !assets_dir.exists() {
+        if let Err(e) = fs::create_dir_all(&assets_dir) {
+            log::error!("Failed to create assets directory: {}", e);
+            process::exit(1);
+        }
+        log::info!("Created assets directory: {}", assets_dir.display());
+    }
+
+    // Extract assets (always overwrite in update mode)
+    log::info!("Updating assets in {}", assets_dir.display());
+    for (name, content) in ASSETS {
+        let filepath = assets_dir.join(name);
+
+        log::debug!("Writing '{}'", name);
+        if let Err(e) = fs::write(&filepath, content) {
+            log::error!("Failed to write '{}': {}", name, e);
+            process::exit(1);
+        }
+    }
 }
 
 fn has_preprocessor(doc: &toml_edit::Document) -> bool {
@@ -159,28 +202,28 @@ fn has_preprocessor(doc: &toml_edit::Document) -> bool {
 }
 
 fn add_preprocessor(doc: &mut toml_edit::Document) {
-    use toml_edit::{value, Item, Table};
-    
+    use toml_edit::{Item, Table, value};
+
     let preprocessor = doc
         .as_table_mut()
         .entry("preprocessor")
         .or_insert(Item::Table(Table::new()))
         .as_table_mut()
         .unwrap();
-    
+
     let mermaid = preprocessor
         .entry("mermaid-panzoom")
         .or_insert(Item::Table(Table::new()))
         .as_table_mut()
         .unwrap();
-    
+
     mermaid.insert("command", value("mdbook-mermaid-panzoom"));
 }
 
 fn add_assets_to_config(doc: &mut toml_edit::Document) -> bool {
     use toml_edit::{Array, Item, Value};
     let mut changed = false;
-    
+
     // Ensure output.html section exists
     let output = doc
         .as_table_mut()
@@ -188,42 +231,47 @@ fn add_assets_to_config(doc: &mut toml_edit::Document) -> bool {
         .or_insert(Item::Table(toml_edit::Table::new()))
         .as_table_mut()
         .unwrap();
-    
+
     let html = output
         .entry("html")
         .or_insert(Item::Table(toml_edit::Table::new()))
         .as_table_mut()
         .unwrap();
-    
-    // Add JavaScript files
+
+    // Add JavaScript files with correct path for mdBook
     let js_array = html
         .entry("additional-js")
         .or_insert(Item::Value(Value::Array(Array::new())))
         .as_array_mut()
         .unwrap();
-    
+
     for file in &["mermaid.min.js", "panzoom-bundle.js"] {
-        if !js_array.iter().any(|item| {
-            item.as_str().map(|s| s.ends_with(file)).unwrap_or(false)
-        }) {
-            js_array.push(*file);
+        let path = format!("assets/{}", file);
+        if !js_array
+            .iter()
+            .any(|item| item.as_str().map(|s| s.ends_with(file)).unwrap_or(false))
+        {
+            js_array.push(path);
             changed = true;
         }
     }
-    
-    // Add CSS file
+
+    // Add CSS file with correct path for mdBook
     let css_array = html
         .entry("additional-css")
         .or_insert(Item::Value(Value::Array(Array::new())))
         .as_array_mut()
         .unwrap();
-    
+
+    let css_path = "assets/panzoom.css";
     if !css_array.iter().any(|item| {
-        item.as_str().map(|s| s.ends_with("panzoom.css")).unwrap_or(false)
+        item.as_str()
+            .map(|s| s.ends_with("panzoom.css"))
+            .unwrap_or(false)
     }) {
-        css_array.push("panzoom.css");
+        css_array.push(css_path);
         changed = true;
     }
-    
+
     changed
 }
