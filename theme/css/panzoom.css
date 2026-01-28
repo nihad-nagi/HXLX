@@ -1,0 +1,88 @@
+/*/home/enzi/HXLX/plugins/mdbook-mermaid-panzoom/assets/panzoom.css*/
+/* ===== MERMAID PAN/ZOOM - PURE OVERLAY ===== */
+.mermaid-panzoom-wrapper {
+    position: relative;
+    display: block;
+    margin: 1.5em 0;
+    width: 100%;
+    /* NO fixed height, NO overflow, NO background manipulation */
+}
+
+.mermaid-container {
+    position: relative;
+    display: block;
+    width: 100%;
+    overflow: visible !important; /* Let Mermaid control overflow */
+}
+
+/* Let Mermaid style the SVG completely */
+.mermaid-container svg {
+    display: block !important;
+    margin: 0 auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    transform-origin: 0 0 !important;
+}
+
+/* Overlay controls - absolutely positioned over the diagram */
+.mermaid-panzoom-controls {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px;
+    display: flex;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+}
+
+.mermaid-panzoom-controls button {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    min-width: 30px;
+}
+
+.mermaid-panzoom-controls .zoom-level {
+    padding: 4px 8px;
+    font-size: 11px;
+    min-width: 50px;
+    text-align: center;
+    font-family: monospace;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* Minimal fullscreen - just make it fill the screen */
+.fullscreen-mode {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 20px !important;
+}
+
+.fullscreen-mode .mermaid-container {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.fullscreen-mode .mermaid-container svg {
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+}
