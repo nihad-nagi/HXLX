@@ -427,7 +427,6 @@
   }
 
   // Core function: Render Mermaid, then initialize svg-pan-zoom with our custom controls
-  // Core function: Render Mermaid, then initialize svg-pan-zoom with our custom controls
   async function renderAndEnablePanZoom(wrapper) {
     const container = wrapper.querySelector(".mermaid-container");
     const codeDiv = wrapper.querySelector(".mermaid-code");
@@ -446,40 +445,63 @@
       const svgElement = container.querySelector("svg");
       if (!svgElement) return;
 
-      // ------------------------------------------------------------------
-      // 🔑 CRITICAL FIX: install explicit pan-zoom viewport layer
-      // ------------------------------------------------------------------
-      if (!svgElement.querySelector(".svg-pan-zoom_viewport")) {
-        const viewport = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "g",
-        );
-        viewport.classList.add("svg-pan-zoom_viewport");
+      // Store original viewBox if it exists, or create one from width/height
+      let originalViewBox = svgElement.getAttribute("viewBox");
+      let originalWidth = svgElement.getAttribute("width");
+      let originalHeight = svgElement.getAttribute("height");
 
-        // Move ALL existing SVG children into the viewport
-        while (svgElement.firstChild) {
-          viewport.appendChild(svgElement.firstChild);
+      // If no viewBox exists but we have width/height, create a viewBox
+      if (!originalViewBox && originalWidth && originalHeight) {
+        // Remove 'px' if present and convert to numbers
+        const width = parseFloat(originalWidth.replace("px", "")) || 0;
+        const height = parseFloat(originalHeight.replace("px", "")) || 0;
+        if (width > 0 && height > 0) {
+          originalViewBox = `0 0 ${width} ${height}`;
+          svgElement.setAttribute("viewBox", originalViewBox);
         }
-
-        svgElement.appendChild(viewport);
       }
 
-      // Root SVG stays layout-driven
+      // Remove fixed width/height to make SVG responsive
+      svgElement.removeAttribute("width");
+      svgElement.removeAttribute("height");
+
+      // Set SVG to be responsive
       svgElement.style.width = "100%";
-      svgElement.style.height = "auto";
+      svgElement.style.height = "100%";
       svgElement.style.display = "block";
-      svgElement.style.maxWidth = "100%";
+
+      // Preserve aspect ratio
+      svgElement.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+      // Set container to have a reasonable aspect ratio
+      container.style.width = "100%";
+      container.style.height = "auto";
+      container.style.minHeight = "200px"; // Minimum height for visibility
+      container.style.display = "block";
 
       // Wrapper must be positioning context for controls
       wrapper.style.position = "relative";
+      wrapper.style.width = "100%";
+      wrapper.style.overflow = "hidden"; // Prevent scrollbars during pan
+
+      // Create a wrapper div for the SVG with fixed dimensions
+      const svgWrapper = document.createElement("div");
+      svgWrapper.style.width = "100%";
+      svgWrapper.style.height = "400px"; // Default height, can adjust
+      svgWrapper.style.position = "relative";
+      svgWrapper.style.backgroundColor = "transparent";
+
+      // Move SVG into the wrapper
+      container.insertBefore(svgWrapper, svgElement);
+      svgWrapper.appendChild(svgElement);
 
       // ------------------------------------------------------------------
-      // 2. Initialize svg-pan-zoom (now operates ONLY on the <g>)
+      // 2. Initialize svg-pan-zoom
       // ------------------------------------------------------------------
       const panZoomInstance = svgPanZoom(svgElement, {
         zoomEnabled: true,
         controlIconsEnabled: false,
-        fit: true,
+        fit: true, // Fit to container initially
         center: true,
         minZoom: 0.1,
         maxZoom: 20,
@@ -487,6 +509,26 @@
         dblClickZoomEnabled: true,
         mouseWheelZoomEnabled: true,
         preventMouseEventsDefault: true,
+        beforePan: function (oldPan, newPan) {
+          // Get SVG dimensions
+          const svgRect = svgElement.getBoundingClientRect();
+          const viewBox = svgElement.getAttribute("viewBox");
+
+          if (viewBox) {
+            const [x, y, width, height] = viewBox.split(" ").map(Number);
+            const bounds = panZoomInstance.getSizes();
+
+            // Calculate bounds to prevent panning outside the SVG
+            const leftBound = -(width * bounds.realZoom - bounds.width);
+            const topBound = -(height * bounds.realZoom - bounds.height);
+
+            return {
+              x: Math.max(leftBound, Math.min(0, newPan.x)),
+              y: Math.max(topBound, Math.min(0, newPan.y)),
+            };
+          }
+          return newPan;
+        },
       });
 
       // ------------------------------------------------------------------
@@ -504,31 +546,105 @@
           panZoomInstance.fit();
           panZoomInstance.center();
         },
+        fit() {
+          panZoomInstance.fit();
+          panZoomInstance.center();
+        },
         controlsWrapper: null,
       };
 
-      ControlIcons.enable(controlInstance, wrapper, svgElement);
+      // Create custom controls wrapper (different from default)
+      const controlsWrapper = document.createElement("div");
+      controlsWrapper.className = "mermaid-panzoom-controls";
+      controlsWrapper.style.cssText = `
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        z-index: 1000;
+        display: flex;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 6px;
+        padding: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      `;
 
-      // Store references for cleanup
-      wrapper._panZoomInstance = panZoomInstance;
-      wrapper._controlInstance = controlInstance;
+      // Dark theme adjustments
+      const isDarkTheme = ControlIcons._isDarkTheme();
+      if (isDarkTheme) {
+        controlsWrapper.style.background = "rgba(30, 41, 59, 0.9)";
+        controlsWrapper.style.borderColor = "rgba(255, 255, 255, 0.15)";
+      }
+
+      // Add control buttons
+      controlsWrapper.appendChild(
+        createControlButton("+", "Zoom In", () => controlInstance.zoomIn()),
+      );
+      controlsWrapper.appendChild(
+        createControlButton("-", "Zoom Out", () => controlInstance.zoomOut()),
+      );
+      controlsWrapper.appendChild(
+        createControlButton("⟳", "Reset View", () => controlInstance.reset()),
+      );
+      controlsWrapper.appendChild(
+        createControlButton("⤢", "Fit to View", () => controlInstance.fit()),
+      );
+
+      wrapper.appendChild(controlsWrapper);
+      controlInstance.controlsWrapper = controlsWrapper;
+
+      // Helper function to create control buttons
+      function createControlButton(text, title, onClick) {
+        const button = document.createElement("button");
+        button.textContent = text;
+        button.title = title;
+        button.style.cssText = `
+          width: 32px;
+          height: 32px;
+          border: none;
+          border-radius: 4px;
+          background: transparent;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          font-weight: bold;
+          transition: all 0.2s ease;
+        `;
+
+        button.addEventListener("click", (e) => {
+          e.stopPropagation();
+          onClick();
+        });
+
+        button.addEventListener("mouseenter", () => {
+          button.style.background = "rgba(0, 0, 0, 0.1)";
+        });
+        button.addEventListener("mouseleave", () => {
+          button.style.background = "transparent";
+        });
+
+        return button;
+      }
 
       // ------------------------------------------------------------------
-      // 4. Resize handling — now safe and correct
+      // 4. Resize handling
       // ------------------------------------------------------------------
       const resizeObserver = new ResizeObserver(() => {
         panZoomInstance.resize();
         panZoomInstance.fit();
         panZoomInstance.center();
-
-        if (controlInstance.controlsWrapper) {
-          controlInstance.controlsWrapper.style.bottom = "15px";
-          controlInstance.controlsWrapper.style.right = "15px";
-        }
       });
 
-      resizeObserver.observe(wrapper);
+      resizeObserver.observe(svgWrapper);
+
+      // Store references for cleanup
+      wrapper._panZoomInstance = panZoomInstance;
+      wrapper._controlInstance = controlInstance;
       wrapper._resizeObserver = resizeObserver;
+      wrapper._svgWrapper = svgWrapper;
     } catch (error) {
       console.error("Failed to render Mermaid diagram:", error);
       showError(wrapper, error.message);
@@ -626,8 +742,8 @@
   // Cleanup function for when diagrams are removed
   // Cleanup function for when diagrams are removed
   function cleanupDiagram(wrapper) {
-    if (wrapper._controlInstance) {
-      ControlIcons.disable(wrapper._controlInstance, wrapper);
+    if (wrapper._controlInstance && wrapper._controlInstance.controlsWrapper) {
+      wrapper._controlInstance.controlsWrapper.remove();
     }
     if (wrapper._panZoomInstance && wrapper._panZoomInstance.destroy) {
       wrapper._panZoomInstance.destroy();
@@ -635,13 +751,15 @@
     if (wrapper._resizeObserver) {
       wrapper._resizeObserver.disconnect();
     }
-    if (wrapper._windowResizeHandler) {
-      window.removeEventListener("resize", wrapper._windowResizeHandler);
+    if (wrapper._svgWrapper) {
+      wrapper._svgWrapper.remove();
     }
+
+    // Remove all stored references
     delete wrapper._panZoomInstance;
     delete wrapper._controlInstance;
     delete wrapper._resizeObserver;
-    delete wrapper._windowResizeHandler;
+    delete wrapper._svgWrapper;
     delete wrapper._handleContainerResize;
     wrapper.removeAttribute("data-processed");
   }
