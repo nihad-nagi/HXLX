@@ -1,31 +1,46 @@
-/* theme/static/css/panzoom.css - UPDATED */
+/* =========================================================
+   Mermaid Panzoom Wrapper
+   ========================================================= */
+
 .mermaid-panzoom-wrapper {
-    position: relative;
+    position: relative; /* anchor for controls */
+    width: 100%;
     margin: 1.5em 0;
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 8px;
     overflow: hidden;
     background: var(--md-default-bg-color, #ffffff);
-    padding: 10px;
 }
 
+/* ---------------------------------------------------------
+   Container — NO forced height
+   --------------------------------------------------------- */
 .mermaid-panzoom-wrapper .mermaid-container {
     width: 100%;
-    min-height: 300px;
-    cursor: grab;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
 }
 
-.mermaid-panzoom-wrapper .mermaid-container svg {
-    max-width: 100%;
-    max-height: 100%;
+/* ---------------------------------------------------------
+   Root SVG — layout-driven, viewBox preserved
+   --------------------------------------------------------- */
+.mermaid-panzoom-wrapper svg {
     display: block;
+    width: 100%;
+    height: auto; /* ← critical */
+    max-width: 100%;
 }
 
-/* Control buttons styling */
+/* ---------------------------------------------------------
+   Pan/Zoom viewport layer
+   --------------------------------------------------------- */
+.mermaid-panzoom-wrapper .svg-pan-zoom_viewport {
+    transform-origin: 0 0;
+}
+
+/* =========================================================
+   Control buttons
+   ========================================================= */
+
 .svg-pan-zoom-control {
     color: #333;
 }
@@ -34,7 +49,10 @@
     background-color: rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Dark theme adjustments */
+/* =========================================================
+   Dark themes (mdBook compatible)
+   ========================================================= */
+
 .dark-theme .mermaid-panzoom-wrapper,
 [data-md-color-scheme="slate"] .mermaid-panzoom-wrapper,
 .navy .mermaid-panzoom-wrapper,
@@ -59,28 +77,11 @@
 .ayu .svg-pan-zoom-control:hover {
     background-color: rgba(255, 255, 255, 0.15) !important;
 }
-/* Base container */
-.mermaid-panzoom-wrapper {
-    position: relative;
-    margin: 1.5em 0;
-    border-radius: 8px;
-    overflow: hidden;
-    background: var(--md-default-bg-color, #fff);
-}
 
-/* Normal mode */
-.mermaid-panzoom-wrapper .mermaid-container {
-    width: 100%;
-    min-height: 400px;
-}
+/* =========================================================
+   Fullscreen mode
+   ========================================================= */
 
-/* SVG must fill container */
-.mermaid-panzoom-wrapper svg {
-    width: 100%;
-    height: 100%;
-}
-
-/* ===== FULLSCREEN MODE ===== */
 .mermaid-panzoom-wrapper.is-fullscreen {
     position: fixed;
     inset: 0;
@@ -88,15 +89,15 @@
     margin: 0;
     border-radius: 0;
     background: var(--md-default-bg-color, #fff);
+    max-width: none !important;
 }
 
 .mermaid-panzoom-wrapper.is-fullscreen .mermaid-container {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 }
 
-/* Escape mdBook column */
-.mermaid-panzoom-wrapper.is-fullscreen {
-    max-width: none !important;
+.mermaid-panzoom-wrapper.is-fullscreen svg {
+    width: 100%;
+    height: 100%;
 }
-/**/

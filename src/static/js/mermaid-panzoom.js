@@ -427,6 +427,7 @@
   }
 
   // Core function: Render Mermaid, then initialize svg-pan-zoom with our custom controls
+  // Core function: Render Mermaid, then initialize svg-pan-zoom with our custom controls
   async function renderAndEnablePanZoom(wrapper) {
     const container = wrapper.querySelector(".mermaid-container");
     const codeDiv = wrapper.querySelector(".mermaid-code");
@@ -438,25 +439,46 @@
       const uniqueId =
         "mermaid-" + Date.now() + "-" + Math.random().toString(36).substr(2, 9);
 
-      // 1. Render the diagram with Mermaid
+      // 1. Render Mermaid
       const { svg } = await mermaid.render(uniqueId, mermaidCode);
       container.innerHTML = svg;
 
       const svgElement = container.querySelector("svg");
       if (!svgElement) return;
 
-      // Style the SVG to be responsive
-      svgElement.style.maxWidth = "100%";
+      // ------------------------------------------------------------------
+      // 🔑 CRITICAL FIX: install explicit pan-zoom viewport layer
+      // ------------------------------------------------------------------
+      if (!svgElement.querySelector(".svg-pan-zoom_viewport")) {
+        const viewport = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "g",
+        );
+        viewport.classList.add("svg-pan-zoom_viewport");
+
+        // Move ALL existing SVG children into the viewport
+        while (svgElement.firstChild) {
+          viewport.appendChild(svgElement.firstChild);
+        }
+
+        svgElement.appendChild(viewport);
+      }
+
+      // Root SVG stays layout-driven
+      svgElement.style.width = "100%";
       svgElement.style.height = "auto";
       svgElement.style.display = "block";
+      svgElement.style.maxWidth = "100%";
 
-      // Ensure container has position relative for absolute positioning of controls
+      // Wrapper must be positioning context for controls
       wrapper.style.position = "relative";
 
-      // 2. Initialize pan and zoom WITHOUT library's default controls
+      // ------------------------------------------------------------------
+      // 2. Initialize svg-pan-zoom (now operates ONLY on the <g>)
+      // ------------------------------------------------------------------
       const panZoomInstance = svgPanZoom(svgElement, {
         zoomEnabled: true,
-        controlIconsEnabled: false, // Disable default controls
+        controlIconsEnabled: false,
         fit: true,
         center: true,
         minZoom: 0.1,
@@ -465,38 +487,41 @@
         dblClickZoomEnabled: true,
         mouseWheelZoomEnabled: true,
         preventMouseEventsDefault: true,
-        beforePan: function (oldPan, newPan) {
-          // Allow panning
-          return newPan;
-        },
       });
 
-      // 3. Add OUR custom control buttons overlaid on the container
+      // ------------------------------------------------------------------
+      // 3. Custom controls
+      // ------------------------------------------------------------------
       const controlInstance = {
-        zoomIn: function () {
+        zoomIn() {
           panZoomInstance.zoomIn();
         },
-        zoomOut: function () {
+        zoomOut() {
           panZoomInstance.zoomOut();
         },
-        reset: function () {
+        reset() {
           panZoomInstance.reset();
+          panZoomInstance.fit();
+          panZoomInstance.center();
         },
         controlsWrapper: null,
       };
 
-      // Enable our control icons (this will also remove the existing left controls)
       ControlIcons.enable(controlInstance, wrapper, svgElement);
 
-      // Store reference for cleanup
+      // Store references for cleanup
       wrapper._panZoomInstance = panZoomInstance;
       wrapper._controlInstance = controlInstance;
 
-      // Handle container resize
+      // ------------------------------------------------------------------
+      // 4. Resize handling — now safe and correct
+      // ------------------------------------------------------------------
       const resizeObserver = new ResizeObserver(() => {
-        // Update controls if needed
+        panZoomInstance.resize();
+        panZoomInstance.fit();
+        panZoomInstance.center();
+
         if (controlInstance.controlsWrapper) {
-          // Ensure controls stay in bottom right
           controlInstance.controlsWrapper.style.bottom = "15px";
           controlInstance.controlsWrapper.style.right = "15px";
         }
@@ -599,6 +624,7 @@
   }
 
   // Cleanup function for when diagrams are removed
+  // Cleanup function for when diagrams are removed
   function cleanupDiagram(wrapper) {
     if (wrapper._controlInstance) {
       ControlIcons.disable(wrapper._controlInstance, wrapper);
@@ -609,9 +635,14 @@
     if (wrapper._resizeObserver) {
       wrapper._resizeObserver.disconnect();
     }
+    if (wrapper._windowResizeHandler) {
+      window.removeEventListener("resize", wrapper._windowResizeHandler);
+    }
     delete wrapper._panZoomInstance;
     delete wrapper._controlInstance;
     delete wrapper._resizeObserver;
+    delete wrapper._windowResizeHandler;
+    delete wrapper._handleContainerResize;
     wrapper.removeAttribute("data-processed");
   }
 
