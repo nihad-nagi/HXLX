@@ -4,25 +4,26 @@ language = "en"
 src = "src"
 
 [output.html]
-default-theme = "coal"
-preferred-dark-theme = "coal"
+theme = "theme"
+default-theme = "light"
+preferred-dark-theme = "navy"
+# copy-fonts = true
+# copy-custom-fonts = true
 
-additional-js = [
-  "static/scripts/components.js",
-  "src/assets/mermaid.min.js",
-  "src/assets/panzoom-bundle.js"
-]
-additional-css = [
-  "static/styles/components.css",
-  "src/assets/panzoom.css",
-  "css/fancy_table.css",
-]
+additional-js = []
+additional-css = []
+
+[output.html.playground]
+editable = false         # allows editing the source code
+copyable = true          # include the copy button for copying code snippets
+copy-js = true           # includes the JavaScript for the code editor
+line-numbers = false     # displays line numbers for editable code
+runnable = true          # displays a run button for rust code
+
+
 
 [preprocessor.mermaid-panzoom]
 command = "mdbook-mermaid-panzoom"
 
-[preprocessor.components]
-command = "mdbook-components"
-namespace = "mybook"
-strict = false
-debug = true
+# [preprocessor.mermaid]
+# command = "mdbook-mermaid"
