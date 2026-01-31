@@ -570,7 +570,7 @@
         border: 1px solid rgba(0, 0, 0, 0.1);
       `;
 
-      // Dark theme adjustments
+      // // Dark theme adjustments
       const isDarkTheme = ControlIcons._isDarkTheme();
       if (isDarkTheme) {
         controlsWrapper.style.background = "rgba(30, 41, 59, 0.9)";

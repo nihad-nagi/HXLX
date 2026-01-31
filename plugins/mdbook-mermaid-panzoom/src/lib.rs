@@ -13,12 +13,13 @@ impl Preprocessor for MermaidPanZoom {
 
     fn run(&self, _ctx: &PreprocessorContext, mut book: Book) -> Result<Book> {
         let mut res = None;
-        book.for_each_mut(|item: &mut BookItem| {
+
+        book.for_each_mut(|item| {
             if let Some(Err(_)) = res {
                 return;
             }
 
-            if let BookItem::Chapter(ref mut chapter) = *item {
+            if let BookItem::Chapter(chapter) = item {
                 res = Some(process_chapter(chapter).map(|content| {
                     chapter.content = content;
                 }));
@@ -35,8 +36,8 @@ impl Preprocessor for MermaidPanZoom {
 
 fn process_chapter(chapter: &Chapter) -> Result<String> {
     let content = &chapter.content;
-    let mut processed_content = String::with_capacity(content.len() * 2);
-    let mut mermaid_blocks = Vec::new();
+    let mut output = String::with_capacity(content.len() * 2);
+    let mut replacements: Vec<(usize, usize, String)> = Vec::new();
 
     let mut opts = Options::empty();
     opts.insert(Options::ENABLE_TABLES);
@@ -45,84 +46,121 @@ fn process_chapter(chapter: &Chapter) -> Result<String> {
     opts.insert(Options::ENABLE_TASKLISTS);
 
     let parser = Parser::new_ext(content, opts);
+
     let mut in_mermaid = false;
-    let mut mermaid_content = String::new();
+    let mut buffer = String::new();
     let mut block_start = 0;
-    let mut block_end;
+    let mut diagram_index = 0;
 
     for (event, span) in parser.into_offset_iter() {
         match event {
-            Event::Start(Tag::CodeBlock(Fenced(code))) if &*code == "mermaid" => {
+            Event::Start(Tag::CodeBlock(Fenced(code))) if code.as_ref() == "mermaid" => {
                 in_mermaid = true;
-                mermaid_content.clear();
+                buffer.clear();
                 block_start = span.start;
             }
+
             Event::Text(text) if in_mermaid => {
-                mermaid_content.push_str(&text);
+                buffer.push_str(&text);
             }
+
             Event::End(TagEnd::CodeBlock) if in_mermaid => {
                 in_mermaid = false;
-                block_end = span.end;
+                let block_end = span.end;
 
-                let id = format!("mermaid-{}", mermaid_blocks.len());
+                let diagrams = split_mermaid_diagrams(&buffer);
 
-                // Create wrapper with unique ID and encoded content
-                let wrapper = format!(
-                    r#"<div class="mermaid-panzoom-wrapper" data-mermaid-id="{}">
+                let mut html = String::new();
+                for diagram in diagrams {
+                    let id = format!("mermaid-{}", diagram_index);
+                    diagram_index += 1;
+
+                    html.push_str(&format!(
+                        r#"<div class="mermaid-panzoom-wrapper" data-mermaid-id="{}">
 <div class="mermaid-container"></div>
 <div class="mermaid-code" style="display: none;">{}</div>
-<div class="mermaid-panzoom-controls">
-<button class="zoom-in" title="Zoom In">+</button>
-<button class="zoom-out" title="Zoom Out">-</button>
-<button class="reset-view" title="Reset View">⟳</button>
-<button class="fit-view" title="Fit to View">⤢</button>
-<span class="zoom-level">100%</span>
-</div>
 </div>"#,
-                    id,
-                    html_escape::encode_text(&mermaid_content)
-                );
+                        id,
+                        html_escape::encode_text(&diagram)
+                    ));
+                }
 
-                mermaid_blocks.push((block_start, block_end, wrapper));
+                replacements.push((block_start, block_end, html));
             }
+
             _ => {}
         }
     }
 
-    // Process blocks in forward order
-    let mut last_pos = 0;
-    for (start, end, wrapper) in mermaid_blocks {
-        // Add content BEFORE this mermaid block
-        processed_content.push_str(&content[last_pos..start]);
-        // Add the wrapper
-        processed_content.push_str(&wrapper);
-        last_pos = end;
+    let mut last = 0;
+    for (start, end, html) in replacements {
+        output.push_str(&content[last..start]);
+        output.push_str(&html);
+        last = end;
     }
 
-    // Add remaining content AFTER the last mermaid block
-    if last_pos < content.len() {
-        processed_content.push_str(&content[last_pos..]);
-    }
-
-    Ok(processed_content)
+    output.push_str(&content[last..]);
+    Ok(output)
 }
 
-// Helper function to escape HTML attributes
-mod html_escape {
+/// Split a single mermaid block into multiple diagrams
+fn split_mermaid_diagrams(input: &str) -> Vec<String> {
+    let starters = [
+        "graph ",
+        "flowchart ",
+        "sequenceDiagram",
+        "classDiagram",
+        "stateDiagram",
+        "erDiagram",
+        "journey",
+        "gantt",
+        "pie",
+        "mindmap",
+        "timeline",
+    ];
 
+    let lines: Vec<&str> = input.lines().collect();
+    let mut indices = Vec::new();
+
+    for (i, line) in lines.iter().enumerate() {
+        let trimmed = line.trim_start();
+        if starters.iter().any(|s| trimmed.starts_with(s)) {
+            indices.push(i);
+        }
+    }
+
+    if indices.len() <= 1 {
+        return vec![input.trim().to_string()];
+    }
+
+    let mut diagrams = Vec::new();
+    for w in indices.windows(2) {
+        diagrams.push(lines[w[0]..w[1]].join("\n").trim().to_string());
+    }
+
+    diagrams.push(
+        lines[*indices.last().unwrap()..]
+            .join("\n")
+            .trim()
+            .to_string(),
+    );
+    diagrams
+}
+
+mod html_escape {
     pub fn encode_text(s: &str) -> String {
-        let mut output = String::with_capacity(s.len());
+        let mut out = String::with_capacity(s.len());
         for c in s.chars() {
             match c {
-                '"' => output.push_str("&quot;"),
-                '\'' => output.push_str("&#x27;"),
-                '&' => output.push_str("&amp;"),
-                '<' => output.push_str("&lt;"),
-                '>' => output.push_str("&gt;"),
-                _ => output.push(c),
+                '&' => out.push_str("&amp;"),
+                '<' => out.push_str("&lt;"),
+                '>' => out.push_str("&gt;"),
+                '"' => out.push_str("&quot;"),
+                '\'' => out.push_str("&#x27;"),
+                _ => out.push(c),
             }
         }
-        output
+        out
     }
 }
 
@@ -149,7 +187,6 @@ A --> B
     #[test]
     fn test_multiple_mermaid() {
         let input = r#"# Test
-First diagram:
 ```mermaid
 graph TD
 A --> B
@@ -160,8 +197,7 @@ Alice->>Bob: Hello
         let chapter = Chapter::new("Test", input.to_string(), "test.md", Vec::new());
         let result = process_chapter(&chapter).unwrap();
 
-        // Should find two wrappers
-        let wrapper_count = result.matches("mermaid-panzoom-wrapper").count();
-        assert_eq!(wrapper_count, 2);
+        let count = result.matches("mermaid-panzoom-wrapper").count();
+        assert_eq!(count, 2);
     }
 }
