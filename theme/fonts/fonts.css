@@ -133,20 +133,20 @@
 @font-face {
     font-family: "Arma";
     font-style: normal;
-    font-weight: normal;
-    src: url("armagist.otf");
+    font-weight: 600;
+    src: url('{{ resource "fonts/armagist.otf" }}') format("otf");
 }
 
 @font-face {
     font-family: "Rush";
     font-style: normal;
     font-weight: normal;
-    src: url("rush.otf");
+    src: url('{{ resource "fonts/rush.otf" }}') format("otf");
 }
 
 @font-face {
     font-family: "Spray";
     font-style: normal;
     font-weight: normal;
-    src: url("spray.ttf");
+    src: url('{{ resource "fonts/spray.ttf" }}') format("ttf");
 }

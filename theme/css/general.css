@@ -7,7 +7,7 @@
 }
 
 html {
-    font-family: "Open Sans", sans-serif;
+    font-family: "Arma", sans-serif;
     color: var(--fg);
     background-color: var(--bg);
     text-size-adjust: none;
@@ -37,18 +37,40 @@ main {
 }
 
 /* Don't change font size in headers. */
-h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
     font-size: unset;
+    font-family: "Rush", sans-serif;
 }
 
-.left { float: left; }
-.right { float: right; }
-.boring { opacity: 0.6; }
-.hide-boring .boring { display: none; }
-.hidden { display: none !important; }
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+.boring {
+    opacity: 0.6;
+}
+.hide-boring .boring {
+    display: none;
+}
+.hidden {
+    display: none !important;
+}
 
-h2, h3 { margin-block-start: 2.5em; }
-h4, h5 { margin-block-start: 2em; }
+h2,
+h3 {
+    margin-block-start: 2.5em;
+}
+h4,
+h5 {
+    margin-block-start: 2em;
+}
 
 .header + .header h3,
 .header + .header h4,
@@ -81,7 +103,9 @@ dt:target::before {
 .page {
     outline: 0;
     padding: 0 var(--page-padding);
-    margin-block-start: calc(0px - var(--menu-bar-height)); /* Compensate for the #mdbook-menu-bar-hover-placeholder */
+    margin-block-start: calc(
+        0px - var(--menu-bar-height)
+    ); /* Compensate for the #mdbook-menu-bar-hover-placeholder */
 }
 .page-wrapper {
     box-sizing: border-box;
@@ -89,11 +113,15 @@ dt:target::before {
 }
 html:not(.js) .page-wrapper,
 .js:not(.sidebar-resizing) .page-wrapper {
-    transition: margin-left 0.3s ease, transform 0.3s ease; /* Animation: slide away */
+    transition:
+        margin-left 0.3s ease,
+        transform 0.3s ease; /* Animation: slide away */
 }
-[dir=rtl]:not(.js) .page-wrapper,
-[dir=rtl].js:not(.sidebar-resizing) .page-wrapper {
-    transition: margin-right 0.3s ease, transform 0.3s ease; /* Animation: slide away */
+[dir="rtl"]:not(.js) .page-wrapper,
+[dir="rtl"].js:not(.sidebar-resizing) .page-wrapper {
+    transition:
+        margin-right 0.3s ease,
+        transform 0.3s ease; /* Animation: slide away */
 }
 
 .content {
@@ -105,12 +133,25 @@ html:not(.js) .page-wrapper,
     margin-inline-end: auto;
     max-width: var(--content-max-width);
 }
-.content p { line-height: 1.45em; }
-.content ol { line-height: 1.45em; }
-.content ul { line-height: 1.45em; }
-.content a { text-decoration: none; }
-.content a:hover { text-decoration: underline; }
-.content img, .content video { max-width: 100%; }
+.content p {
+    line-height: 1.45em;
+}
+.content ol {
+    line-height: 1.45em;
+}
+.content ul {
+    line-height: 1.45em;
+}
+.content a {
+    text-decoration: none;
+}
+.content a:hover {
+    text-decoration: underline;
+}
+.content img,
+.content video {
+    max-width: 100%;
+}
 .content .header:link,
 .content .header:visited {
     color: var(--fg);
@@ -146,14 +187,13 @@ table tbody tr:nth-child(2n) {
     background: var(--table-alternate-bg);
 }
 
-
 blockquote {
     margin: 20px 0;
     padding: 0 20px;
     color: var(--fg);
     background-color: var(--quote-bg);
-    border-block-start: .1em solid var(--quote-border);
-    border-block-end: .1em solid var(--quote-border);
+    border-block-start: 0.1em solid var(--quote-border);
+    border-block-end: 0.1em solid var(--quote-border);
 }
 
 /* TODO: Remove .warning in a future version of mdbook, it is replaced by
@@ -241,7 +281,7 @@ sup {
    This could use some improvement.
 */
 @media not (prefers-reduced-motion) {
-    .footnote-reference:target  {
+    .footnote-reference:target {
         animation: fn-highlight 0.8s;
         border-radius: 2px;
     }
@@ -258,7 +298,9 @@ sup {
     visibility: hidden;
     color: #fff;
     background-color: #333;
-    transform: translateX(-50%); /* Center by moving tooltip 50% of its width left */
+    transform: translateX(
+        -50%
+    ); /* Center by moving tooltip 50% of its width left */
     left: -8px; /* Half of the width of the icon */
     top: -35px;
     font-size: 0.8em;
@@ -297,14 +339,16 @@ dt {
 
 /* This uses a CSS counter to add numbers to definitions, but only if there is
  more than one definition. */
-dl, dt {
+dl,
+dt {
     counter-reset: dd-counter;
 }
 
 /* When there is more than one definition, increment the counter. The first
 selector selects the first definition, and the second one selects definitions
 2 and beyond.*/
-dd:has(+ dd), dd + dd {
+dd:has(+ dd),
+dd + dd {
     counter-increment: dd-counter;
     /* Use flex display to help with positioning the numbers when there is a p
     tag inside the definition. */
@@ -314,7 +358,8 @@ dd:has(+ dd), dd + dd {
 
 /* Shows the counter for definitions. The first selector selects the first
 definition, and the second one selections definitions 2 and beyond.*/
-dd:has(+ dd)::before, dd + dd::before  {
+dd:has(+ dd)::before,
+dd + dd::before {
     content: counter(dd-counter) ". ";
     font-weight: 600;
     display: inline-block;

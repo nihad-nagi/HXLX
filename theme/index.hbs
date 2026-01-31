@@ -1,3 +1,4 @@
+{{!-- /home/enzi/HXLX/theme/index.hbs --}}
 <!DOCTYPE HTML>
 <html lang="{{ language }}" class="{{ default_theme }} sidebar-visible" dir="{{ text_direction }}">
     <head>
@@ -28,7 +29,7 @@
         <link rel="stylesheet" href="{{ resource "css/variables.css" }}">
         <link rel="stylesheet" href="{{ resource "css/general.css" }}">
         <link rel="stylesheet" href="{{ resource "css/chrome.css" }}">
-        <link rel="stylesheet" href="{{ resource "css/panzoom.css" }}">
+        <link rel="stylesheet" href="static/css/panzoom.css">
         {{!-- <link rel="stylesheet" href="{{ resource "css/catppuccin.css" }}"> --}}
         {{#if print_enable}}
         <link rel="stylesheet" href="{{ resource "css/print.css" }}" media="print">
@@ -48,9 +49,10 @@
         {{/each}}
 
         <!-- Scripts -->
-
-        <script src="{{ resource "js/mermaid.min.js" }}"></script>
-        <script src="{{ resource "js/panzoom-bundle.js" }}"></script>
+        <script src="static/js/svgpanzoom.min.js"></script>
+        <script src="static/js/mermaid.min.js"></script>
+        <script src="static/js/mermaid-panzoom.js"></script>
+        <script src="static/js/alpine.js" defer></script>
 
         {{#if mathjax_support}}
         <!-- MathJax -->
