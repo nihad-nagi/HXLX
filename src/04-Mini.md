@@ -1,4 +1,4 @@
-# ENHANCED MINI LXs
+# MINI LXs
 # Product Layer: From Primitives to Reality
 
 ## PIPELINE MASTER MAP: PRODUCT GENESIS
@@ -139,10 +139,6 @@ checkout PIPE
 merge 0W1
 ```
 <!-- ANCHOR_END:D401 -->
-
-
-
-<!--{{#include appendix/dags/D04.md:D401}} -->
 
 ### BASIC
 This is our development timeline. Each branch is a product being built from the foundational discoveries. The main line (PIPE) is where stable releases merge.

@@ -1,14 +1,9 @@
 # MORPHS
 
-This is a test of the components.
-
-{% component "admonition" type="warning" title="Be careful" %}
-This is a warning message.
-{% endcomponent %}
-
-Here is an example component:
-
-{% component "example" title="My Example" %}
-This is the content of the example.
-It can have **markdown** and `code`.
-{% endcomponent %}
+```mermaid
+%%{init:{ 'logLevel':'debug', 'theme':'dark', 'gitGraph':{'showBranches':true, 'showCommitLabel':true, 'mainBranchName':'PIPE'} } }%%
+gitGraph  
+commit id:"INIT"
+commit id:"Cybernetics MS" tag:"HLX"
+commit id:"GITS" tag:"Hx28" type:REVERSE
+```

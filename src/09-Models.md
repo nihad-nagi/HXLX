@@ -6,13 +6,13 @@ AI models are the pinnacle of our era, so its fair to use those llms as wide sub
 In alphapetical order:
 
 ## ChatGPT
-{{#include appendix/models/chatgpt.md}}
+{{#include includes/models/chatgpt.md}}
 
 ## DeepSeek
-{{#include appendix/models/deepseek.md}}
+{{#include includes/models/deepseek.md}}
 
 ## Gemini
-{{#include appendix/models/gemini.md}}
+{{#include includes/models/gemini.md}}
 
 ## Grok
-{{#include appendix/models/grok.md}}
+{{#include includes/models/grok.md}}
