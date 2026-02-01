@@ -1,5 +1,5 @@
 // theme/static/js/mermaid-panzoom.js
-// UPDATED VERSION with SVG-embedded controls - FIXED
+// FIXED VERSION: Vertical controls, no wrapper, proper fullscreen
 (function () {
   "use strict";
 
@@ -13,7 +13,7 @@
   };
 
   // ============================================
-  // SVG Controls Module (embedded in SVG) - FIXED
+  // SVG Controls Module - VERTICAL STACK on RIGHT
   // ============================================
   const SvgControls = {
     enable: function (panZoomInstance, svgElement) {
@@ -25,7 +25,7 @@
         existingControls.remove();
       }
 
-      // Get SVG dimensions from viewBox OR from bounding box
+      // Get SVG dimensions
       let width = 800,
         height = 600;
       const viewBox = svgElement.getAttribute("viewBox");
@@ -37,15 +37,19 @@
           height = parts[3];
         }
       } else {
-        // Fallback to bounding box
-        const bbox = svgElement.getBBox();
-        if (bbox.width && bbox.height) {
-          width = bbox.width;
-          height = bbox.height;
+        // Try to get from bounding box
+        try {
+          const bbox = svgElement.getBBox();
+          if (bbox.width && bbox.height) {
+            width = bbox.width;
+            height = bbox.height;
+          }
+        } catch (e) {
+          console.log("Could not get SVG dimensions, using defaults");
         }
       }
 
-      // Create controls group - position at bottom right with padding
+      // Create controls group - VERTICAL STACK on RIGHT SIDE
       const controlsGroup = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "g",
@@ -53,32 +57,23 @@
       controlsGroup.setAttribute("id", "mermaid-panzoom-controls");
       controlsGroup.setAttribute("class", "mermaid-controls");
 
-      // Position controls (bottom-right with padding)
-      const padding = 20;
-      const controlSize = 32;
-      const spacing = 10;
-      const controlsWidth = controlSize * 2 + spacing;
-      const controlsHeight = controlSize * 2 + spacing;
+      // Position controls on right side, centered vertically
+      const padding = 15;
+      const controlSize = 30;
+      const spacing = 8;
+      const controlsHeight = controlSize * 4 + spacing * 3; // 4 buttons with spacing
+
+      // Calculate vertical center position
+      const startY = (height - controlsHeight) / 2;
 
       controlsGroup.setAttribute(
         "transform",
-        `translate(${width - controlsWidth - padding} ${height - controlsHeight - padding})`,
+        `translate(${width - controlSize - padding} ${Math.max(padding, startY)})`,
       );
 
-      // Ensure controls are on top
-      controlsGroup.setAttribute("style", "pointer-events: all");
-
-      // Add control buttons
+      // Add vertical stack of buttons (top to bottom: Zoom In, Zoom Out, Reset, Fullscreen)
       controlsGroup.appendChild(
         this._createZoomIn(panZoomInstance, 0, 0, controlSize),
-      );
-      controlsGroup.appendChild(
-        this._createZoomReset(
-          panZoomInstance,
-          controlSize + spacing,
-          0,
-          controlSize,
-        ),
       );
       controlsGroup.appendChild(
         this._createZoomOut(
@@ -89,11 +84,19 @@
         ),
       );
       controlsGroup.appendChild(
+        this._createZoomReset(
+          panZoomInstance,
+          0,
+          (controlSize + spacing) * 2,
+          controlSize,
+        ),
+      );
+      controlsGroup.appendChild(
         this._createFullscreen(
           panZoomInstance,
           svgElement,
-          controlSize + spacing,
-          controlSize + spacing,
+          0,
+          (controlSize + spacing) * 3,
           controlSize,
         ),
       );
@@ -111,15 +114,16 @@
       group.setAttribute("class", "mermaid-control mermaid-zoom-in");
       group.setAttribute("transform", `translate(${x}, ${y})`);
 
-      // Background rectangle
-      const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      bg.setAttribute("x", "0");
-      bg.setAttribute("y", "0");
-      bg.setAttribute("width", size);
-      bg.setAttribute("height", size);
-      bg.setAttribute("rx", "4");
+      // Background circle (more elegant than rectangle)
+      const bg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle",
+      );
+      bg.setAttribute("cx", size / 2);
+      bg.setAttribute("cy", size / 2);
+      bg.setAttribute("r", size / 2);
       bg.setAttribute("class", "mermaid-control-bg");
-      bg.setAttribute("style", "pointer-events: all");
+      bg.setAttribute("style", "pointer-events: all;");
       group.appendChild(bg);
 
       // Plus icon
@@ -159,15 +163,16 @@
       group.setAttribute("class", "mermaid-control mermaid-zoom-out");
       group.setAttribute("transform", `translate(${x}, ${y})`);
 
-      // Background rectangle
-      const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      bg.setAttribute("x", "0");
-      bg.setAttribute("y", "0");
-      bg.setAttribute("width", size);
-      bg.setAttribute("height", size);
-      bg.setAttribute("rx", "4");
+      // Background circle
+      const bg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle",
+      );
+      bg.setAttribute("cx", size / 2);
+      bg.setAttribute("cy", size / 2);
+      bg.setAttribute("r", size / 2);
       bg.setAttribute("class", "mermaid-control-bg");
-      bg.setAttribute("style", "pointer-events: all");
+      bg.setAttribute("style", "pointer-events: all;");
       group.appendChild(bg);
 
       // Minus icon
@@ -204,18 +209,19 @@
       group.setAttribute("class", "mermaid-control mermaid-reset");
       group.setAttribute("transform", `translate(${x}, ${y})`);
 
-      // Background rectangle
-      const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      bg.setAttribute("x", "0");
-      bg.setAttribute("y", "0");
-      bg.setAttribute("width", size);
-      bg.setAttribute("height", size);
-      bg.setAttribute("rx", "4");
+      // Background circle
+      const bg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle",
+      );
+      bg.setAttribute("cx", size / 2);
+      bg.setAttribute("cy", size / 2);
+      bg.setAttribute("r", size / 2);
       bg.setAttribute("class", "mermaid-control-bg");
-      bg.setAttribute("style", "pointer-events: all");
+      bg.setAttribute("style", "pointer-events: all;");
       group.appendChild(bg);
 
-      // Reset icon
+      // Reset icon (circular arrow)
       const reset = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "path",
@@ -257,15 +263,16 @@
       group.setAttribute("class", "mermaid-control mermaid-fullscreen");
       group.setAttribute("transform", `translate(${x}, ${y})`);
 
-      // Background rectangle
-      const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      bg.setAttribute("x", "0");
-      bg.setAttribute("y", "0");
-      bg.setAttribute("width", size);
-      bg.setAttribute("height", size);
-      bg.setAttribute("rx", "4");
+      // Background circle
+      const bg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle",
+      );
+      bg.setAttribute("cx", size / 2);
+      bg.setAttribute("cy", size / 2);
+      bg.setAttribute("r", size / 2);
       bg.setAttribute("class", "mermaid-control-bg");
-      bg.setAttribute("style", "pointer-events: all");
+      bg.setAttribute("style", "pointer-events: all;");
       group.appendChild(bg);
 
       // Fullscreen icon (enter)
@@ -273,14 +280,11 @@
         "http://www.w3.org/2000/svg",
         "path",
       );
-      const padding = size * 0.2;
-      const innerSize = size - padding * 2;
+      const half = size / 2;
+      const offset = size * 0.25;
       icon.setAttribute(
         "d",
-        `M${padding},${padding} L${padding + innerSize / 3},${padding} L${padding},${padding + innerSize / 3}
-        M${padding + innerSize},${padding} L${padding + (innerSize * 2) / 3},${padding} L${padding + innerSize},${padding + innerSize / 3}
-        M${padding},${padding + innerSize} L${padding},${padding + (innerSize * 2) / 3} L${padding + innerSize / 3},${padding + innerSize}
-        M${padding + innerSize},${padding + innerSize} L${padding + innerSize},${padding + (innerSize * 2) / 3} L${padding + (innerSize * 2) / 3},${padding + innerSize}`,
+        `M${half - offset},${half - offset} L${half + offset},${half - offset} M${half + offset},${half - offset} L${half + offset},${half + offset} M${half + offset},${half + offset} L${half - offset},${half + offset} M${half - offset},${half + offset} L${half - offset},${half - offset}`,
       );
       icon.setAttribute("fill", "none");
       icon.setAttribute("stroke", "currentColor");
@@ -298,22 +302,16 @@
         );
 
         if (isFullscreen) {
-          // Exit fullscreen icon
+          // Exit fullscreen icon (arrows pointing inward)
           icon.setAttribute(
             "d",
-            `M${padding + innerSize / 3},${padding} L${padding + innerSize / 3},${padding + innerSize / 3} L${padding},${padding + innerSize / 3}
-            M${padding + (innerSize * 2) / 3},${padding} L${padding + (innerSize * 2) / 3},${padding + innerSize / 3} L${padding + innerSize},${padding + innerSize / 3}
-            M${padding + innerSize / 3},${padding + innerSize} L${padding + innerSize / 3},${padding + (innerSize * 2) / 3} L${padding},${padding + (innerSize * 2) / 3}
-            M${padding + (innerSize * 2) / 3},${padding + innerSize} L${padding + (innerSize * 2) / 3},${padding + (innerSize * 2) / 3} L${padding + innerSize},${padding + (innerSize * 2) / 3}`,
+            `M${half - offset},${half - offset} L${half},${half} M${half + offset},${half - offset} L${half},${half} M${half + offset},${half + offset} L${half},${half} M${half - offset},${half + offset} L${half},${half}`,
           );
         } else {
-          // Enter fullscreen icon
+          // Enter fullscreen icon (arrows pointing outward)
           icon.setAttribute(
             "d",
-            `M${padding},${padding} L${padding + innerSize / 3},${padding} L${padding},${padding + innerSize / 3}
-            M${padding + innerSize},${padding} L${padding + (innerSize * 2) / 3},${padding} L${padding + innerSize},${padding + innerSize / 3}
-            M${padding},${padding + innerSize} L${padding},${padding + (innerSize * 2) / 3} L${padding + innerSize / 3},${padding + innerSize}
-            M${padding + innerSize},${padding + innerSize} L${padding + innerSize},${padding + (innerSize * 2) / 3} L${padding + (innerSize * 2) / 3},${padding + innerSize}`,
+            `M${half - offset},${half - offset} L${half + offset},${half - offset} M${half + offset},${half - offset} L${half + offset},${half + offset} M${half + offset},${half + offset} L${half - offset},${half + offset} M${half - offset},${half + offset} L${half - offset},${half - offset}`,
           );
         }
       };
@@ -322,13 +320,13 @@
       group.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        this._toggleFullscreen(svgElement);
+        this._toggleFullscreen(svgElement, panZoomInstance);
       });
 
       group.addEventListener("touchstart", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        this._toggleFullscreen(svgElement);
+        this._toggleFullscreen(svgElement, panZoomInstance);
       });
 
       // Listen for fullscreen changes
@@ -349,7 +347,7 @@
       return group;
     },
 
-    _toggleFullscreen: function (svgElement) {
+    _toggleFullscreen: function (svgElement, panZoomInstance) {
       const wrapper = svgElement.closest(".mermaid-panzoom-wrapper");
       if (!wrapper) return;
 
@@ -362,20 +360,29 @@
 
       if (!isFullscreen) {
         // Enter fullscreen
-        wrapper.classList.add("is-fullscreen");
-        const elem = wrapper;
-        if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) {
-          elem.webkitRequestFullscreen();
-        } else if (elem.mozRequestFullScreen) {
-          elem.mozRequestFullScreen();
-        } else if (elem.msRequestFullscreen) {
-          elem.msRequestFullscreen();
+        if (wrapper.requestFullscreen) {
+          wrapper.requestFullscreen();
+        } else if (wrapper.webkitRequestFullscreen) {
+          wrapper.webkitRequestFullscreen();
+        } else if (wrapper.mozRequestFullScreen) {
+          wrapper.mozRequestFullScreen();
+        } else if (wrapper.msRequestFullscreen) {
+          wrapper.msRequestFullscreen();
         }
+
+        // Force resize and reposition after entering fullscreen
+        setTimeout(() => {
+          if (panZoomInstance) {
+            panZoomInstance.resize();
+            panZoomInstance.fit();
+            panZoomInstance.center();
+
+            // Update controls position for fullscreen
+            this._repositionControlsForFullscreen(svgElement, panZoomInstance);
+          }
+        }, 100);
       } else {
         // Exit fullscreen
-        wrapper.classList.remove("is-fullscreen");
         if (document.exitFullscreen) {
           document.exitFullscreen();
         } else if (document.webkitExitFullscreen) {
@@ -385,6 +392,46 @@
         } else if (document.msExitFullscreen) {
           document.msExitFullscreen();
         }
+
+        // Force resize after exiting fullscreen
+        setTimeout(() => {
+          if (panZoomInstance) {
+            panZoomInstance.resize();
+            panZoomInstance.fit();
+            panZoomInstance.center();
+
+            // Update controls position back to normal
+            this._repositionControls(svgElement, panZoomInstance);
+          }
+        }, 100);
+      }
+    },
+
+    _repositionControls: function (svgElement, panZoomInstance) {
+      // Remove and re-add controls to recalculate position
+      if (panZoomInstance.controlsGroup) {
+        this.disable(panZoomInstance);
+        this.enable(panZoomInstance, svgElement);
+      }
+    },
+
+    _repositionControlsForFullscreen: function (svgElement, panZoomInstance) {
+      // For fullscreen, we might want to adjust control positioning
+      if (panZoomInstance.controlsGroup) {
+        // Get fullscreen dimensions
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        // Calculate new position for fullscreen
+        const controlsGroup = panZoomInstance.controlsGroup;
+        const controlSize = 30;
+        const padding = 20;
+
+        // Position on right side, centered vertically
+        controlsGroup.setAttribute(
+          "transform",
+          `translate(${screenWidth - controlSize - padding} ${(screenHeight - (controlSize * 4 + 8 * 3)) / 2})`,
+        );
       }
     },
 
@@ -416,7 +463,7 @@
   };
 
   // ============================================
-  // Mermaid Integration - SIMPLIFIED
+  // Mermaid Integration
   // ============================================
 
   function init() {
@@ -492,7 +539,7 @@
     }
   }
 
-  // Core function: Render Mermaid, then initialize svg-pan-zoom with SVG controls
+  // Core function: Render Mermaid with SVG controls
   async function renderAndEnablePanZoom(wrapper) {
     const container = wrapper.querySelector(".mermaid-container");
     const codeDiv = wrapper.querySelector(".mermaid-code");
@@ -511,7 +558,7 @@
       const svgElement = container.querySelector("svg");
       if (!svgElement) return;
 
-      // Store original viewBox if it exists
+      // Store original viewBox
       let originalViewBox = svgElement.getAttribute("viewBox");
       let originalWidth = svgElement.getAttribute("width");
       let originalHeight = svgElement.getAttribute("height");
@@ -542,9 +589,8 @@
       container.style.width = "100%";
       container.style.height = "100%";
       container.style.display = "block";
-      container.style.minHeight = "300px"; // Minimum height
 
-      // Make wrapper relative for positioning
+      // Minimal wrapper styling - NO BORDERS/BACKGROUNDS
       wrapper.style.position = "relative";
       wrapper.style.width = "100%";
       wrapper.style.height = "auto";
@@ -556,7 +602,7 @@
       // ------------------------------------------------------------------
       const panZoomInstance = svgPanZoom(svgElement, {
         zoomEnabled: true,
-        controlIconsEnabled: false, // We'll use our own
+        controlIconsEnabled: false,
         fit: true,
         center: true,
         minZoom: 0.1,
@@ -584,12 +630,12 @@
       });
 
       // ------------------------------------------------------------------
-      // 3. SVG controls (embedded in SVG)
+      // 3. SVG controls (vertical stack on right side)
       // ------------------------------------------------------------------
       SvgControls.enable(panZoomInstance, svgElement);
 
       // ------------------------------------------------------------------
-      // 4. Resize handling - simplified
+      // 4. Resize handling
       // ------------------------------------------------------------------
       const resizeObserver = new ResizeObserver(() => {
         panZoomInstance.resize();
@@ -599,13 +645,33 @@
 
       resizeObserver.observe(container);
 
-      // Handle fullscreen resize
+      // Handle fullscreen changes - CRITICAL for viewBox updates
       const handleFullscreenChange = () => {
         setTimeout(() => {
+          // Force recalculate viewBox
+          const bbox = svgElement.getBBox();
+          const currentViewBox = svgElement.getAttribute("viewBox");
+
+          if (currentViewBox) {
+            const parts = currentViewBox.split(" ").map(Number);
+            if (parts.length >= 4) {
+              // Update viewBox if needed
+              const newWidth = Math.max(parts[2], bbox.width);
+              const newHeight = Math.max(parts[3], bbox.height);
+              svgElement.setAttribute(
+                "viewBox",
+                `0 0 ${newWidth} ${newHeight}`,
+              );
+            }
+          }
+
           panZoomInstance.resize();
           panZoomInstance.fit();
           panZoomInstance.center();
-        }, 100);
+
+          // Reposition controls
+          SvgControls._repositionControls(svgElement, panZoomInstance);
+        }, 150);
       };
 
       document.addEventListener("fullscreenchange", handleFullscreenChange);
