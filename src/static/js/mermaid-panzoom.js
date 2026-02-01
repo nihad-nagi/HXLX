@@ -1,5 +1,5 @@
 // theme/static/js/mermaid-panzoom.js
-// UPDATED VERSION with properly positioned controls and fullscreen button
+// UPDATED VERSION with SVG-embedded controls - FIXED
 (function () {
   "use strict";
 
@@ -13,299 +13,369 @@
   };
 
   // ============================================
-  // UPDATED CONTROL ICONS - Positioned absolutely over the container
+  // SVG Controls Module (embedded in SVG) - FIXED
   // ============================================
-  const ControlIcons = {
-    enable: function (instance, container, svgElement) {
-      // Remove existing controls from HTML (the ones on the left)
-      const existingControls = container.querySelector(
-        ".mermaid-panzoom-controls",
+  const SvgControls = {
+    enable: function (panZoomInstance, svgElement) {
+      // Remove existing controls if any
+      const existingControls = svgElement.querySelector(
+        "#mermaid-panzoom-controls",
       );
       if (existingControls) {
         existingControls.remove();
       }
 
-      // Get container dimensions for positioning
-      const containerRect = container.getBoundingClientRect();
+      // Get SVG dimensions from viewBox OR from bounding box
+      let width = 800,
+        height = 600;
+      const viewBox = svgElement.getAttribute("viewBox");
 
-      // Create controls wrapper - positioned absolutely over the container
-      const controlsWrapper = document.createElement("div");
-      controlsWrapper.className = "svg-pan-zoom-controls-wrapper";
-      controlsWrapper.style.cssText = `
-        position: absolute;
-        bottom: 15px;
-        right: 15px;
-        z-index: 1000;
-        display: flex;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 6px;
-        padding: 4px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-      `;
-
-      // Dark theme adjustments
-      const isDarkTheme = this._isDarkTheme();
-
-      if (isDarkTheme) {
-        controlsWrapper.style.background = "rgba(30, 41, 59, 0.9)";
-        controlsWrapper.style.borderColor = "rgba(255, 255, 255, 0.15)";
+      if (viewBox) {
+        const parts = viewBox.split(" ").map(Number);
+        if (parts.length >= 4) {
+          width = parts[2];
+          height = parts[3];
+        }
+      } else {
+        // Fallback to bounding box
+        const bbox = svgElement.getBBox();
+        if (bbox.width && bbox.height) {
+          width = bbox.width;
+          height = bbox.height;
+        }
       }
 
-      // Create control buttons
-      controlsWrapper.appendChild(this._createZoomInButton(instance));
-      controlsWrapper.appendChild(this._createResetButton(instance));
-      controlsWrapper.appendChild(this._createZoomOutButton(instance));
-      controlsWrapper.appendChild(
-        this._createFullscreenButton(instance, container),
+      // Create controls group - position at bottom right with padding
+      const controlsGroup = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "g",
+      );
+      controlsGroup.setAttribute("id", "mermaid-panzoom-controls");
+      controlsGroup.setAttribute("class", "mermaid-controls");
+
+      // Position controls (bottom-right with padding)
+      const padding = 20;
+      const controlSize = 32;
+      const spacing = 10;
+      const controlsWidth = controlSize * 2 + spacing;
+      const controlsHeight = controlSize * 2 + spacing;
+
+      controlsGroup.setAttribute(
+        "transform",
+        `translate(${width - controlsWidth - padding} ${height - controlsHeight - padding})`,
       );
 
-      // Add wrapper to container
-      container.appendChild(controlsWrapper);
+      // Ensure controls are on top
+      controlsGroup.setAttribute("style", "pointer-events: all");
 
-      // Cache control instance
-      instance.controlsWrapper = controlsWrapper;
-    },
-
-    _isDarkTheme: function () {
-      const htmlEl = document.documentElement;
-      return (
-        htmlEl.classList.contains("dark") ||
-        htmlEl.getAttribute("data-md-color-scheme") === "slate" ||
-        htmlEl.classList.contains("navy") ||
-        htmlEl.classList.contains("coal") ||
-        htmlEl.classList.contains("ayu")
+      // Add control buttons
+      controlsGroup.appendChild(
+        this._createZoomIn(panZoomInstance, 0, 0, controlSize),
       );
+      controlsGroup.appendChild(
+        this._createZoomReset(
+          panZoomInstance,
+          controlSize + spacing,
+          0,
+          controlSize,
+        ),
+      );
+      controlsGroup.appendChild(
+        this._createZoomOut(
+          panZoomInstance,
+          0,
+          controlSize + spacing,
+          controlSize,
+        ),
+      );
+      controlsGroup.appendChild(
+        this._createFullscreen(
+          panZoomInstance,
+          svgElement,
+          controlSize + spacing,
+          controlSize + spacing,
+          controlSize,
+        ),
+      );
+
+      svgElement.appendChild(controlsGroup);
+
+      // Cache for cleanup
+      panZoomInstance.controlsGroup = controlsGroup;
+
+      return controlsGroup;
     },
 
-    _createZoomInButton: function (instance) {
-      const button = document.createElement("button");
-      button.className = "svg-pan-zoom-control zoom-in";
-      button.setAttribute("aria-label", "Zoom in");
-      button.setAttribute("title", "Zoom in");
-      button.style.cssText = `
-        width: 32px;
-        height: 32px;
-        border: none;
-        border-radius: 4px;
-        background: transparent;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        transition: all 0.2s ease;
-      `;
+    _createZoomIn: function (panZoomInstance, x, y, size) {
+      const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      group.setAttribute("class", "mermaid-control mermaid-zoom-in");
+      group.setAttribute("transform", `translate(${x}, ${y})`);
 
-      button.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-        </svg>
-      `;
+      // Background rectangle
+      const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bg.setAttribute("x", "0");
+      bg.setAttribute("y", "0");
+      bg.setAttribute("width", size);
+      bg.setAttribute("height", size);
+      bg.setAttribute("rx", "4");
+      bg.setAttribute("class", "mermaid-control-bg");
+      bg.setAttribute("style", "pointer-events: all");
+      group.appendChild(bg);
 
-      button.addEventListener("click", (e) => {
+      // Plus icon
+      const plus = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path",
+      );
+      const half = size / 2;
+      plus.setAttribute(
+        "d",
+        `M${half - 5},${half} L${half + 5},${half} M${half},${half - 5} L${half},${half + 5}`,
+      );
+      plus.setAttribute("stroke", "currentColor");
+      plus.setAttribute("stroke-width", "2");
+      plus.setAttribute("stroke-linecap", "round");
+      plus.setAttribute("class", "mermaid-control-icon");
+      group.appendChild(plus);
+
+      // Event listeners
+      group.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        instance.zoomIn();
+        panZoomInstance.zoomIn();
       });
 
-      button.addEventListener("touchstart", (e) => {
+      group.addEventListener("touchstart", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        instance.zoomIn();
+        panZoomInstance.zoomIn();
       });
 
-      // Hover effects
-      button.addEventListener("mouseenter", () => {
-        button.style.background = "rgba(0, 0, 0, 0.1)";
-      });
-      button.addEventListener("mouseleave", () => {
-        button.style.background = "transparent";
-      });
-
-      return button;
+      return group;
     },
 
-    _createResetButton: function (instance) {
-      const button = document.createElement("button");
-      button.className = "svg-pan-zoom-control reset-view";
-      button.setAttribute("aria-label", "Reset zoom");
-      button.setAttribute("title", "Reset zoom");
-      button.style.cssText = `
-        width: 32px;
-        height: 32px;
-        border: none;
-        border-radius: 4px;
-        background: transparent;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        transition: all 0.2s ease;
-      `;
+    _createZoomOut: function (panZoomInstance, x, y, size) {
+      const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      group.setAttribute("class", "mermaid-control mermaid-zoom-out");
+      group.setAttribute("transform", `translate(${x}, ${y})`);
 
-      button.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-        </svg>
-      `;
+      // Background rectangle
+      const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bg.setAttribute("x", "0");
+      bg.setAttribute("y", "0");
+      bg.setAttribute("width", size);
+      bg.setAttribute("height", size);
+      bg.setAttribute("rx", "4");
+      bg.setAttribute("class", "mermaid-control-bg");
+      bg.setAttribute("style", "pointer-events: all");
+      group.appendChild(bg);
 
-      button.addEventListener("click", (e) => {
+      // Minus icon
+      const minus = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path",
+      );
+      const half = size / 2;
+      minus.setAttribute("d", `M${half - 5},${half} L${half + 5},${half}`);
+      minus.setAttribute("stroke", "currentColor");
+      minus.setAttribute("stroke-width", "2");
+      minus.setAttribute("stroke-linecap", "round");
+      minus.setAttribute("class", "mermaid-control-icon");
+      group.appendChild(minus);
+
+      // Event listeners
+      group.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        instance.reset();
+        panZoomInstance.zoomOut();
       });
 
-      button.addEventListener("touchstart", (e) => {
+      group.addEventListener("touchstart", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        instance.reset();
+        panZoomInstance.zoomOut();
       });
 
-      // Hover effects
-      button.addEventListener("mouseenter", () => {
-        button.style.background = "rgba(0, 0, 0, 0.1)";
-      });
-      button.addEventListener("mouseleave", () => {
-        button.style.background = "transparent";
-      });
-
-      return button;
+      return group;
     },
 
-    _createZoomOutButton: function (instance) {
-      const button = document.createElement("button");
-      button.className = "svg-pan-zoom-control zoom-out";
-      button.setAttribute("aria-label", "Zoom out");
-      button.setAttribute("title", "Zoom out");
-      button.style.cssText = `
-        width: 32px;
-        height: 32px;
-        border: none;
-        border-radius: 4px;
-        background: transparent;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        transition: all 0.2s ease;
-      `;
+    _createZoomReset: function (panZoomInstance, x, y, size) {
+      const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      group.setAttribute("class", "mermaid-control mermaid-reset");
+      group.setAttribute("transform", `translate(${x}, ${y})`);
 
-      button.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 13H5v-2h14v2z"/>
-        </svg>
-      `;
+      // Background rectangle
+      const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bg.setAttribute("x", "0");
+      bg.setAttribute("y", "0");
+      bg.setAttribute("width", size);
+      bg.setAttribute("height", size);
+      bg.setAttribute("rx", "4");
+      bg.setAttribute("class", "mermaid-control-bg");
+      bg.setAttribute("style", "pointer-events: all");
+      group.appendChild(bg);
 
-      button.addEventListener("click", (e) => {
+      // Reset icon
+      const reset = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path",
+      );
+      const half = size / 2;
+      const radius = size * 0.3;
+      reset.setAttribute(
+        "d",
+        `M${half},${half - radius} L${half},${half - radius * 1.5} L${half - radius * 0.7},${half} L${half},${half + radius * 1.5} L${half},${half + radius} A${radius},${radius} 0 1 1 ${half + radius * 0.7},${half - radius * 0.7}`,
+      );
+      reset.setAttribute("fill", "none");
+      reset.setAttribute("stroke", "currentColor");
+      reset.setAttribute("stroke-width", "1.5");
+      reset.setAttribute("class", "mermaid-control-icon");
+      group.appendChild(reset);
+
+      // Event listeners
+      group.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        instance.zoomOut();
+        panZoomInstance.reset();
+        panZoomInstance.fit();
+        panZoomInstance.center();
       });
 
-      button.addEventListener("touchstart", (e) => {
+      group.addEventListener("touchstart", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        instance.zoomOut();
+        panZoomInstance.reset();
+        panZoomInstance.fit();
+        panZoomInstance.center();
       });
 
-      // Hover effects
-      button.addEventListener("mouseenter", () => {
-        button.style.background = "rgba(0, 0, 0, 0.1)";
-      });
-      button.addEventListener("mouseleave", () => {
-        button.style.background = "transparent";
-      });
-
-      return button;
+      return group;
     },
 
-    _createFullscreenButton: function (instance, container) {
-      const button = document.createElement("button");
-      button.className = "svg-pan-zoom-control fullscreen-toggle";
-      button.setAttribute("aria-label", "Toggle fullscreen");
-      button.setAttribute("title", "Toggle fullscreen");
-      button.style.cssText = `
-        width: 32px;
-        height: 32px;
-        border: none;
-        border-radius: 4px;
-        background: transparent;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        transition: all 0.2s ease;
-      `;
+    _createFullscreen: function (panZoomInstance, svgElement, x, y, size) {
+      const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      group.setAttribute("class", "mermaid-control mermaid-fullscreen");
+      group.setAttribute("transform", `translate(${x}, ${y})`);
 
-      // Enter fullscreen icon
-      button.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-        </svg>
-      `;
+      // Background rectangle
+      const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bg.setAttribute("x", "0");
+      bg.setAttribute("y", "0");
+      bg.setAttribute("width", size);
+      bg.setAttribute("height", size);
+      bg.setAttribute("rx", "4");
+      bg.setAttribute("class", "mermaid-control-bg");
+      bg.setAttribute("style", "pointer-events: all");
+      group.appendChild(bg);
 
-      let isFullscreen = false;
+      // Fullscreen icon (enter)
+      const icon = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path",
+      );
+      const padding = size * 0.2;
+      const innerSize = size - padding * 2;
+      icon.setAttribute(
+        "d",
+        `M${padding},${padding} L${padding + innerSize / 3},${padding} L${padding},${padding + innerSize / 3}
+        M${padding + innerSize},${padding} L${padding + (innerSize * 2) / 3},${padding} L${padding + innerSize},${padding + innerSize / 3}
+        M${padding},${padding + innerSize} L${padding},${padding + (innerSize * 2) / 3} L${padding + innerSize / 3},${padding + innerSize}
+        M${padding + innerSize},${padding + innerSize} L${padding + innerSize},${padding + (innerSize * 2) / 3} L${padding + (innerSize * 2) / 3},${padding + innerSize}`,
+      );
+      icon.setAttribute("fill", "none");
+      icon.setAttribute("stroke", "currentColor");
+      icon.setAttribute("stroke-width", "1.5");
+      icon.setAttribute("class", "mermaid-control-icon");
+      group.appendChild(icon);
 
-      button.addEventListener("click", (e) => {
+      // Update icon based on fullscreen state
+      const updateIcon = () => {
+        const isFullscreen = !!(
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement
+        );
+
+        if (isFullscreen) {
+          // Exit fullscreen icon
+          icon.setAttribute(
+            "d",
+            `M${padding + innerSize / 3},${padding} L${padding + innerSize / 3},${padding + innerSize / 3} L${padding},${padding + innerSize / 3}
+            M${padding + (innerSize * 2) / 3},${padding} L${padding + (innerSize * 2) / 3},${padding + innerSize / 3} L${padding + innerSize},${padding + innerSize / 3}
+            M${padding + innerSize / 3},${padding + innerSize} L${padding + innerSize / 3},${padding + (innerSize * 2) / 3} L${padding},${padding + (innerSize * 2) / 3}
+            M${padding + (innerSize * 2) / 3},${padding + innerSize} L${padding + (innerSize * 2) / 3},${padding + (innerSize * 2) / 3} L${padding + innerSize},${padding + (innerSize * 2) / 3}`,
+          );
+        } else {
+          // Enter fullscreen icon
+          icon.setAttribute(
+            "d",
+            `M${padding},${padding} L${padding + innerSize / 3},${padding} L${padding},${padding + innerSize / 3}
+            M${padding + innerSize},${padding} L${padding + (innerSize * 2) / 3},${padding} L${padding + innerSize},${padding + innerSize / 3}
+            M${padding},${padding + innerSize} L${padding},${padding + (innerSize * 2) / 3} L${padding + innerSize / 3},${padding + innerSize}
+            M${padding + innerSize},${padding + innerSize} L${padding + innerSize},${padding + (innerSize * 2) / 3} L${padding + (innerSize * 2) / 3},${padding + innerSize}`,
+          );
+        }
+      };
+
+      // Event listeners
+      group.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        this._toggleFullscreen(container, button);
+        this._toggleFullscreen(svgElement);
       });
 
-      button.addEventListener("touchstart", (e) => {
+      group.addEventListener("touchstart", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        this._toggleFullscreen(container, button);
+        this._toggleFullscreen(svgElement);
       });
 
-      // Hover effects
-      button.addEventListener("mouseenter", () => {
-        button.style.background = "rgba(0, 0, 0, 0.1)";
-      });
-      button.addEventListener("mouseleave", () => {
-        button.style.background = "transparent";
-      });
-
-      // Listen for fullscreen change events
-      document.addEventListener("fullscreenchange", () => {
-        isFullscreen = !!document.fullscreenElement;
-        this._updateFullscreenIcon(button, isFullscreen);
+      // Listen for fullscreen changes
+      const fullscreenEvents = [
+        "fullscreenchange",
+        "webkitfullscreenchange",
+        "mozfullscreenchange",
+        "MSFullscreenChange",
+      ];
+      fullscreenEvents.forEach((event) => {
+        document.addEventListener(event, updateIcon);
       });
 
-      document.addEventListener("webkitfullscreenchange", () => {
-        isFullscreen = !!document.webkitFullscreenElement;
-        this._updateFullscreenIcon(button, isFullscreen);
-      });
+      // Store handler for cleanup
+      group._fullscreenHandlers = fullscreenEvents;
+      group._updateIcon = updateIcon;
 
-      document.addEventListener("mozfullscreenchange", () => {
-        isFullscreen = !!document.mozFullScreenElement;
-        this._updateFullscreenIcon(button, isFullscreen);
-      });
-
-      document.addEventListener("MSFullscreenChange", () => {
-        isFullscreen = !!document.msFullscreenElement;
-        this._updateFullscreenIcon(button, isFullscreen);
-      });
-
-      return button;
+      return group;
     },
 
-    _toggleFullscreen: function (element, button) {
-      if (
-        !document.fullscreenElement &&
-        !document.webkitFullscreenElement &&
-        !document.mozFullScreenElement &&
-        !document.msFullscreenElement
-      ) {
+    _toggleFullscreen: function (svgElement) {
+      const wrapper = svgElement.closest(".mermaid-panzoom-wrapper");
+      if (!wrapper) return;
+
+      const isFullscreen = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+
+      if (!isFullscreen) {
         // Enter fullscreen
-        if (element.requestFullscreen) {
-          element.requestFullscreen();
-        } else if (element.webkitRequestFullscreen) {
-          element.webkitRequestFullscreen();
-        } else if (element.mozRequestFullScreen) {
-          element.mozRequestFullScreen();
-        } else if (element.msRequestFullscreen) {
-          element.msRequestFullscreen();
+        wrapper.classList.add("is-fullscreen");
+        const elem = wrapper;
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+          elem.mozRequestFullScreen();
+        } else if (elem.msRequestFullscreen) {
+          elem.msRequestFullscreen();
         }
       } else {
         // Exit fullscreen
+        wrapper.classList.remove("is-fullscreen");
         if (document.exitFullscreen) {
           document.exitFullscreen();
         } else if (document.webkitExitFullscreen) {
@@ -318,39 +388,35 @@
       }
     },
 
-    _updateFullscreenIcon: function (button, isFullscreen) {
-      if (isFullscreen) {
-        // Exit fullscreen icon
-        button.innerHTML = `
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
-          </svg>
-        `;
-        button.setAttribute("title", "Exit fullscreen");
-      } else {
-        // Enter fullscreen icon
-        button.innerHTML = `
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-          </svg>
-        `;
-        button.setAttribute("title", "Enter fullscreen");
-      }
-    },
-
-    disable: function (instance, container) {
+    disable: function (panZoomInstance) {
       if (
-        instance.controlsWrapper &&
-        instance.controlsWrapper.parentNode === container
+        panZoomInstance.controlsGroup &&
+        panZoomInstance.controlsGroup.parentNode
       ) {
-        container.removeChild(instance.controlsWrapper);
-        instance.controlsWrapper = null;
+        // Clean up event listeners
+        const fullscreenGroup = panZoomInstance.controlsGroup.querySelector(
+          ".mermaid-fullscreen",
+        );
+        if (
+          fullscreenGroup &&
+          fullscreenGroup._fullscreenHandlers &&
+          fullscreenGroup._updateIcon
+        ) {
+          fullscreenGroup._fullscreenHandlers.forEach((event) => {
+            document.removeEventListener(event, fullscreenGroup._updateIcon);
+          });
+        }
+
+        panZoomInstance.controlsGroup.parentNode.removeChild(
+          panZoomInstance.controlsGroup,
+        );
+        panZoomInstance.controlsGroup = null;
       }
     },
   };
 
   // ============================================
-  // Mermaid Integration
+  // Mermaid Integration - SIMPLIFIED
   // ============================================
 
   function init() {
@@ -426,7 +492,7 @@
     }
   }
 
-  // Core function: Render Mermaid, then initialize svg-pan-zoom with our custom controls
+  // Core function: Render Mermaid, then initialize svg-pan-zoom with SVG controls
   async function renderAndEnablePanZoom(wrapper) {
     const container = wrapper.querySelector(".mermaid-container");
     const codeDiv = wrapper.querySelector(".mermaid-code");
@@ -445,14 +511,13 @@
       const svgElement = container.querySelector("svg");
       if (!svgElement) return;
 
-      // Store original viewBox if it exists, or create one from width/height
+      // Store original viewBox if it exists
       let originalViewBox = svgElement.getAttribute("viewBox");
       let originalWidth = svgElement.getAttribute("width");
       let originalHeight = svgElement.getAttribute("height");
 
       // If no viewBox exists but we have width/height, create a viewBox
       if (!originalViewBox && originalWidth && originalHeight) {
-        // Remove 'px' if present and convert to numbers
         const width = parseFloat(originalWidth.replace("px", "")) || 0;
         const height = parseFloat(originalHeight.replace("px", "")) || 0;
         if (width > 0 && height > 0) {
@@ -473,35 +538,26 @@
       // Preserve aspect ratio
       svgElement.setAttribute("preserveAspectRatio", "xMidYMid meet");
 
-      // Set container to have a reasonable aspect ratio
+      // Set container to fill wrapper
       container.style.width = "100%";
-      container.style.height = "auto";
-      container.style.minHeight = "200px"; // Minimum height for visibility
+      container.style.height = "100%";
       container.style.display = "block";
+      container.style.minHeight = "300px"; // Minimum height
 
-      // Wrapper must be positioning context for controls
+      // Make wrapper relative for positioning
       wrapper.style.position = "relative";
       wrapper.style.width = "100%";
-      wrapper.style.overflow = "hidden"; // Prevent scrollbars during pan
-
-      // Create a wrapper div for the SVG with fixed dimensions
-      const svgWrapper = document.createElement("div");
-      svgWrapper.style.width = "100%";
-      svgWrapper.style.height = "400px"; // Default height, can adjust
-      svgWrapper.style.position = "relative";
-      svgWrapper.style.backgroundColor = "transparent";
-
-      // Move SVG into the wrapper
-      container.insertBefore(svgWrapper, svgElement);
-      svgWrapper.appendChild(svgElement);
+      wrapper.style.height = "auto";
+      wrapper.style.minHeight = "300px";
+      wrapper.style.overflow = "hidden";
 
       // ------------------------------------------------------------------
       // 2. Initialize svg-pan-zoom
       // ------------------------------------------------------------------
       const panZoomInstance = svgPanZoom(svgElement, {
         zoomEnabled: true,
-        controlIconsEnabled: false,
-        fit: true, // Fit to container initially
+        controlIconsEnabled: false, // We'll use our own
+        fit: true,
         center: true,
         minZoom: 0.1,
         maxZoom: 20,
@@ -510,15 +566,11 @@
         mouseWheelZoomEnabled: true,
         preventMouseEventsDefault: true,
         beforePan: function (oldPan, newPan) {
-          // Get SVG dimensions
-          const svgRect = svgElement.getBoundingClientRect();
           const viewBox = svgElement.getAttribute("viewBox");
-
           if (viewBox) {
             const [x, y, width, height] = viewBox.split(" ").map(Number);
             const bounds = panZoomInstance.getSizes();
 
-            // Calculate bounds to prevent panning outside the SVG
             const leftBound = -(width * bounds.realZoom - bounds.width);
             const topBound = -(height * bounds.realZoom - bounds.height);
 
@@ -532,105 +584,12 @@
       });
 
       // ------------------------------------------------------------------
-      // 3. Custom controls
+      // 3. SVG controls (embedded in SVG)
       // ------------------------------------------------------------------
-      const controlInstance = {
-        zoomIn() {
-          panZoomInstance.zoomIn();
-        },
-        zoomOut() {
-          panZoomInstance.zoomOut();
-        },
-        reset() {
-          panZoomInstance.reset();
-          panZoomInstance.fit();
-          panZoomInstance.center();
-        },
-        fit() {
-          panZoomInstance.fit();
-          panZoomInstance.center();
-        },
-        controlsWrapper: null,
-      };
-
-      // Create custom controls wrapper (different from default)
-      const controlsWrapper = document.createElement("div");
-      controlsWrapper.className = "mermaid-panzoom-controls";
-      controlsWrapper.style.cssText = `
-        position: absolute;
-        bottom: 15px;
-        right: 15px;
-        z-index: 1000;
-        display: flex;
-        gap: 5px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 6px;
-        padding: 5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-      `;
-
-      // // Dark theme adjustments
-      const isDarkTheme = ControlIcons._isDarkTheme();
-      if (isDarkTheme) {
-        controlsWrapper.style.background = "rgba(30, 41, 59, 0.9)";
-        controlsWrapper.style.borderColor = "rgba(255, 255, 255, 0.15)";
-      }
-
-      // Add control buttons
-      controlsWrapper.appendChild(
-        createControlButton("+", "Zoom In", () => controlInstance.zoomIn()),
-      );
-      controlsWrapper.appendChild(
-        createControlButton("-", "Zoom Out", () => controlInstance.zoomOut()),
-      );
-      controlsWrapper.appendChild(
-        createControlButton("⟳", "Reset View", () => controlInstance.reset()),
-      );
-      controlsWrapper.appendChild(
-        createControlButton("⤢", "Fit to View", () => controlInstance.fit()),
-      );
-
-      wrapper.appendChild(controlsWrapper);
-      controlInstance.controlsWrapper = controlsWrapper;
-
-      // Helper function to create control buttons
-      function createControlButton(text, title, onClick) {
-        const button = document.createElement("button");
-        button.textContent = text;
-        button.title = title;
-        button.style.cssText = `
-          width: 32px;
-          height: 32px;
-          border: none;
-          border-radius: 4px;
-          background: transparent;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 16px;
-          font-weight: bold;
-          transition: all 0.2s ease;
-        `;
-
-        button.addEventListener("click", (e) => {
-          e.stopPropagation();
-          onClick();
-        });
-
-        button.addEventListener("mouseenter", () => {
-          button.style.background = "rgba(0, 0, 0, 0.1)";
-        });
-        button.addEventListener("mouseleave", () => {
-          button.style.background = "transparent";
-        });
-
-        return button;
-      }
+      SvgControls.enable(panZoomInstance, svgElement);
 
       // ------------------------------------------------------------------
-      // 4. Resize handling
+      // 4. Resize handling - simplified
       // ------------------------------------------------------------------
       const resizeObserver = new ResizeObserver(() => {
         panZoomInstance.resize();
@@ -638,13 +597,29 @@
         panZoomInstance.center();
       });
 
-      resizeObserver.observe(svgWrapper);
+      resizeObserver.observe(container);
+
+      // Handle fullscreen resize
+      const handleFullscreenChange = () => {
+        setTimeout(() => {
+          panZoomInstance.resize();
+          panZoomInstance.fit();
+          panZoomInstance.center();
+        }, 100);
+      };
+
+      document.addEventListener("fullscreenchange", handleFullscreenChange);
+      document.addEventListener(
+        "webkitfullscreenchange",
+        handleFullscreenChange,
+      );
+      document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.addEventListener("MSFullscreenChange", handleFullscreenChange);
 
       // Store references for cleanup
       wrapper._panZoomInstance = panZoomInstance;
-      wrapper._controlInstance = controlInstance;
       wrapper._resizeObserver = resizeObserver;
-      wrapper._svgWrapper = svgWrapper;
+      wrapper._fullscreenHandler = handleFullscreenChange;
     } catch (error) {
       console.error("Failed to render Mermaid diagram:", error);
       showError(wrapper, error.message);
@@ -713,19 +688,11 @@
             config.mermaid.theme = newTheme;
             mermaid.initialize(config.mermaid);
 
-            // Clean up existing controls and re-render
+            // Clean up existing diagrams and re-render
             document
               .querySelectorAll(".mermaid-panzoom-wrapper[data-processed]")
               .forEach((wrapper) => {
-                // Clean up our controls
-                if (wrapper._controlInstance) {
-                  ControlIcons.disable(wrapper._controlInstance, wrapper);
-                }
-                if (wrapper._resizeObserver) {
-                  wrapper._resizeObserver.disconnect();
-                  delete wrapper._resizeObserver;
-                }
-                wrapper.removeAttribute("data-processed");
+                cleanupDiagram(wrapper);
               });
             processAllDiagrams();
           }
@@ -740,27 +707,39 @@
   }
 
   // Cleanup function for when diagrams are removed
-  // Cleanup function for when diagrams are removed
   function cleanupDiagram(wrapper) {
-    if (wrapper._controlInstance && wrapper._controlInstance.controlsWrapper) {
-      wrapper._controlInstance.controlsWrapper.remove();
+    // Remove SVG controls
+    if (wrapper._panZoomInstance) {
+      SvgControls.disable(wrapper._panZoomInstance);
     }
+
+    // Cleanup panzoom instance
     if (wrapper._panZoomInstance && wrapper._panZoomInstance.destroy) {
       wrapper._panZoomInstance.destroy();
     }
+
+    // Cleanup resize observer
     if (wrapper._resizeObserver) {
       wrapper._resizeObserver.disconnect();
     }
-    if (wrapper._svgWrapper) {
-      wrapper._svgWrapper.remove();
+
+    // Remove fullscreen event handlers
+    if (wrapper._fullscreenHandler) {
+      const events = [
+        "fullscreenchange",
+        "webkitfullscreenchange",
+        "mozfullscreenchange",
+        "MSFullscreenChange",
+      ];
+      events.forEach((event) => {
+        document.removeEventListener(event, wrapper._fullscreenHandler);
+      });
     }
 
     // Remove all stored references
     delete wrapper._panZoomInstance;
-    delete wrapper._controlInstance;
     delete wrapper._resizeObserver;
-    delete wrapper._svgWrapper;
-    delete wrapper._handleContainerResize;
+    delete wrapper._fullscreenHandler;
     wrapper.removeAttribute("data-processed");
   }
 

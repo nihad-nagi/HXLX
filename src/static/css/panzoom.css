@@ -1,58 +1,77 @@
 /* =========================================================
-   Mermaid Panzoom Wrapper
+   Mermaid Panzoom Wrapper - SIMPLIFIED
    ========================================================= */
 
 .mermaid-panzoom-wrapper {
-    position: relative; /* anchor for controls */
+    position: relative;
     width: 100%;
     margin: 1.5em 0;
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 8px;
     overflow: hidden;
     background: var(--md-default-bg-color, #ffffff);
+    min-height: 300px;
 }
 
-/* ---------------------------------------------------------
-   Container — NO forced height
-   --------------------------------------------------------- */
+/* Container */
 .mermaid-panzoom-wrapper .mermaid-container {
     width: 100%;
+    height: 100%;
+    min-height: 300px;
     position: relative;
 }
 
-/* ---------------------------------------------------------
-   Root SVG — layout-driven, viewBox preserved
-   --------------------------------------------------------- */
+/* SVG */
 .mermaid-panzoom-wrapper svg {
     display: block;
     width: 100%;
-    height: auto; /* ← critical */
-    max-width: 100%;
+    height: 100%;
 }
 
-/* ---------------------------------------------------------
-   Pan/Zoom viewport layer
-   --------------------------------------------------------- */
-.mermaid-panzoom-wrapper .svg-pan-zoom_viewport {
-    transform-origin: 0 0;
+/* SVG Controls - These styles apply to the embedded SVG controls */
+.mermaid-control-bg {
+    fill: rgba(255, 255, 255, 0.9);
+    stroke: rgba(0, 0, 0, 0.1);
+    stroke-width: 1;
+    cursor: pointer;
+    transition: fill 0.2s ease;
 }
 
-/* =========================================================
-   Control buttons
-   ========================================================= */
-
-.svg-pan-zoom-control {
-    color: #333;
+.mermaid-control-bg:hover {
+    fill: rgba(255, 255, 255, 1);
 }
 
-.svg-pan-zoom-control:hover {
-    background-color: rgba(0, 0, 0, 0.08) !important;
+.mermaid-control-icon {
+    pointer-events: none;
 }
 
-/* =========================================================
-   Dark themes (mdBook compatible)
-   ========================================================= */
+/* Dark theme adjustments */
+.dark-theme .mermaid-control-bg,
+[data-md-color-scheme="slate"] .mermaid-control-bg,
+.navy .mermaid-control-bg,
+.coal .mermaid-control-bg,
+.ayu .mermaid-control-bg {
+    fill: rgba(30, 41, 59, 0.9);
+    stroke: rgba(255, 255, 255, 0.15);
+}
 
+.dark-theme .mermaid-control-bg:hover,
+[data-md-color-scheme="slate"] .mermaid-control-bg:hover,
+.navy .mermaid-control-bg:hover,
+.coal .mermaid-control-bg:hover,
+.ayu .mermaid-control-bg:hover {
+    fill: rgba(30, 41, 59, 1);
+}
+
+.dark-theme .mermaid-control-icon,
+[data-md-color-scheme="slate"] .mermaid-control-icon,
+.navy .mermaid-control-icon,
+.coal .mermaid-control-icon,
+.ayu .mermaid-control-icon {
+    stroke: #e2e8f0;
+}
+
+/* Dark theme wrapper */
 .dark-theme .mermaid-panzoom-wrapper,
 [data-md-color-scheme="slate"] .mermaid-panzoom-wrapper,
 .navy .mermaid-panzoom-wrapper,
@@ -62,26 +81,7 @@
     border-color: rgba(255, 255, 255, 0.15);
 }
 
-.dark-theme .svg-pan-zoom-control,
-[data-md-color-scheme="slate"] .svg-pan-zoom-control,
-.navy .svg-pan-zoom-control,
-.coal .svg-pan-zoom-control,
-.ayu .svg-pan-zoom-control {
-    color: #e2e8f0;
-}
-
-.dark-theme .svg-pan-zoom-control:hover,
-[data-md-color-scheme="slate"] .svg-pan-zoom-control:hover,
-.navy .svg-pan-zoom-control:hover,
-.coal .svg-pan-zoom-control:hover,
-.ayu .svg-pan-zoom-control:hover {
-    background-color: rgba(255, 255, 255, 0.15) !important;
-}
-
-/* =========================================================
-   Fullscreen mode
-   ========================================================= */
-
+/* Fullscreen mode */
 .mermaid-panzoom-wrapper.is-fullscreen {
     position: fixed;
     inset: 0;
@@ -89,15 +89,11 @@
     margin: 0;
     border-radius: 0;
     background: var(--md-default-bg-color, #fff);
-    max-width: none !important;
 }
 
-.mermaid-panzoom-wrapper.is-fullscreen .mermaid-container {
-    width: 100%;
-    height: 100%;
-}
-
-.mermaid-panzoom-wrapper.is-fullscreen svg {
-    width: 100%;
-    height: 100%;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mermaid-panzoom-wrapper {
+        min-height: 250px;
+    }
 }
