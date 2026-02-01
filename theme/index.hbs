@@ -21,25 +21,25 @@
         <meta name="theme-color" content="#ffffff">
 
         {{#if favicon_svg}}
-        <link rel="icon" href="{{ resource "favicon.svg" }}">
+        <link rel="icon" href="static/img/favicon.svg">
         {{/if}}
         {{#if favicon_png}}
-        <link rel="shortcut icon" href="{{ resource "favicon.png" }}">
+        <link rel="shortcut icon" href="static/img/favicon.png">
         {{/if}}
-        <link rel="stylesheet" href="{{ resource "css/variables.css" }}">
-        <link rel="stylesheet" href="{{ resource "css/general.css" }}">
-        <link rel="stylesheet" href="{{ resource "css/chrome.css" }}">
+        <link rel="stylesheet" href="static/css/hxlx-variables.css">
+        <link rel="stylesheet" href="static/css/general.css">
+        <link rel="stylesheet" href="static/css/chrome.css">
         <link rel="stylesheet" href="static/css/panzoom.css">
         {{!-- <link rel="stylesheet" href="{{ resource "css/catppuccin.css" }}"> --}}
         {{#if print_enable}}
-        <link rel="stylesheet" href="{{ resource "css/print.css" }}" media="print">
+        <link rel="stylesheet" href="static/css/print.css" media="print">
         {{/if}}
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="{{ resource "fonts/fonts.css" }}">
+        <link rel="stylesheet" href="static/fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="{{ resource "highlight.css" }}">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="static/css/highlight.css">
         <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="{{ resource "tomorrow-night.css" }}">
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="{{ resource "ayu-highlight.css" }}">
 
@@ -56,7 +56,7 @@
 
         {{#if mathjax_support}}
         <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="static/js/MathJax.js"></script>
         {{/if}}
 
         <!-- Provide site root and default themes to javascript -->
@@ -159,12 +159,8 @@
                             {{fa "solid" "paintbrush"}}
                         </button>
                         <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-lux">Lux</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-hex">Hex</button></li
                         </ul>
                         {{#if search_enabled}}
                         <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
@@ -343,7 +339,7 @@
         <script>
         window.addEventListener('load', function() {
             MathJax.Hub.Register.StartupHook('End', function() {
-                window.setTimeout(window.print, 100);
+                window.setTimeout(window.print, `100);
             });
         });
         </script>
