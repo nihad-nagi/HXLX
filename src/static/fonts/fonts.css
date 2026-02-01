@@ -1,0 +1,165 @@
+/* =========================================================
+   HEADER FONT: Bitcount Single Roman (for headers)
+   ========================================================= */
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 100;
+    src: url("static/fonts/BitcountSingle_Roman-Thin.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 200;
+    src: url("BitcountSingle_Roman-ExtraLight.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 300;
+    src: url("BitcountSingle_Roman-Light.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 400;
+    src: url("BitcountSingle_Roman-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 500;
+    src: url("BitcountSingle_Roman-Medium.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 600;
+    src: url("BitcountSingle_Roman-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 700;
+    src: url("BitcountSingle_Roman-Bold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 800;
+    src: url("BitcountSingle_Roman-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Roman";
+    font-style: normal;
+    font-weight: 900;
+    src: url("BitcountSingle_Roman-Black.ttf") format("truetype");
+}
+
+/* =========================================================
+   BITCOUNT CURSIVE (for italic headers if needed)
+   ========================================================= */
+@font-face {
+    font-family: "Bitcount Single Cursive";
+    font-style: normal;
+    font-weight: 100;
+    src: url("BitcountSingle_Cursive-Thin.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Cursive";
+    font-style: normal;
+    font-weight: 400;
+    src: url("BitcountSingle_Cursive-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Bitcount Single Cursive";
+    font-style: normal;
+    font-weight: 700;
+    src: url("BitcountSingle_Cursive-Bold.ttf") format("truetype");
+}
+
+/* =========================================================
+   BODY FONT: Barlow Sans (all weights)
+   ========================================================= */
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 100;
+    src: url("BarlowCondensed-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 200;
+    src: url("BarlowCondensed-ExtraLight.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 300;
+    src: url("BarlowCondensed-Light.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 400;
+    src: url("BarlowCondensed-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 500;
+    src: url("BarlowCondensed-Medium.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 600;
+    src: url("BarlowCondensed-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 700;
+    src: url("BarlowCondensed-Bold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 800;
+    src: url("BarlowCondensed-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow Sans";
+    font-style: normal;
+    font-weight: 900;
+    src: url("BarlowCondensed-Black.ttf") format("truetype");
+}
+
+/* =========================================================
+   MONOSPACE: Source Code Pro (keep your existing)
+   ========================================================= */
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: normal;
+    font-weight: 500;
+    src: url("source-code-pro-v11-all-charsets-500.woff2") format("woff2");
+}
