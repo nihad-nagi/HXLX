@@ -7,7 +7,7 @@
     position: relative;
     width: 100%;
     margin: 0.5em 0; /* Minimal margin only */
-    min-height: 300px;
+    min-height: 400px;
     overflow: hidden;
 }
 
@@ -31,48 +31,36 @@
    ========================================================= */
 
 .mermaid-control-bg {
-    fill: rgba(255, 255, 255, 0.85);
-    stroke: rgba(0, 0, 0, 0.15);
+    fill: var(--mermaid-control-bg, rgba(255, 255, 255, 0.85));
+    stroke: var(--mermaid-control-border, rgba(0, 0, 0, 0.15));
     stroke-width: 1;
     cursor: pointer;
     transition: all 0.2s ease;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    filter: var(
+        --mermaid-control-shadow,
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))
+    );
 }
 
 .mermaid-control-bg:hover {
-    fill: rgba(255, 255, 255, 1);
+    fill: var(
+        --mermaid-control-hover-bg,
+        var(--mermaid-control-bg, rgba(255, 255, 255, 1))
+    );
+    stroke: var(
+        --mermaid-control-hover-border,
+        var(--mermaid-control-border, rgba(0, 0, 0, 0.25))
+    );
     stroke-width: 1.5;
-    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+    filter: var(
+        --mermaid-control-hover-shadow,
+        drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15))
+    );
 }
 
 .mermaid-control-icon {
     pointer-events: none;
-}
-
-/* Dark theme adjustments */
-.dark-theme .mermaid-control-bg,
-[data-md-color-scheme="slate"] .mermaid-control-bg,
-.navy .mermaid-control-bg,
-.coal .mermaid-control-bg,
-.ayu .mermaid-control-bg {
-    fill: rgba(30, 41, 59, 0.85);
-    stroke: rgba(255, 255, 255, 0.2);
-}
-
-.dark-theme .mermaid-control-bg:hover,
-[data-md-color-scheme="slate"] .mermaid-control-bg:hover,
-.navy .mermaid-control-bg:hover,
-.coal .mermaid-control-bg:hover,
-.ayu .mermaid-control-bg:hover {
-    fill: rgba(30, 41, 59, 1);
-}
-
-.dark-theme .mermaid-control-icon,
-[data-md-color-scheme="slate"] .mermaid-control-icon,
-.navy .mermaid-control-icon,
-.coal .mermaid-control-icon,
-.ayu .mermaid-control-icon {
-    stroke: #e2e8f0;
+    stroke: var(--mermaid-control-icon, #374151);
 }
 
 /* =========================================================
@@ -86,7 +74,7 @@
 .mermaid-panzoom-wrapper:-ms-fullscreen {
     width: 100% !important;
     height: 100% !important;
-    background: inherit !important; /* Inherit theme background */
+    background: var(--mermaid-fullscreen-bg, inherit) !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;

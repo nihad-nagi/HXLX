@@ -1,5 +1,5 @@
 // theme/static/js/mermaid-panzoom.js
-// FIXED VERSION: Vertical controls, no wrapper, proper fullscreen
+// UPDATED: Controls at 75% size, vertically centered on the right
 (function () {
   "use strict";
 
@@ -59,16 +59,18 @@
 
       // Position controls on right side, centered vertically
       const padding = 15;
-      const controlSize = 30;
+      const controlSize = 22.5; // 75% of original 30
       const spacing = 8;
       const controlsHeight = controlSize * 4 + spacing * 3; // 4 buttons with spacing
 
       // Calculate vertical center position
       const startY = (height - controlsHeight) / 2;
+      // Ensure controls don't go above padding but maintain centering
+      const finalY = Math.max(padding, startY);
 
       controlsGroup.setAttribute(
         "transform",
-        `translate(${width - controlSize - padding} ${Math.max(padding, startY)})`,
+        `translate(${width - controlSize - padding} ${finalY})`,
       );
 
       // Add vertical stack of buttons (top to bottom: Zoom In, Zoom Out, Reset, Fullscreen)
@@ -416,21 +418,21 @@
     },
 
     _repositionControlsForFullscreen: function (svgElement, panZoomInstance) {
-      // For fullscreen, we might want to adjust control positioning
+      // For fullscreen, adjust control positioning with proper centering
       if (panZoomInstance.controlsGroup) {
         // Get fullscreen dimensions
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
-
-        // Calculate new position for fullscreen
-        const controlsGroup = panZoomInstance.controlsGroup;
-        const controlSize = 30;
+        const controlSize = 22.5; // Updated size
+        const spacing = 8;
         const padding = 20;
 
-        // Position on right side, centered vertically
-        controlsGroup.setAttribute(
+        const controlsHeight = controlSize * 4 + spacing * 3;
+        const centerY = (screenHeight - controlsHeight) / 2;
+
+        panZoomInstance.controlsGroup.setAttribute(
           "transform",
-          `translate(${screenWidth - controlSize - padding} ${(screenHeight - (controlSize * 4 + 8 * 3)) / 2})`,
+          `translate(${screenWidth - controlSize - padding} ${Math.max(padding, centerY)})`,
         );
       }
     },
@@ -586,17 +588,26 @@
       svgElement.setAttribute("preserveAspectRatio", "xMidYMid meet");
 
       // Set container to fill wrapper
-      container.style.width = "100%";
+      // container.style.width = "100%";
+      // container.style.height = "100%";
+      // container.style.display = "block";
+      container.style.width = "auto"; // Change from 100% to auto
       container.style.height = "100%";
       container.style.display = "block";
-
+      container.style.margin = "0 auto"; // Center container
       // Minimal wrapper styling - NO BORDERS/BACKGROUNDS
+      // wrapper.style.position = "relative";
+      // wrapper.style.width = "100%";
+      // wrapper.style.height = "auto";
+      // wrapper.style.minHeight = "300px";
+      // wrapper.style.overflow = "hidden";
       wrapper.style.position = "relative";
-      wrapper.style.width = "100%";
+      wrapper.style.display = "inline-block"; // Change from width: 100% to inline-block
       wrapper.style.height = "auto";
       wrapper.style.minHeight = "300px";
-      wrapper.style.overflow = "hidden";
-
+      wrapper.style.overflow = "visible"; // Change from hidden to visible
+      wrapper.style.margin = "0 auto"; // Center horizontally
+      wrapper.style.textAlign = "center"; // Center content inside
       // ------------------------------------------------------------------
       // 2. Initialize svg-pan-zoom
       // ------------------------------------------------------------------
