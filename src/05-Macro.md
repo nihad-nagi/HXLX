@@ -33,8 +33,9 @@ L2: Platform	Transaction fees	Z00Marche, B01T/B02T/B03T	Medium (60-80%)	Exponent
 L3: Attention	Ad4Boot, Boot Tokens	0VV1 Ether Exchange	Extreme (2400%+)	Attention economy capture
 L4: Enterprise	Licensing, services	H0S, H0T, Z00S	High (70-90%)	Enterprise IT spend
 L5: Physical	Hardware, hosting	B00M, TNN sheets	Variable (30-60%)	Infrastructure as service
-PRIMARY REVENUE STREAMS
-1. ZEROBOOT SUBSCRIPTIONS — FOUNDATION LAYER
+
+## PRIMARY REVENUE STREAMS
+### 1. ZEROBOOT SUBSCRIPTIONS — FOUNDATION LAYER
 
 BASIC: $0.10 every time a computer starts instantly, or $3/month per device. Targets 168 million devices.
 
@@ -61,7 +62,8 @@ Stream Details:
     LTV: $45 free user, $900 premium user
 
 Economic Impact: Establishes system's economic floor while creating immediate user benefit.
-2. AD4BOOT — ATTENTION CAPTURE ENGINE
+
+### 2. AD4BOOT — ATTENTION CAPTURE ENGINE
 
 BASIC: $0.75 for 5 minutes of guaranteed, voluntary attention. Users watch one ad to boot instantly for free.
 
@@ -86,15 +88,16 @@ Stream Details:
     Value: Captive audience, high-intent moment, no alternative activities
 
 Economic Impact: Most profitable stream with sufficient margin to subsidize all other layers.
-3. EARTH EXCHANGE OF ETHER — ATTENTION & CREATIVITY TOKENS
 
-BASIC: 0.1% fee on all attention token trades. Turns human focus into tradable currency.
+### 3. EARTH EXCHANGE OF ETHER — ATTENTION & CREATIVITY TOKENS
 
-NORMAL: Transaction coordination fees on attention economy marketplace where Boot Tokens represent transferable, user-owned attention units.
+#### BASIC: 0.1% fee on all attention token trades. Turns human focus into tradable currency.
 
-TECHNICAL: Revenue = Σ(transaction_volume × 0.1%). Assumes $5T attention economy with 10% capture. Creates native economic layer for human attention.
+#### NORMAL: Transaction coordination fees on attention economy marketplace where Boot Tokens represent transferable, user-owned attention units.
 
-Stream Details:
+#### TECHNICAL: Revenue = Σ(transaction_volume × 0.1%). Assumes $5T attention economy with 10% capture. Creates native economic layer for human attention.
+
+#### Stream Details:
 
     Product: 0VV1 Ether Exchange (LX19)
 
@@ -110,16 +113,17 @@ Stream Details:
 
     Tokenomics: Fixed supply with velocity-based valuation
 
-Economic Impact: Creates attention as infrastructure rather than surveillance byproduct.
-4. COMMERCE PLATFORM — Z00MARCHE MARKETPLACE
+#### Economic Impact: Creates attention as infrastructure rather than surveillance byproduct.
 
-BASIC: 5% fee on all marketplace transactions. Like ThemeForest + CodePen + Etsy + GitHub Marketplace combined.
+### 4. COMMERCE PLATFORM — Z00MARCHE MARKETPLACE
 
-NORMAL: Distributed digital asset marketplace with Bitcoin settlement, instant discounts, and aligned incentives across users, creators, and platform.
+#### BASIC: 5% fee on all marketplace transactions. Like ThemeForest + CodePen + Etsy + GitHub Marketplace combined.
 
-TECHNICAL: Revenue = Σ(GMV × 5%). Targets 0.25% of global e-commerce ($6.3T). Win-win-win economics where users save, suppliers earn higher margins, and platform scales at near-zero marginal cost.
+#### NORMAL: Distributed digital asset marketplace with Bitcoin settlement, instant discounts, and aligned incentives across users, creators, and platform.
 
-Stream Details:
+#### TECHNICAL: Revenue = Σ(GMV × 5%). Targets 0.25% of global e-commerce ($6.3T). Win-win-win economics where users save, suppliers earn higher margins, and platform scales at near-zero marginal cost.
+
+#### Stream Details:
 
     Product: Z00Marche (B03T component)
 
@@ -135,7 +139,7 @@ Stream Details:
 
     Features: Version control integration, collaborative tools, reputation system
 
-Win-Win-Win Mechanics:
+#### Win-Win-Win Mechanics:
 
     User: Instant 5-20% savings through platform subsidies
 
@@ -143,13 +147,13 @@ Win-Win-Win Mechanics:
 
     Platform: Near-zero marginal cost coordination
 
-5. ENTERPRISE & DEVELOPER STREAMS
+### 5. ENTERPRISE & DEVELOPER STREAMS
 
-BASIC: Business tools, operating systems, and AI services for companies and developers.
+#### BASIC: Business tools, operating systems, and AI services for companies and developers.
 
-NORMAL: Tiered licensing and service models across enterprise tools, operating systems, development platforms, and physical AI infrastructure.
+#### NORMAL: Tiered licensing and service models across enterprise tools, operating systems, development platforms, and physical AI infrastructure.
 
-TECHNICAL: Multi-stream enterprise revenue from software licensing, marketplace fees, premium services, and infrastructure hosting.
+#### TECHNICAL: Multi-stream enterprise revenue from software licensing, marketplace fees, premium services, and infrastructure hosting.
 
 Stream Breakdown:
 Stream	Product Source	Model	Target Market	Annual Revenue
@@ -217,7 +221,7 @@ BASIC: Attention becomes money you can earn, spend, and trade. 1 Boot Token = 5 
 
 NORMAL: Boot Token economy creates user-owned attention capital with transparent pricing, decentralized exchange, and multiple utility functions within the ecosystem.
 
-TECHNICAL: Tokenized attention with fixed supply mechanics, velocity-based valuation, and built-in utility across all platform services.
+#### TECHNICAL: Tokenized attention with fixed supply mechanics, velocity-based valuation, and built-in utility across all platform services.
 Boot Token Specifications:
 
     Unit: 1 Boot Token = 5 minutes of guaranteed attention
@@ -265,7 +269,7 @@ BASIC: Every transaction makes everyone better off. Buyers save money, sellers e
 
 NORMAL: Aligned incentive structure where each transaction strengthens all three parties through instant savings, higher margins, and efficient coordination.
 
-TECHNICAL: Positive-sum economic model with built-in Pareto improvements. Platform captures value from coordination efficiency rather than rent extraction.
+#### TECHNICAL: Positive-sum economic model with built-in Pareto improvements. Platform captures value from coordination efficiency rather than rent extraction.
 Transaction Mechanics:
 
 For User Purchase of $100 Item:
@@ -296,7 +300,7 @@ BASIC: Unbeatable because we fund everything from attention profits, have zero c
 
 NORMAL: Mathematical economic advantages create structural defensibility through margin superiority, zero CAC, tokenized lock-in, and physics-based data superiority.
 
-TECHNICAL: Multiple overlapping moats create economic and technical barriers while Open Hand Protocol converts competitive threats into collaborative opportunities.
+#### TECHNICAL: Multiple overlapping moats create economic and technical barriers while Open Hand Protocol converts competitive threats into collaborative opportunities.
 1. Mathematical Unbeatability
 
 2400% Attention Margins:
@@ -450,7 +454,7 @@ BASIC: Fund growth from profits, not investors. Only take money that helps us mo
 
 NORMAL: Repo-first investment model with minimal burn and maximal leverage. Funding aligns strictly with OEM and ecosystem milestones rather than speculative growth.
 
-TECHNICAL: Bootstrapped through Ad4Boot revenue with strategic investment only for acceleration. Capital structure preserves control while enabling rapid scaling.
+#### TECHNICAL: Bootstrapped through Ad4Boot revenue with strategic investment only for acceleration. Capital structure preserves control while enabling rapid scaling.
 Funding Phases:
 
 Phase 1: Bootstrapping (Months 0-12)
@@ -528,10 +532,11 @@ BASIC: We're building infrastructure civilization can't abandon. The "exit" is b
 
 NORMAL: Primary path is IPO at $1T+ valuation in years 5-7, with secondary options of strategic acquisition or consortium ownership. The system isn't optimized for exit but for becoming permanent infrastructure.
 
-TECHNICAL: Multiple liquidity paths with valuation based on infrastructure multiples (40-50×) rather than software multiples (10-20×). Designed for long-term stewardship rather than quick exit.
-Liquidity Pathways:
+#### TECHNICAL: Multiple liquidity paths with valuation based on infrastructure multiples (40-50×) rather than software multiples (10-20×). Designed for long-term stewardship rather than quick exit.
 
-Path 1: IPO (Primary)
+#### Liquidity Pathways:
+
+##### Path 1: IPO (Primary)
 
     Timing: Year 5-7
 
@@ -541,7 +546,7 @@ Path 1: IPO (Primary)
 
     Use of Proceeds: Fund B00M deployment, global expansion
 
-Path 2: Strategic Acquisition
+##### Path 2: Strategic Acquisition
 
     Potential Buyers: Tech conglomerates, sovereign wealth funds
 
@@ -549,7 +554,7 @@ Path 2: Strategic Acquisition
 
     Conditions: Must preserve open ecosystem, ethical constraints
 
-Path 3: Consortium Ownership
+##### Path 3: Consortium Ownership
 
     Structure: User/developer/enterprise consortium
 
@@ -557,7 +562,7 @@ Path 3: Consortium Ownership
 
     Valuation: Market-based via token trading
 
-Path 4: Perpetual Stewardship
+##### Path 4: Perpetual Stewardship
 
     Model: Foundation-controlled, profit-generating
 

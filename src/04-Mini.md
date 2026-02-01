@@ -1,5 +1,5 @@
-# MINI LXs
-# Product Layer: From Primitives to Reality
+# MINI LXs : Products Layer
+From Primitives to Reality
 
 ## PIPELINE MASTER MAP: PRODUCT GENESIS
 <!-- ANCHOR:D401 -->

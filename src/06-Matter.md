@@ -3,12 +3,13 @@
 
 ## TOTAL ADDRESSABLE REALITY (TAR)
 
-BASIC: We don't measure markets—we measure how much of reality we can improve. Our potential isn't just software sales, but a percentage of everything civilization does.
+### BASIC: We don't measure markets—we measure how much of reality we can improve. Our potential isn't just software sales, but a percentage of everything civilization does.
 
-NORMAL: Traditional TAM (Total Addressable Market) metrics fail to capture systems that become infrastructure. We measure Total Addressable Reality—the portion of civilization activity that can be sensed, computed, coordinated, or improved through computational photonics.
+### NORMAL: Traditional TAM (Total Addressable Market) metrics fail to capture systems that become infrastructure. We measure Total Addressable Reality—the portion of civilization activity that can be sensed, computed, coordinated, or improved through computational photonics.
 
-TECHNICAL: TAR = ∫[f(x) dx] where x ∈ {economic activity, attention, creative output, environmental management} and f(x) represents computational enhancement factor. Targets 5-15% of global GDP through efficiency gains, time reclamation, and productivity multipliers.
-Global Baseline Reality:
+### TECHNICAL: TAR = ∫[f(x) dx] where x ∈ {economic activity, attention, creative output, environmental management} and f(x) represents computational enhancement factor. Targets 5-15% of global GDP through efficiency gains, time reclamation, and productivity multipliers.
+
+### Global Baseline Reality:
 
     Global GDP: ~$100T annually
 
