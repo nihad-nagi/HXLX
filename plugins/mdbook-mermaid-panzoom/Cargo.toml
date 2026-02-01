@@ -1,6 +1,6 @@
 [package]
 name = "mdbook-mermaid-panzoom"
-version = "0.2.4"
+version = "0.2.12"
 edition = "2024"
 description = "mdBook preprocessor with pan/zoom support for mermaid diagrams"
 authors = ["Nihad Nagi nihads.nagis@gmail.com"]

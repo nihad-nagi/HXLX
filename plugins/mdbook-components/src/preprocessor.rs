@@ -1,10 +1,11 @@
+// /home/enzi/HXLX/plugins/mdbook-components/src/preprocessor.rs
 use crate::asset_generator::AssetGenerator;
 use crate::parser::ComponentParser;
 use crate::registry::ComponentConfig;
 use crate::templates::ComponentManager;
 use mdbook::book::{Book, BookItem};
-use mdbook::preprocess::{Preprocessor, PreprocessorContext};
-// use std::fs;
+use mdbook::errors::Error as MdbookError;
+use mdbook_preprocessor::{Preprocessor, PreprocessorContext}; // Changed this line
 use std::path::Path;
 use tera::Context;
 
@@ -86,7 +87,10 @@ impl ComponentPreprocessor {
                                 return Err(crate::errors::ComponentError::TemplateError(e));
                             } else {
                                 log::error!("Failed to render component '{}': {}", name, e);
-                                format!("<div class='component-error'>Error rendering component: {}</div>", name)
+                                format!(
+                                    "<div class='component-error'>Error rendering component: {}</div>",
+                                    name
+                                )
                             }
                         }
                     };
@@ -174,7 +178,7 @@ impl Preprocessor for ComponentPreprocessor {
         "mdbook-components"
     }
 
-    fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> mdbook::errors::Result<Book> {
+    fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> Result<Book, MdbookError> {
         // Generate assets in the source directory so they're available for mdbook
         let book_root = &ctx.root;
         let src_dir = book_root.join("src");
@@ -186,7 +190,7 @@ impl Preprocessor for ComponentPreprocessor {
                     if let Err(e) = generator.generate_all_assets(&src_dir) {
                         log::error!("Failed to generate assets: {}", e);
                         if self.config.strict {
-                            return Err(mdbook::errors::Error::msg(format!(
+                            return Err(MdbookError::msg(format!(
                                 "Failed to generate assets: {}",
                                 e
                             )));
@@ -200,7 +204,7 @@ impl Preprocessor for ComponentPreprocessor {
                 Err(e) => {
                     log::error!("Failed to create asset generator: {}", e);
                     if self.config.strict {
-                        return Err(mdbook::errors::Error::msg(format!(
+                        return Err(MdbookError::msg(format!(
                             "Failed to create asset generator: {}",
                             e
                         )));

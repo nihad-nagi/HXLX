@@ -1,8 +1,10 @@
-// src/registry.rs
+// /home/enzi/HXLX/plugins/mdbook-components/src/registry.rs
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use tera::Value as TeraValue;
+
+// Remove the mdbook import from here - we'll handle it differently
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(untagged)]
@@ -148,7 +150,7 @@ impl ComponentDefinition {
 
             Ok(def)
         } else {
-            // Auto-discover MVC files - this is the main path!
+            // Auto-discover MVC files
             Ok(Self {
                 source: ComponentSource::Directory(dir.to_path_buf()),
                 schema: None,
@@ -220,14 +222,13 @@ pub struct ComponentConfig {
     #[serde(default)]
     pub templates: HashMap<String, String>,
 
-    // This field is optional in the TOML - users don't define components here!
     #[serde(default)]
     pub components: HashMap<String, ComponentDefinition>,
 }
 
 impl ComponentConfig {
     pub fn from_context(
-        ctx: &mdbook::preprocess::PreprocessorContext,
+        ctx: &mdbook_preprocessor::PreprocessorContext, // Updated this line
     ) -> Result<Self, anyhow::Error> {
         // Try to get the preprocessor.components section
         let config_value = if let Some(config) = ctx.config.get("preprocessor.components") {
@@ -239,7 +240,7 @@ impl ComponentConfig {
         // Convert to string
         let config_str = config_value.to_string();
 
-        // Parse the TOML - components field will be empty (which is what we want!)
+        // Parse the TOML
         let config: Self = toml::from_str(&config_str)
             .map_err(|e| anyhow::anyhow!("Failed to parse component config: {}", e))?;
 
@@ -253,7 +254,6 @@ impl ComponentConfig {
     }
 
     pub fn validate(&self) -> Result<(), crate::errors::ComponentError> {
-        // No validation needed for auto-discovered components
         Ok(())
     }
 }

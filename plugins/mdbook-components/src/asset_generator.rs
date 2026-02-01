@@ -1,6 +1,12 @@
+// /home/enzi/HXLX/plugins/mdbook-components/src/asset_generator.rs
 use crate::templates::ComponentManager;
+use crate::unocss_manager::UnoCSSManager;
 use std::fs;
-use std::path::Path; // Removed PathBuf since it's not used
+use std::path::Path;
+
+// Embedded assets - ONLY Alpine.js
+const ALPINE_JS: &[u8] = include_bytes!("../assets/alpine.min.js");
+const ALPINE_INIT: &[u8] = include_bytes!("../assets/alpine-init.js");
 
 pub struct AssetGenerator {
     manager: ComponentManager,
@@ -17,124 +23,88 @@ impl AssetGenerator {
         let static_dir = output_dir.join("static");
         let styles_dir = static_dir.join("styles");
         let scripts_dir = static_dir.join("scripts");
-        let components_dir = static_dir.join("components");
 
         fs::create_dir_all(&styles_dir)?;
         fs::create_dir_all(&scripts_dir)?;
-        fs::create_dir_all(&components_dir)?;
 
-        // Generate consolidated bundles
+        // Generate CSS bundle
         self.generate_css_bundle(&styles_dir)?;
-        self.generate_js_bundle(&scripts_dir)?;
 
-        // Generate individual component assets (for debugging)
-        self.generate_component_assets(&components_dir)?;
+        // Generate JS bundle
+        self.generate_js_bundle(&scripts_dir)?;
 
         Ok(())
     }
 
     fn generate_css_bundle(&self, styles_dir: &Path) -> Result<(), anyhow::Error> {
+        // 1. Get component CSS from view.css files
+        let component_css = self.manager.css_bundle();
+
+        // 2. Generate 40×4 color system (our custom implementation)
+        let color_css = UnoCSSManager::generate_color_css();
+
+        // 3. Extract classes from all templates and generate utilities
+        let all_templates = self.collect_all_templates();
+        let classes = UnoCSSManager::extract_classes(&all_templates);
+        let utility_css = UnoCSSManager::generate_utility_css(&classes);
+
+        // 4. Bundle everything
         let css_content = format!(
-            "/* mdBook Components CSS Bundle */\n/* Generated from component view.css files */\n\n{}",
-            self.manager.css_bundle()
+            "/* mdBook Components CSS Bundle */
+/* Generated at: {} */
+
+/* ========== Component-Specific CSS ========== */
+{}
+
+/* ========== Color System (40 hues × 4 luminance levels) ========== */
+{}
+
+/* ========== Generated Utility Classes ========== */
+{}",
+            chrono::Utc::now().to_rfc3339(),
+            component_css,
+            color_css,
+            utility_css
         );
 
         fs::write(styles_dir.join("components.css"), css_content)?;
-        log::debug!(
-            "Generated CSS bundle: {}",
-            styles_dir.join("components.css").display()
-        );
+        log::debug!("Generated CSS bundle ({} bytes)", css_content.len());
 
         Ok(())
+    }
+
+    fn collect_all_templates(&self) -> String {
+        let mut all_templates = String::new();
+
+        for (name, def) in self.manager.component_defs() {
+            if let crate::registry::ComponentSource::Inline { template, .. } = &def.source {
+                all_templates.push_str(template);
+                all_templates.push('\n');
+            }
+        }
+
+        all_templates
     }
 
     fn generate_js_bundle(&self, scripts_dir: &Path) -> Result<(), anyhow::Error> {
+        // Bundle: Alpine.js + our initialization
         let js_content = format!(
             r#"// mdBook Components JavaScript Bundle
-// Generated from component control.js files
+// Generated at: {}
 
-// Base Component framework
+// ========== Alpine.js v3.14.0 ==========
 {}
 
-// Component Registry framework
+// ========== mdBook Components Initialization ==========
 {}
-
-// Hydration Manager framework
-{}
-
-// Component implementations
-{}
-
-// Main entry point
-(function() {{
-    // Export to global scope
-    window.mdBookComponents = window.mdBookComponents || {{}};
-    window.mdBookComponents.Component = window.Component || null;
-    window.mdBookComponents.ComponentRegistry = window.ComponentRegistry || null;
-    window.mdBookComponents.HydrationManager = window.HydrationManager || null;
-    window.mdBookComponents.components = window.mdBookComponents.components || {{}};
-
-    // Auto-register built-in components
-    if (!window.mdBookComponents.components.admonition) {{
-        window.mdBookComponents.components.admonition = AdmonitionComponent;
-    }}
-    if (!window.mdBookComponents.components.example) {{
-        window.mdBookComponents.components.example = ExampleComponent;
-    }}
-
-    // Auto-initialize components on page load
-    document.addEventListener('DOMContentLoaded', function() {{
-        console.log('mdBook components loaded');
-
-        // Initialize components
-        const components = document.querySelectorAll('[data-component]');
-        components.forEach(el => {{
-            const name = el.dataset.component;
-            if (name && window.mdBookComponents.components[name]) {{
-                try {{
-                    const ComponentClass = window.mdBookComponents.components[name];
-                    new ComponentClass(el, {{}});
-                }} catch (err) {{
-                    console.error('Failed to initialize component:', name, err);
-                }}
-            }}
-        }});
-    }});
-}})();"#,
-            include_str!("../assets/Component.js"),
-            include_str!("../assets/ComponentRegistry.js"),
-            include_str!("../assets/HydrationManager.js"),
-            self.manager.js_bundle()
+"#,
+            chrono::Utc::now().to_rfc3339(),
+            String::from_utf8_lossy(ALPINE_JS),
+            String::from_utf8_lossy(ALPINE_INIT)
         );
 
         fs::write(scripts_dir.join("components.js"), js_content)?;
-        log::debug!(
-            "Generated JS bundle: {}",
-            scripts_dir.join("components.js").display()
-        );
-
-        Ok(())
-    }
-
-    fn generate_component_assets(&self, components_dir: &Path) -> Result<(), anyhow::Error> {
-        // For debugging: also write individual component assets
-        for (name, def) in self.manager.component_defs() {
-            let component_dir = components_dir.join(name);
-            fs::create_dir_all(&component_dir)?;
-
-            if let crate::registry::ComponentSource::Inline { css, js, .. } = &def.source {
-                if let Some(css_content) = css {
-                    if !css_content.is_empty() {
-                        fs::write(component_dir.join("view.css"), css_content)?;
-                    }
-                }
-                if let Some(js_content) = js {
-                    if !js_content.is_empty() {
-                        fs::write(component_dir.join("control.js"), js_content)?;
-                    }
-                }
-            }
-        }
+        log::debug!("Generated JS bundle ({} bytes)", js_content.len());
 
         Ok(())
     }
@@ -167,6 +137,11 @@ pub fn generate_assets(project_dir: &Path) -> Result<(), anyhow::Error> {
     log::info!("✅ Generated assets:");
     log::info!("   - {}", css_path);
     log::info!("   - {}", js_path);
+    log::info!("");
+    log::info!("Color system includes:");
+    log::info!("   • 40 hues (H0-H39, 9° increments)");
+    log::info!("   • 4 luminance levels per hue (L1-L4: 25%, 50%, 75%, 100%)");
+    log::info!("   • Semantic colors: primary, secondary, success, warning, danger, info");
     log::info!("");
     log::info!("Add to your book.toml:");
     log::info!("  [output.html]");

@@ -1,4 +1,4 @@
-// src/templates.rs
+// /home/enzi/HXLX/plugins/mdbook-components/src/templates.rs
 use crate::registry::{ComponentDefinition, ComponentSource};
 use std::collections::HashMap;
 use std::path::Path;
@@ -160,7 +160,7 @@ impl ComponentManager {
         tera.register_filter(
             "markdown",
             |value: &tera::Value, _: &HashMap<String, tera::Value>| {
-                use pulldown_cmark::{html, Options, Parser};
+                use pulldown_cmark::{Options, Parser, html};
 
                 if let Some(s) = value.as_str() {
                     let options = Options::empty();
