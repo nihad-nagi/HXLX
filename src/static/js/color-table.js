@@ -320,7 +320,7 @@ class ColorSpectrumTable extends HTMLElement {
           <li>Value</li>
           <li>Color ID</li>
           <li>Hue°</li>
-          <li>Description</li>
+          <li>Luminance</li>
         </ul>
       </main>
       <div class="table-data">
