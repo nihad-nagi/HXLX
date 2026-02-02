@@ -142,9 +142,9 @@ html:not(.js) {
 
     --warning-border: hsl(35, 100%, 55%);
 
-    --table-border-color: hsl(220, 25%, 15%);
-    --table-header-bg: hsl(220, 25%, 12%);
-    --table-alternate-bg: hsl(220, 25%, 10%);
+    --table-border-color: hsl(1, 0%, 15%);
+    --table-header-bg: hsl(0, 0%, 6%);
+    --table-alternate-bg: hsl(1, 0%, 8%);
 
     --searchbar-border-color: hsl(220, 14%, 40%);
     --searchbar-bg: hsl(220, 25%, 12%);

@@ -37,17 +37,6 @@ h6 {
     color: var(--header-color, var(--fg, #000000)); /* ADD THIS LINE */
 }
 
-/* Use Cursive for italic headers if desired */
-h1 em,
-h2 em,
-h3 em,
-.italic-heading {
-    font-family: var(--header-cursive, serif);
-    font-style: normal;
-    font-weight: var(--header-weight, 400);
-    color: var(--header-color, var(--fg, #000000));
-}
-
 /* Bold headers */
 h1 strong,
 h2 strong,
@@ -65,20 +54,45 @@ pre {
 
 /* Specific header styling */
 h1 {
-    font-weight: 600; /* SemiBold for main title */
-    font-size: 2.5rem;
+    font-weight: 700; /* SemiBold for main title */
+    font-size: 2.8rem;
     letter-spacing: -0.02em;
+    margin-top: 0;
+    margin-bottom: 0.8em;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.3em;
 }
 
 h2 {
-    font-weight: 500; /* Medium for section headers */
-    font-size: 2rem;
+    font-size: 2.2rem; /* 22px */
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-top: 2em;
 }
 
 h3 {
-    font-weight: 500;
-    font-size: 1.5rem;
+    font-weight: 600;
+    font-size: 1.9rem;
 }
+
+h4 {
+    font-weight: 600;
+    font-size: 1.7rem;
+}
+
+h5 {
+    font-size: 1.6rem; /* 16px */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+h6 {
+    font-size: 1.6rem; /* 16px */
+    font-weight: 600;
+    color: var(--text-color, var(--fg, #666666));
+    font-style: italic;
+}
+
 body {
     margin: 0;
     font-size: 1.6rem;
