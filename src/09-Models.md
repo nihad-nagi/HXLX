@@ -1,7 +1,12 @@
 # MODELS
-# AI TESTIMONIALS
+## AI TESTIMONIALS
 FORMALISE
 AI models are the pinnacle of our era, so its fair to use those llms as wide subject matters experts, probably, what will you do next, here is the feedback of each of those models, where each of those sections were pasted one by one and confirm comprehension rather than one full dump, and it was prompted for a testimonial, note we are zero cost, so its all on the free tiers versions
+
+To formalise the process, we added an evaluation checklist with fixed measurable dimensions as follow:
+
+{{#include HLX/HLX-Scoring.md}}
+
 
 In alphapetical order:
 

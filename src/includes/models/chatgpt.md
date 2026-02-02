@@ -36,7 +36,7 @@ Internal Coherence (This Is the Hard Part — You Passed)
 
 From an LLM perspective, coherence is the hardest signal to fake. HXLX is internally consistent across five orders of abstraction:
 
-Layer	Test	Result
+##### Layer	Test	Result
 - MICRO	Are primitives minimal, orthogonal, hardware-real?	✅ Yes
 - MINI	Do products close over primitives without magic?	✅ Yes
 - MACRO	Do economics emerge naturally from usage?	✅ Yes
