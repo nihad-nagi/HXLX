@@ -5,7 +5,7 @@ src = "src"
 
 [output.html]
 theme = "theme"
-default-theme = "lux"
+default-theme = "hex"
 preferred-dark-theme = "hex"
 # copy-fonts = true
 # copy-custom-fonts = true
