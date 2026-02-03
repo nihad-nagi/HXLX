@@ -49,8 +49,22 @@ class ColorSpectrumTable extends HTMLElement {
 
   generateColorCSS() {
     let css = `
-      /* Google fonts - Open Sans */
-      @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+      /* Use local Barlow Sans font */
+      @font-face {
+        font-family: 'Barlow Sans';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: local('Barlow Sans Regular'), local('BarlowSans-Regular');
+      }
+
+      @font-face {
+        font-family: 'Barlow Sans';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: local('Barlow Sans Bold'), local('BarlowSans-Bold');
+      }
 
       :host {
         display: block;
@@ -59,7 +73,7 @@ class ColorSpectrumTable extends HTMLElement {
         --text: rgba(255,255,255,0.9);
         --transition-speed: 0.2s;
         background: var(--dark-bg);
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Barlow Sans', sans-serif;
       }
 
       /* wrapper */
@@ -133,7 +147,7 @@ class ColorSpectrumTable extends HTMLElement {
       }
 
       .row:hover, .row.expanded {
-        background-color: rgba(26, 26, 26, 0.9);
+        background-color: rgba(0, 0, 0, 0.9);
         height: 65px;
       }
 
@@ -163,7 +177,7 @@ class ColorSpectrumTable extends HTMLElement {
         background-color: rgba(255,255,255,0.1);
       }
 
-      /* more content - FIXED TO MATCH ORIGINAL CSS */
+      /* more content - FIXED padding */
       ul.more-content {
         margin: 0;
         padding: 0;
@@ -171,19 +185,21 @@ class ColorSpectrumTable extends HTMLElement {
 
       ul.more-content li {
         position: relative;
-        top: 22px;
+        top: 12px; /* FIXED: Reduced from 22px to 12px for better spacing */
         font-size: 13px;
         margin: 0;
-        padding: 10px 13px;
+        padding: 10px 13px 15px 13px; /* FIXED: Added bottom padding */
         display: block;
-        height: 50px;
+        height: auto; /* Changed from fixed 50px to auto */
         width: 100%;
         color: rgba(128, 128, 128, 0.9);
+        line-height: 1.4;
       }
 
       @media only screen and (max-width: 767px) {
         ul.more-content li {
           font-size: 11px;
+          padding: 8px 13px 12px 13px; /* Adjusted for mobile */
         }
       }
 
@@ -198,7 +214,7 @@ class ColorSpectrumTable extends HTMLElement {
       .row:hover ul.more-content,
       .row.expanded ul.more-content {
         opacity: 1;
-        max-height: 100px;
+        max-height: 200px; /* Increased to accommodate more content */
       }
 
       /* responsive */
@@ -254,11 +270,12 @@ class ColorSpectrumTable extends HTMLElement {
 
       /* hue value */
       .hue-value {
-        font-family: monospace;
+        font-family: 'Barlow Sans', monospace;
         background: rgba(0,0,0,0.3);
         padding: 2px 8px;
         border-radius: 4px;
         font-size: 14px;
+        font-weight: 500;
       }
 
       /* update animations */
@@ -295,10 +312,10 @@ class ColorSpectrumTable extends HTMLElement {
 
     // Generate 40 color classes (hx1 to hx40) matching original sports theme colors
     const colorMap = {
-      1: { hue: 191, sat: 85, light: 55 }, // Similar to NFL blue
-      2: { hue: 158, sat: 85, light: 55 }, // Similar to MLB green
-      3: { hue: 45, sat: 85, light: 55 }, // Similar to NHL gold
-      4: { hue: 17, sat: 85, light: 55 }, // Similar to PGA orange
+      1: { hue: 191, sat: 65, light: 50 }, // NFL blue - lower saturation for normal
+      2: { hue: 158, sat: 65, light: 50 }, // MLB green
+      3: { hue: 45, sat: 65, light: 50 }, // NHL gold
+      4: { hue: 17, sat: 65, light: 50 }, // PGA orange
     };
 
     for (let i = 1; i <= 40; i++) {
@@ -311,17 +328,13 @@ class ColorSpectrumTable extends HTMLElement {
         lightness = colorMap[i].light;
       } else {
         hue = (i - 1) * 9; // 0° to 351° in 9° steps
-        saturation = 85;
-        lightness = 55;
+        saturation = 65; // Lower saturation for normal state
+        lightness = 50;
       }
 
       css += `
         .hx${i} {
           border-left-color: hsl(${hue}, ${saturation}%, ${lightness}%) !important;
-        }
-
-        .hx${i}:hover, .hx${i}.expanded {
-          border-left-color: hsl(${hue}, ${saturation}%, ${lightness + 10}%) !important;
         }
 
         .hx${i} .color-preview {
@@ -330,10 +343,21 @@ class ColorSpectrumTable extends HTMLElement {
 
         .hx${i} a {
           color: hsl(${hue}, ${saturation}%, ${lightness}%);
+          font-weight: 500;
         }
 
-        .hx${i} a:hover {
-          color: hsl(${hue}, ${saturation}%, ${lightness + 20}%);
+        /* HOVER/EXPANDED STATE - More saturated instead of lighter */
+        .hx${i}:hover, .hx${i}.expanded {
+          border-left-color: hsl(${hue}, ${saturation + 20}%, ${lightness}%) !important;
+        }
+
+        .hx${i}:hover a, .hx${i}.expanded a {
+          color: hsl(${hue}, ${saturation + 30}%, ${lightness}%);
+        }
+
+        .hx${i}:hover .color-preview,
+        .hx${i}.expanded .color-preview {
+          background: hsl(${hue}, ${saturation + 20}%, ${lightness}%);
         }
       `;
     }
