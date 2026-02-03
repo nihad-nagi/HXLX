@@ -58,6 +58,8 @@ class ColorSpectrumTable extends HTMLElement {
         --light-bg: rgba(255,255,255,0.1);
         --text: rgba(255,255,255,0.9);
         --transition-speed: 0.2s;
+        background: var(--dark-bg);
+        font-family: 'Open Sans', sans-serif;
       }
 
       /* wrapper */
@@ -70,8 +72,7 @@ class ColorSpectrumTable extends HTMLElement {
         color: var(--text);
         overflow: hidden;
         position: relative;
-        font-family: 'Open Sans', sans-serif;
-        border-radius: 8px;
+        border-radius: 0;
       }
 
       /* lists */
@@ -92,6 +93,17 @@ class ColorSpectrumTable extends HTMLElement {
         padding: 15px 13px;
       }
 
+      @media only screen and (max-width: 767px) and (min-width: 480px) {
+        .row ul li {
+          font-size: 13px;
+        }
+      }
+      @media only screen and (max-width: 479px) {
+        .row ul li {
+          font-size: 13px;
+        }
+      }
+
       .row ul li a {
         text-decoration: none;
         transition: color var(--transition-speed) ease-out;
@@ -100,7 +112,11 @@ class ColorSpectrumTable extends HTMLElement {
       /* title row */
       .title ul li {
         font-weight: bold;
-        background-color: rgba(255,255,255,0.05);
+        padding: 15px 13px;
+      }
+
+      .row ul li {
+        padding: 5px 10px;
       }
 
       /* rows */
@@ -117,43 +133,72 @@ class ColorSpectrumTable extends HTMLElement {
       }
 
       .row:hover, .row.expanded {
-        background-color: rgba(255,255,255,0.05);
+        background-color: rgba(26, 26, 26, 0.9);
         height: 65px;
+      }
+
+      @media only screen and (max-width: 767px) {
+        .row:hover, .row.expanded {
+          height: 85px;
+        }
+      }
+
+      @media only screen and (max-width: 359px) {
+        .row:hover, .row.expanded {
+          height: 105px;
+        }
       }
 
       .title {
         padding: 25px 0 5px 0;
         height: 45px;
         font-size: 0;
-        background-color: var(--light-bg);
-        border-left: 3px solid rgba(255,255,255,0.5) !important;
+        background-color: rgba(255,255,255,0.1);
+        border-left: 3px solid rgba(255,255,255,0.1) !important;
         cursor: default;
       }
 
       .title:hover {
         height: 45px;
-        background-color: var(--light-bg);
+        background-color: rgba(255,255,255,0.1);
       }
 
-      /* more content */
-      .more-content {
-        position: absolute;
-        top: 65px;
-        left: 0;
-        right: 0;
-        padding: 15px 20px;
-        background: rgba(0,0,0,0.3);
-        font-size: 14px;
+      /* more content - FIXED TO MATCH ORIGINAL CSS */
+      ul.more-content {
+        margin: 0;
+        padding: 0;
+      }
+
+      ul.more-content li {
+        position: relative;
+        top: 22px;
+        font-size: 13px;
+        margin: 0;
+        padding: 10px 13px;
+        display: block;
+        height: 50px;
+        width: 100%;
+        color: rgba(128, 128, 128, 0.9);
+      }
+
+      @media only screen and (max-width: 767px) {
+        ul.more-content li {
+          font-size: 11px;
+        }
+      }
+
+      /* Hide more content by default, show on hover/expand */
+      .row ul.more-content {
         opacity: 0;
-        transform: translateY(-10px);
-        transition: all var(--transition-speed) ease-out;
-        pointer-events: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: opacity 0.2s ease-out, max-height 0.2s ease-out;
       }
 
-      .row.expanded .more-content {
+      .row:hover ul.more-content,
+      .row.expanded ul.more-content {
         opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
+        max-height: 100px;
       }
 
       /* responsive */
@@ -162,20 +207,12 @@ class ColorSpectrumTable extends HTMLElement {
           font-size: 13px;
           padding: 10px 8px;
         }
-
-        .row:hover, .row.expanded {
-          height: 85px;
-        }
       }
 
       @media only screen and (max-width: 479px) {
         .row ul li {
           font-size: 12px;
           padding: 8px 5px;
-        }
-
-        .row:hover, .row.expanded {
-          height: 105px;
         }
       }
 
@@ -187,6 +224,20 @@ class ColorSpectrumTable extends HTMLElement {
       @media only screen and (max-width: 767px) {
         .title-hide {
           display: inline-block;
+        }
+      }
+
+      /* small content */
+      .small {
+        color: rgba(102, 102, 102, 0.9);
+        font-size: 10px;
+        padding: 0 10px;
+        margin: 0;
+      }
+
+      @media only screen and (max-width: 767px) {
+        .small {
+          display: none;
         }
       }
 
@@ -209,13 +260,60 @@ class ColorSpectrumTable extends HTMLElement {
         border-radius: 4px;
         font-size: 14px;
       }
+
+      /* update animations */
+      .update1 {
+        position: absolute;
+        top: 25px;
+        display: inline-block;
+        opacity: 1;
+        animation: update1 1s ease-out 12s 1 alternate;
+        animation-fill-mode: forwards;
+      }
+
+      .update2 {
+        position: absolute;
+        top: 25px;
+        display: inline-block;
+        opacity: 0;
+        animation: update2 4s ease-out 13s 1 alternate;
+        animation-fill-mode: forwards;
+      }
+
+      @keyframes update1 {
+        0% { opacity: 0; }
+        0% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+
+      @keyframes update2 {
+        0% { opacity: 0; color: rgba(255,255,255,0.9); }
+        20% { opacity: 1; color: #52d29a; }
+        100% { opacity: 1; color: rgba(255,255,255,0.9); }
+      }
     `;
 
-    // Generate 40 color classes (hx1 to hx40)
+    // Generate 40 color classes (hx1 to hx40) matching original sports theme colors
+    const colorMap = {
+      1: { hue: 191, sat: 85, light: 55 }, // Similar to NFL blue
+      2: { hue: 158, sat: 85, light: 55 }, // Similar to MLB green
+      3: { hue: 45, sat: 85, light: 55 }, // Similar to NHL gold
+      4: { hue: 17, sat: 85, light: 55 }, // Similar to PGA orange
+    };
+
     for (let i = 1; i <= 40; i++) {
-      const hue = (i - 1) * 9; // 0° to 351° in 9° steps
-      const saturation = 85;
-      const lightness = 55;
+      // Use specific colors for first 4, then generate for rest
+      let hue, saturation, lightness;
+
+      if (i <= 4) {
+        hue = colorMap[i].hue;
+        saturation = colorMap[i].sat;
+        lightness = colorMap[i].light;
+      } else {
+        hue = (i - 1) * 9; // 0° to 351° in 9° steps
+        saturation = 85;
+        lightness = 55;
+      }
 
       css += `
         .hx${i} {
@@ -272,7 +370,7 @@ class ColorSpectrumTable extends HTMLElement {
                x-on:click="toggleRow('${item.id || `row-${index}`}')"
                :class="{ 'expanded': selectedRow === '${item.id || `row-${index}`}' }">
         <ul>
-          <li>${item.classification || "N/A"}</li>
+          <li><a href="#">${item.classification || "N/A"}</a></li>
           <li>${item.value || "0"}</li>
           <li>
             <span class="color-preview"></span>
@@ -284,9 +382,9 @@ class ColorSpectrumTable extends HTMLElement {
         ${
           item.moreContent
             ? `
-          <div class="more-content">
-            ${item.moreContent}
-          </div>
+          <ul class="more-content">
+            <li>${item.moreContent}</li>
+          </ul>
         `
             : ""
         }
@@ -312,15 +410,15 @@ class ColorSpectrumTable extends HTMLElement {
     }`,
     );
 
-    // Header row
+    // Header row - updated to match original exactly
     wrapper.innerHTML = `
       <main class="row title">
         <ul>
           <li>Category</li>
           <li>Value</li>
-          <li>Color ID</li>
+          <li><span class="title-hide">#</span> Color ID</li>
           <li>Hue°</li>
-          <li>Luminance</li>
+          <li>Description</li>
         </ul>
       </main>
       <div class="table-data">
