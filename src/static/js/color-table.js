@@ -317,7 +317,7 @@ class ColorSpectrumTable extends HTMLElement {
       .star-rating {
         display: inline-block;
         position: relative;
-        width: 112px; /* 7 stars * 16px */
+        width: 130px; /* 7 stars * 16px */
         height: 16px;
       }
 
@@ -388,7 +388,7 @@ class ColorSpectrumTable extends HTMLElement {
 
     // Generate 40 color classes (hx1 to hx40) with 1=red (0°), 20=green (120°), 40=violet (300°)
     const step = 9; // 7.6923...
-    const alpha = 0.5; // 50% opacity for HSLA
+    const alpha = 0.75; // 50% opacity for HSLA
 
     for (let i = 1; i <= 40; i++) {
       const hue = (i - 1) * step; // This gives us: i=1 → 0°, i=20 → ~171°, i=40 → ~351°
@@ -408,7 +408,9 @@ class ColorSpectrumTable extends HTMLElement {
         .hx${i} .cid-icon svg {
           fill: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha});
         }
-
+        .hx${i} .stars-foreground svg {
+              fill: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha});
+        }
         .hx${i} a {
           color: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha});
           font-weight: 500;
@@ -446,9 +448,9 @@ class ColorSpectrumTable extends HTMLElement {
   generateCidIconSVG() {
     // Light bulb/idea SVG
     return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-        <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
-      </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+         <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
+       </svg>
     `;
   }
 
@@ -529,9 +531,9 @@ class ColorSpectrumTable extends HTMLElement {
             <sup>${cid}</sup>
           </li>
           <li><a href="#">${item.category || "N/A"}</a></li>
+           <li>${description}</li>
           <li>${this.generateStarRating(score)}</li>
-          <li><span class="hue-value">${Math.round(hue)}°</span></li>
-          <li>${description}</li>
+
         </ul>
         ${
           extraContent
@@ -570,9 +572,8 @@ class ColorSpectrumTable extends HTMLElement {
         <ul>
           <li><span class="title-hide">#</span> CID</li>
           <li>Category</li>
+          <li>Criterion</li>
           <li>Score</li>
-          <li>Hue°</li>
-          <li>Description</li>
         </ul>
       </main>
       <div class="table-data">
