@@ -140,6 +140,7 @@ class ColorSpectrumTable extends HTMLElement {
         width: 20%;
         box-sizing: border-box;
         padding: 10px 13px; /* Reduced padding */
+        vertical-align: middle;
       }
 
       @media only screen and (max-width: 767px) and (min-width: 480px) {
@@ -292,7 +293,7 @@ class ColorSpectrumTable extends HTMLElement {
         }
       }
 
-      /* CID icon */
+      /* CID icon - Light bulb/idea SVG */
       .cid-icon {
         display: inline-block;
         width: 24px;
@@ -312,30 +313,45 @@ class ColorSpectrumTable extends HTMLElement {
         font-weight: 500;
       }
 
-      /* star rating */
+      /* star rating - overlay style */
       .star-rating {
-        display: inline-flex;
-        gap: 2px;
-        vertical-align: middle;
+        display: inline-block;
+        position: relative;
+        width: 112px; /* 7 stars * 16px */
+        height: 16px;
       }
 
-      .star {
+      .stars-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .stars-background,
+      .stars-foreground {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .stars-background svg {
         width: 16px;
         height: 16px;
-        fill: rgba(128, 128, 128, 0.5); /* Default gray for empty stars */
+        fill: rgba(128, 128, 128, 0.5); /* Gray for empty stars */
       }
 
-      .star.filled {
-        fill: #FFD700; /* Gold color for filled stars */
+      .stars-foreground {
+        overflow: hidden;
+        width: 0%;
+        transition: width 0.3s ease-out;
       }
 
-      /* score value */
-      .score-value {
-        font-family: 'Barlow Sans', monospace;
-        font-weight: bold;
-        font-size: 14px;
-        margin-left: 8px;
-        color: #FFD700;
+      .stars-foreground svg {
+        width: 16px;
+        height: 16px;
+        fill: #FFFFFF; /* White for filled stars */
       }
 
       /* update animations */
@@ -419,19 +435,19 @@ class ColorSpectrumTable extends HTMLElement {
   }
 
   generateStarSVG() {
-    // Local star SVG - we'll embed this directly
+    // Local star SVG
     return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="star">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
       </svg>
     `;
   }
 
   generateCidIconSVG() {
-    // Local CID icon SVG - a simple diamond/hexagon shape
+    // Light bulb/idea SVG
     return `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
       </svg>
     `;
   }
@@ -439,22 +455,23 @@ class ColorSpectrumTable extends HTMLElement {
   generateStarRating(score) {
     // Ensure score is between 1 and 7
     const validScore = Math.max(1, Math.min(7, parseInt(score) || 1));
-    const stars = [];
+    const percentage = (validScore / 7) * 100;
 
-    for (let i = 1; i <= 7; i++) {
-      const isFilled = i <= validScore;
-      stars.push(`
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="star ${isFilled ? "filled" : ""}">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-      `);
-    }
+    // Generate 7 stars for both background and foreground
+    const starSVG = this.generateStarSVG();
+    const stars = Array(7).fill(starSVG).join("");
 
     return `
       <div class="star-rating">
-        ${stars.join("")}
+        <div class="stars-container">
+          <div class="stars-background">
+            ${stars}
+          </div>
+          <div class="stars-foreground" style="width: ${percentage}%">
+            ${stars}
+          </div>
+        </div>
       </div>
-      <span class="score-value">${validScore}</span>
     `;
   }
 
@@ -547,13 +564,13 @@ class ColorSpectrumTable extends HTMLElement {
     }`,
     );
 
-    // Header row - updated with CID instead of Color ID
+    // Header row - updated header
     wrapper.innerHTML = `
       <main class="row title">
         <ul>
           <li><span class="title-hide">#</span> CID</li>
           <li>Category</li>
-          <li>Score (1-7)</li>
+          <li>Score</li>
           <li>Hue°</li>
           <li>Description</li>
         </ul>
