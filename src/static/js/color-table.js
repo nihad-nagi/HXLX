@@ -5,35 +5,70 @@ class ColorSpectrumTable extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.data = [];
     this.selectedRow = null;
+    this.jsonFile = null;
+    this.jsonPath = null;
   }
 
   connectedCallback() {
-    // Check if data is provided via attribute
+    // Get JSON file path from attribute
+    this.jsonFile = this.getAttribute("json-file");
     const dataAttr = this.getAttribute("data");
-    if (dataAttr) {
-      try {
-        this.data = JSON.parse(dataAttr);
-      } catch (e) {
-        console.error("Failed to parse data attribute:", e);
-      }
+
+    // Priority: json-file attribute > data attribute
+    if (this.jsonFile) {
+      this.loadJsonFile();
+    } else if (dataAttr) {
+      this.parseInlineData(dataAttr);
     } else {
-      // Try to get data from slot content
-      const slotContent = this.innerHTML.trim();
-      if (slotContent.startsWith("```json") || slotContent.startsWith("{")) {
-        try {
-          const jsonString = slotContent
-            .replace("```json", "")
-            .replace("```", "")
-            .trim();
-          this.data = JSON.parse(jsonString);
-        } catch (e) {
-          console.error("Failed to parse slot content:", e);
-        }
+      console.warn(
+        "No data source provided for color-spectrum-table. Use json-file or data attribute.",
+      );
+    }
+  }
+
+  async loadJsonFile() {
+    try {
+      // Construct the path to the JSON file
+      // If it's a relative path, it will be relative to the HTML file
+      this.jsonPath = this.jsonFile;
+
+      const response = await fetch(this.jsonPath);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const json = await response.json();
+
+      // Extract spectrumData from the JSON structure
+      this.data = json.spectrumData || json;
+
+      if (!Array.isArray(this.data)) {
+        console.warn(
+          "JSON data is not an array. Expected an array of objects.",
+        );
+        this.data = [];
+      }
+
+      this.render();
+      this.initializeAlpine();
+    } catch (e) {
+      console.error(`Failed to load data from ${this.jsonPath}:`, e);
+      // Fallback to inline data if available
+      const dataAttr = this.getAttribute("data");
+      if (dataAttr) {
+        this.parseInlineData(dataAttr);
       }
     }
+  }
 
-    this.render();
-    this.initializeAlpine();
+  parseInlineData(dataAttr) {
+    try {
+      const parsedData = JSON.parse(dataAttr);
+      this.data = parsedData.spectrumData || parsedData;
+      this.render();
+      this.initializeAlpine();
+    } catch (e) {
+      console.error("Failed to parse inline data:", e);
+    }
   }
 
   initializeAlpine() {
@@ -460,13 +495,17 @@ class ColorSpectrumTable extends HTMLElement {
 
   // Observe attribute changes
   static get observedAttributes() {
-    return ["data"];
+    return ["json-file", "data"];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === "data" && oldValue !== newValue) {
+    if (name === "json-file" && oldValue !== newValue) {
+      this.jsonFile = newValue;
+      this.loadJsonFile();
+    } else if (name === "data" && oldValue !== newValue) {
       try {
-        this.data = JSON.parse(newValue);
+        const parsedData = JSON.parse(newValue);
+        this.data = parsedData.spectrumData || parsedData;
         this.render();
         this.initializeAlpine();
       } catch (e) {
