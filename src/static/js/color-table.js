@@ -346,13 +346,10 @@ class ColorSpectrumTable extends HTMLElement {
     `;
 
     // Generate 40 color classes (hx1 to hx40) with 1=red (0°), 20=green (120°), 40=violet (300°)
-    // Step calculation: from 0° to 300° in 39 steps (40-1 = 39)
-    // So step = 300 / 39 ≈ 7.69
-    const step = 300 / 39; // 7.6923...
+    const step = 9; // 7.6923...
 
     for (let i = 1; i <= 40; i++) {
-      // Calculate hue: 0° for i=1 (red), 120° for i=20 (green), 300° for i=40 (violet)
-      const hue = (i - 1) * step; // This gives us: i=1 → 0°, i=20 → ~146°, i=40 → ~300°
+      const hue = (i - 1) * step; // This gives us: i=1 → 0°, i=20 → ~171°, i=40 → ~351°
       const saturation = 65;
       const lightness = 50;
 
@@ -412,7 +409,7 @@ class ColorSpectrumTable extends HTMLElement {
     const value = parseInt(item.value) || 1;
 
     // Calculate hue based on the new mapping: 1=red (0°), 20=green (120°), 40=violet (300°)
-    const step = 300 / 39; // 7.6923...
+    const step = 9; // 7.6923...
     const hue = (value - 1) * step;
 
     return `
@@ -421,12 +418,13 @@ class ColorSpectrumTable extends HTMLElement {
                x-on:click="toggleRow('${item.id || `row-${index}`}')"
                :class="{ 'expanded': selectedRow === '${item.id || `row-${index}`}' }">
         <ul>
-          <li><a href="#">${item.classification || "N/A"}</a></li>
-          <li>${item.value || "0"}</li>
           <li>
             <span class="color-preview"></span>
-            CID ${value}
+            <sup>${value}</sup>
           </li>
+          <li><a href="#">${item.classification || "N/A"}</a></li>
+          <li>${item.value || "0"}</li>
+
           <li><span class="hue-value">${Math.round(hue)}°</span></li>
           <li>${item.description || ""}</li>
         </ul>
@@ -465,9 +463,9 @@ class ColorSpectrumTable extends HTMLElement {
     wrapper.innerHTML = `
       <main class="row title">
         <ul>
+          <li><span class="title-hide">#</span> CID</li>
           <li>Category</li>
           <li>Value</li>
-          <li><span class="title-hide">#</span> CID</li>
           <li>Hue°</li>
           <li>Description</li>
         </ul>
