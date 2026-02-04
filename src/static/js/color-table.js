@@ -347,6 +347,7 @@ class ColorSpectrumTable extends HTMLElement {
 
     // Generate 40 color classes (hx1 to hx40) with 1=red (0°), 20=green (120°), 40=violet (300°)
     const step = 9; // 7.6923...
+    const alpha = 0.5; // 50% opacity for HSLA
 
     for (let i = 1; i <= 40; i++) {
       const hue = (i - 1) * step; // This gives us: i=1 → 0°, i=20 → ~171°, i=40 → ~351°
@@ -355,30 +356,30 @@ class ColorSpectrumTable extends HTMLElement {
 
       css += `
         .hx${i} {
-          border-left-color: hsl(${hue}, ${saturation}%, ${lightness}%) !important;
+          border-left-color: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha}) !important;
         }
 
         .hx${i} .color-preview {
-          background: hsl(${hue}, ${saturation}%, ${lightness}%);
+          background: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha});
         }
 
         .hx${i} a {
-          color: hsl(${hue}, ${saturation}%, ${lightness}%);
+          color: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha});
           font-weight: 500;
         }
 
         /* HOVER/EXPANDED STATE - More saturated instead of lighter */
         .hx${i}:hover, .hx${i}.expanded {
-          border-left-color: hsl(${hue}, ${saturation + 20}%, ${lightness}%) !important;
+          border-left-color: hsla(${hue}, ${saturation + 20}%, ${lightness}%, ${alpha}) !important;
         }
 
         .hx${i}:hover a, .hx${i}.expanded a {
-          color: hsl(${hue}, ${saturation + 30}%, ${lightness}%);
+          color: hsla(${hue}, ${saturation + 30}%, ${lightness}%, ${alpha});
         }
 
         .hx${i}:hover .color-preview,
         .hx${i}.expanded .color-preview {
-          background: hsl(${hue}, ${saturation + 20}%, ${lightness}%);
+          background: hsla(${hue}, ${saturation + 20}%, ${lightness}%, ${alpha});
         }
       `;
     }
@@ -404,35 +405,49 @@ class ColorSpectrumTable extends HTMLElement {
   }
 
   renderRow(item, index) {
-    if (!item || !item.classification) return "";
+    if (!item || !item.category) return "";
 
-    const value = parseInt(item.value) || 1;
+    // Get cid value (could be number or string like "valve-b")
+    const cid = item.cid;
+
+    // Convert cid to a number for hue calculation
+    // If cid is a number string or pure number, use it; otherwise use index + 1
+    const cidNum = !isNaN(parseInt(cid)) ? parseInt(cid) : index + 1;
+
+    // Ensure cidNum is between 1 and 40 for color class mapping
+    const colorClassNum = Math.max(1, Math.min(40, cidNum));
 
     // Calculate hue based on the new mapping: 1=red (0°), 20=green (120°), 40=violet (300°)
     const step = 9; // 7.6923...
-    const hue = (value - 1) * step;
+    const hue = (colorClassNum - 1) * step;
+
+    // Use either 'desc' or 'description' field (handling both cases)
+    const description = item.desc || item.description || "";
+
+    // Use either 'extra' or 'moreContent' field for extra content
+    const extraContent = item.extra || item.moreContent || "";
 
     return `
-      <article class="row hx${value}"
-               data-id="${item.id || `row-${index}`}"
-               x-on:click="toggleRow('${item.id || `row-${index}`}')"
-               :class="{ 'expanded': selectedRow === '${item.id || `row-${index}`}' }">
+      <article class="row hx${colorClassNum}"
+               data-id="${cid || `row-${index}`}"
+               x-on:click="toggleRow('${cid || `row-${index}`}')"
+               :class="{ 'expanded': selectedRow === '${cid || `row-${index}`}' }">
         <ul>
           <li>
             <span class="color-preview"></span>
-            <sup>${value}</sup>
+            <sup>${cid}</sup>
           </li>
-          <li><a href="#">${item.classification || "N/A"}</a></li>
-          <li>${item.value || "0"}</li>
+          <li><a href="#">${item.category || "N/A"}</a></li>
+          <li>${colorClassNum}</li>
 
           <li><span class="hue-value">${Math.round(hue)}°</span></li>
-          <li>${item.description || ""}</li>
+          <li>${description}</li>
         </ul>
         ${
-          item.moreContent
+          extraContent
             ? `
           <ul class="more-content">
-            <li>${item.moreContent}</li>
+            <li>${extraContent}</li>
           </ul>
         `
             : ""
