@@ -292,15 +292,14 @@ class ColorSpectrumTable extends HTMLElement {
         }
       }
 
-      /* color preview */
-      .color-preview {
+      /* CID icon */
+      .cid-icon {
         display: inline-block;
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-        margin-right: 10px;
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
         vertical-align: middle;
-        border: 1px solid rgba(255,255,255,0.2);
+        transition: filter var(--transition-speed) ease-out;
       }
 
       /* hue value */
@@ -311,6 +310,32 @@ class ColorSpectrumTable extends HTMLElement {
         border-radius: 4px;
         font-size: 14px;
         font-weight: 500;
+      }
+
+      /* star rating */
+      .star-rating {
+        display: inline-flex;
+        gap: 2px;
+        vertical-align: middle;
+      }
+
+      .star {
+        width: 16px;
+        height: 16px;
+        fill: rgba(128, 128, 128, 0.5); /* Default gray for empty stars */
+      }
+
+      .star.filled {
+        fill: #FFD700; /* Gold color for filled stars */
+      }
+
+      /* score value */
+      .score-value {
+        font-family: 'Barlow Sans', monospace;
+        font-weight: bold;
+        font-size: 14px;
+        margin-left: 8px;
+        color: #FFD700;
       }
 
       /* update animations */
@@ -359,8 +384,13 @@ class ColorSpectrumTable extends HTMLElement {
           border-left-color: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha}) !important;
         }
 
-        .hx${i} .color-preview {
-          background: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha});
+        .hx${i} .cid-icon {
+          filter: drop-shadow(0 0 2px hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha}))
+                 drop-shadow(0 0 4px hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha * 0.5}));
+        }
+
+        .hx${i} .cid-icon svg {
+          fill: hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha});
         }
 
         .hx${i} a {
@@ -368,7 +398,7 @@ class ColorSpectrumTable extends HTMLElement {
           font-weight: 500;
         }
 
-        /* HOVER/EXPANDED STATE - More saturated instead of lighter */
+        /* HOVER/EXPANDED STATE */
         .hx${i}:hover, .hx${i}.expanded {
           border-left-color: hsla(${hue}, ${saturation + 20}%, ${lightness}%, ${alpha}) !important;
         }
@@ -377,14 +407,55 @@ class ColorSpectrumTable extends HTMLElement {
           color: hsla(${hue}, ${saturation + 30}%, ${lightness}%, ${alpha});
         }
 
-        .hx${i}:hover .color-preview,
-        .hx${i}.expanded .color-preview {
-          background: hsla(${hue}, ${saturation + 20}%, ${lightness}%, ${alpha});
+        .hx${i}:hover .cid-icon,
+        .hx${i}.expanded .cid-icon {
+          filter: drop-shadow(0 0 4px hsla(${hue}, ${saturation + 20}%, ${lightness}%, ${alpha}))
+                 drop-shadow(0 0 8px hsla(${hue}, ${saturation + 20}%, ${lightness}%, ${alpha * 0.7}));
         }
       `;
     }
 
     return css;
+  }
+
+  generateStarSVG() {
+    // Local star SVG - we'll embed this directly
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="star">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+      </svg>
+    `;
+  }
+
+  generateCidIconSVG() {
+    // Local CID icon SVG - a simple diamond/hexagon shape
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    `;
+  }
+
+  generateStarRating(score) {
+    // Ensure score is between 1 and 7
+    const validScore = Math.max(1, Math.min(7, parseInt(score) || 1));
+    const stars = [];
+
+    for (let i = 1; i <= 7; i++) {
+      const isFilled = i <= validScore;
+      stars.push(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="star ${isFilled ? "filled" : ""}">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+      `);
+    }
+
+    return `
+      <div class="star-rating">
+        ${stars.join("")}
+      </div>
+      <span class="score-value">${validScore}</span>
+    `;
   }
 
   toggleRow(rowId) {
@@ -417,6 +488,9 @@ class ColorSpectrumTable extends HTMLElement {
     // Ensure cidNum is between 1 and 40 for color class mapping
     const colorClassNum = Math.max(1, Math.min(40, cidNum));
 
+    // Get score (default to 1 if not provided)
+    const score = item.score || 1;
+
     // Calculate hue based on the new mapping: 1=red (0°), 20=green (120°), 40=violet (300°)
     const step = 9; // 7.6923...
     const hue = (colorClassNum - 1) * step;
@@ -434,12 +508,11 @@ class ColorSpectrumTable extends HTMLElement {
                :class="{ 'expanded': selectedRow === '${cid || `row-${index}`}' }">
         <ul>
           <li>
-            <span class="color-preview"></span>
+            <span class="cid-icon">${this.generateCidIconSVG()}</span>
             <sup>${cid}</sup>
           </li>
           <li><a href="#">${item.category || "N/A"}</a></li>
-          <li>${colorClassNum}</li>
-
+          <li>${this.generateStarRating(score)}</li>
           <li><span class="hue-value">${Math.round(hue)}°</span></li>
           <li>${description}</li>
         </ul>
@@ -480,7 +553,7 @@ class ColorSpectrumTable extends HTMLElement {
         <ul>
           <li><span class="title-hide">#</span> CID</li>
           <li>Category</li>
-          <li>Value</li>
+          <li>Score (1-7)</li>
           <li>Hue°</li>
           <li>Description</li>
         </ul>
