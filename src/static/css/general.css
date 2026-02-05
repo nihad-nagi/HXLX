@@ -82,33 +82,39 @@ main {
 }
 
 /* Glassmorphic container - INCREASE Z-INDEX */
+
 .glass-container {
     position: relative;
-    width: 90%;
+    width: 99%;
     max-width: 1200px;
-    min-height: 80vh;
+    min-height: 99vh;
     padding: 3rem;
-    z-index: 20; /* Higher than main and .el */
+    z-index: 20;
 
-    /* Glass effect */
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    /* Keep transparency for clear background */
+    background: transparent;
 
-    /* Glass border */
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Minimal blur for slight distortion like real glass */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 
-    /* Shadow for depth */
+    /* Subtle glass border */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    /* Enhanced shadows for depth while keeping transparency */
     box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        /* Main depth shadow */
+        0 10px 30px rgba(0, 0, 0, 0.25),
+        /* Inner highlights for glass edge */ inset 0 1px 0
+            rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+        /* Glass edge reflection */ 0 0 0 1px rgba(255, 255, 255, 0.1);
 
-    /* Rounded corners */
     border-radius: 24px;
-
-    /* Animation for subtle glow */
-    animation: glassGlow 4s ease-in-out infinite alternate;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
+
+/* Optional: Hover for interactive depth */
 
 /* Inner content wrapper */
 .glass-content {
