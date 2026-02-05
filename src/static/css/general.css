@@ -76,7 +76,7 @@ main {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 2rem;
+    padding: 1rem;
     position: relative;
     z-index: 2; /* Above the .el background */
 }
@@ -84,19 +84,19 @@ main {
 /* Glassmorphic container - INCREASE Z-INDEX */
 
 .glass-container {
-    position: relative;
-    width: 99%;
+    position: absolute;
+    width: 100%;
     max-width: 1200px;
     min-height: 99vh;
-    padding: 3rem;
+    padding: 0rem;
     z-index: 20;
 
     /* Keep transparency for clear background */
     background: transparent;
 
     /* Minimal blur for slight distortion like real glass */
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
 
     /* Subtle glass border */
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -113,71 +113,6 @@ main {
     border-radius: 24px;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
-
-/* Optional: Hover for interactive depth */
-
-/* Inner content wrapper */
-.glass-content {
-    position: relative;
-    z-index: 22;
-    height: 100%;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-/* Headers styling for glass container */
-.glass-content h1,
-.glass-content h2,
-.glass-content h3,
-.glass-content h4,
-.glass-content h5,
-.glass-content h6 {
-    color: rgba(255, 255, 255, 0.95);
-}
-
-/* Specific header styling for glass container */
-.glass-content h1 {
-    font-weight: 700;
-    font-size: 2.8rem;
-    letter-spacing: -0.02em;
-    margin-top: 0;
-    margin-bottom: 0.8em;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Lighter border */
-    padding-bottom: 0.3em;
-}
-
-/* Optional: Add some decorative elements */
-.glass-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 24px;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.05) 50%,
-        rgba(255, 255, 255, 0) 100%
-    );
-    pointer-events: none;
-    z-index: 21;
-}
-
-/* Subtle glow animation */
-/*@keyframes glassGlow {
-    0% {
-        box-shadow:
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    }
-    100% {
-        box-shadow:
-            0 8px 32px rgba(0, 0, 0, 0.4),
-            0 0 60px rgba(238, 195, 45, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    }
-}*/
 
 /* Headers - use Roman variant */
 h1,
