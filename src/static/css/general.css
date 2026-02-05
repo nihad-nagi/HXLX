@@ -1,5 +1,3 @@
-/* Base styles and content styles */
-
 * {
     box-sizing: border-box;
 }
@@ -12,7 +10,6 @@
 }
 
 html {
-    /*font-family: "Arma", sans-serif;*/
     font-family: var(--body-font, sans-serif);
     font-weight: var(--body-weight, 400);
     line-height: 1.6;
@@ -20,17 +17,161 @@ html {
     text-size-adjust: none;
     -webkit-text-size-adjust: none;
 }
-/* Apply fonts globally */
+
+/* Body styling - REMOVE THE MASK FROM HERE */
 body {
     font-family: var(--body-font, sans-serif);
     font-weight: var(--body-weight, 400);
     line-height: 1.6;
-    /*color: var(--text-color, var(--fg, #000000));*/
-    display: grid;
-    place-items: center;
+    margin: 0;
+    padding: 0;
     min-height: 100vh;
-    background: hsl(0 0% 6%); /* ADD THIS LINE */
+    position: relative;
+
+    /* Dark background instead of gradient on body */
+    background: hsl(0 0% 6%);
+
+    /* Remove the mask from body - this was hiding everything! */
 }
+
+/* Background element - this creates your animated gradient */
+.el {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1; /* Behind the glass container */
+
+    background: conic-gradient(
+        from 180deg at 50% 70%,
+        hsla(0, 0%, 98%, 1) 0deg,
+        #eec32d 72.0000010728836deg,
+        #ec4b4b 144.0000021457672deg,
+        #709ab9 216.00000858306885deg,
+        #4dffbf 288.0000042915344deg,
+        hsla(0, 0%, 98%, 1) 1turn
+    );
+
+    mask:
+        radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50%
+            50% / var(--size) var(--size),
+        url("../img/noise-mask.png") 256px 50% / 256px 256px;
+    mask-composite: intersect;
+    animation: flicker 90s infinite linear;
+    pointer-events: none; /* Allow clicks to pass through */
+}
+
+@keyframes flicker {
+    to {
+        mask-position:
+            50% 50%,
+            0 50%;
+    }
+}
+
+main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    position: relative;
+    z-index: 2; /* Above the .el background */
+}
+
+/* Glassmorphic container - INCREASE Z-INDEX */
+.glass-container {
+    position: relative;
+    width: 90%;
+    max-width: 1200px;
+    min-height: 80vh;
+    padding: 3rem;
+    z-index: 20; /* Higher than main and .el */
+
+    /* Glass effect */
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    /* Glass border */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    /* Shadow for depth */
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    /* Rounded corners */
+    border-radius: 24px;
+
+    /* Animation for subtle glow */
+    animation: glassGlow 4s ease-in-out infinite alternate;
+}
+
+/* Inner content wrapper */
+.glass-content {
+    position: relative;
+    z-index: 22;
+    height: 100%;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Headers styling for glass container */
+.glass-content h1,
+.glass-content h2,
+.glass-content h3,
+.glass-content h4,
+.glass-content h5,
+.glass-content h6 {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Specific header styling for glass container */
+.glass-content h1 {
+    font-weight: 700;
+    font-size: 2.8rem;
+    letter-spacing: -0.02em;
+    margin-top: 0;
+    margin-bottom: 0.8em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Lighter border */
+    padding-bottom: 0.3em;
+}
+
+/* Optional: Add some decorative elements */
+.glass-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 24px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    pointer-events: none;
+    z-index: 21;
+}
+
+/* Subtle glow animation */
+/*@keyframes glassGlow {
+    0% {
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    100% {
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            0 0 60px rgba(238, 195, 45, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+}*/
 
 /* Headers - use Roman variant */
 h1,
@@ -43,7 +184,7 @@ h6 {
     font-weight: var(--header-weight, 400);
     font-style: normal;
     letter-spacing: -0.01em;
-    color: var(--header-color, var(--fg, #000000)); /* ADD THIS LINE */
+    color: var(--header-color, var(--fg, #000000));
 }
 
 /* Bold headers */
@@ -61,19 +202,9 @@ pre {
     font-weight: var(--code-weight, 500);
 }
 
-/* Specific header styling */
-h1 {
-    font-weight: 700; /* SemiBold for main title */
-    font-size: 2.8rem;
-    letter-spacing: -0.02em;
-    margin-top: 0;
-    margin-bottom: 0.8em;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: 0.3em;
-}
-
+/* Other header styles remain the same */
 h2 {
-    font-size: 2.2rem; /* 22px */
+    font-size: 2.2rem;
     font-weight: 600;
     letter-spacing: -0.015em;
     margin-top: 2em;
@@ -90,40 +221,15 @@ h4 {
 }
 
 h5 {
-    font-size: 1.6rem; /* 16px */
+    font-size: 1.6rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
 }
+
 h6 {
-    font-size: 1.6rem; /* 16px */
+    font-size: 1.6rem;
     font-weight: 600;
     color: var(--text-color, var(--fg, #666666));
     font-style: italic;
-}
-.el {
-    background: conic-gradient(
-        from 180deg at 50% 70%,
-        hsla(0, 0%, 98%, 1) 0deg,
-        #eec32d 72.0000010728836deg,
-        #ec4b4b 144.0000021457672deg,
-        #709ab9 216.00000858306885deg,
-        #4dffbf 288.0000042915344deg,
-        hsla(0, 0%, 98%, 1) 1turn
-    );
-    width: 100%;
-    height: 100%;
-    mask:
-        radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50%
-            50% / var(--size) var(--size),
-        url("../img/noise-mask.png") 256px 50% / 256px 256px;
-    mask-composite: intersect;
-    animation: flicker 90s infinite linear;
-}
-@keyframes flicker {
-    to {
-        mask-position:
-            50% 50%,
-            0 50%;
-    }
 }
