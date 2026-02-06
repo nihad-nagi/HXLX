@@ -52,6 +52,8 @@
         {{/each}}
 
         <!-- Scripts -->
+        <script src="static/js/regl.min.js" defer></script>
+        <script src="static/js/gl-matrix-min.js" defer></script>
         <script src="static/js/svgpanzoom.min.js"></script>
         <script src="static/js/mermaid.min.js"></script>
         <script src="static/js/mermaid-panzoom.js"></script>
@@ -60,7 +62,7 @@
 
         <!-- ✅ LOAD YOUR WEB COMPONENT HERE -->
         <script src="static/js/color-table.js"></script>
-
+        <script src="static/js/display.js" defer></script>
         {{#if mathjax_support}}
         <!-- MathJax -->
         <script src="static/js/MathJax.js"></script>
@@ -79,11 +81,12 @@
         <script src="{{ resource "toc.js" }}"></script>
     </head>
     <body>
-        <div class="el"></div>
+        {{!-- <div class="el"></div>
         <main>
             <div class="glass-outer"></div>
             <div class="glass-inner"></div>
             <div class="glass-layer glass-left"
-        </main>
+        </main> --}}
+        <div id="display" />
     </body>
 </html>

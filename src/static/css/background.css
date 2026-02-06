@@ -1,35 +1,178 @@
-/* Background element - this creates your animated gradient */
+/* Base CSS remains mostly the same */
 .el {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 0; /* Behind the glass container */
-
+    z-index: 0;
     background: linear-gradient(
         135deg,
-        /* 45deg would be top-left to bottom-right direction */ #ff0000 0%,
-        /* Red - top-left */ #ff7f00 16.666%,
-        /* Orange */ #ffff00 33.333%,
-        /* Yellow */ #00ff00 50%,
-        /* Green */ #0000ff 66.666%,
-        /* Blue */ #4b0082 83.333%,
-        /* Indigo */ #8b00ff 100% /* Violet - bottom-right */
+        #ff0000 0%,
+        #ff7f00 16.666%,
+        #ffff00 33.333%,
+        #00ff00 50%,
+        #0000ff 66.666%,
+        #4b0082 83.333%,
+        #8b00ff 100%
     );
+    pointer-events: none;
 
+    /* 3D Container Setup */
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    overflow: hidden;
+}
+
+/* Create a 3D container for the depth layers */
+.el::before,
+.el::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Base layer - closest to viewer */
+.el::before {
+    transform: translateZ(0px);
+    background: inherit;
     mask:
-        radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50%
-            50% / var(--size) var(--size),
+        radial-gradient(circle at 50% 50%, white 3px, transparent 3.5px) 50%
+            50% / var(--size, 100px) var(--size, 100px),
         url("../img/noise-mask.png") 256px 50% / 256px 256px;
     mask-composite: intersect;
     animation: flicker 90s infinite linear;
-    pointer-events: none; /* Allow clicks to pass through */
 }
+
+/* Deep layer 1 */
+.el::after {
+    transform: translateZ(-500px) scale(2);
+    background: inherit;
+    opacity: 0.7;
+    mask:
+        radial-gradient(circle at 50% 50%, white 1px, transparent 1.5px) 50%
+            50% / calc(var(--size, 100px) * 0.8) calc(var(--size, 100px) * 0.8),
+        url("../img/noise-mask.png") 256px 50% / 256px 256px;
+    mask-composite: intersect;
+    animation:
+        flicker 120s infinite linear reverse,
+        parallaxDepth 20s infinite alternate ease-in-out;
+}
+
+/* Create additional deep layers using box shadows or additional pseudo-elements */
+.el {
+    /* Simulate infinite depth with multiple layers */
+    box-shadow:
+        inset 0 0 100px 50px rgba(0, 0, 0, 0.3),
+        inset 0 0 300px 150px rgba(0, 0, 0, 0.2),
+        inset 0 0 500px 250px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced flicker animation with depth movement */
 @keyframes flicker {
-    to {
+    0%,
+    100% {
         mask-position:
             50% 50%,
             0 50%;
     }
+    50% {
+        mask-position:
+            calc(50% + 10px) calc(50% - 10px),
+            256px 50%;
+    }
 }
+
+/* Parallax depth animation */
+@keyframes parallaxDepth {
+    0% {
+        transform: translateZ(-500px) scale(2) translateX(0) translateY(0);
+    }
+    50% {
+        transform: translateZ(-600px) scale(2.2) translateX(20px)
+            translateY(10px);
+    }
+    100% {
+        transform: translateZ(-500px) scale(2) translateX(0) translateY(0);
+    }
+}
+
+/* Optional: Create a tunnel effect with multiple layers */
+.el-tunnel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 200vmax;
+    height: 200vmax;
+    transform: translate(-50%, -50%) perspective(1000px) rotateX(75deg);
+    background: repeating-radial-gradient(
+        circle at center,
+        transparent 0,
+        transparent 10%,
+        rgba(255, 0, 0, 0.1) 10%,
+        rgba(255, 127, 0, 0.1) 20%,
+        rgba(255, 255, 0, 0.1) 30%,
+        rgba(0, 255, 0, 0.1) 40%,
+        rgba(0, 0, 255, 0.1) 50%,
+        rgba(75, 0, 130, 0.1) 60%,
+        rgba(139, 0, 255, 0.1) 70%,
+        transparent 70%,
+        transparent 100%
+    );
+    animation: tunnelSpin 30s infinite linear;
+    opacity: 0.3;
+    z-index: -1;
+}
+
+@keyframes tunnelSpin {
+    from {
+        transform: translate(-50%, -50%) perspective(1000px) rotateX(75deg)
+            rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) perspective(1000px) rotateX(75deg)
+            rotate(360deg);
+    }
+}
+
+/* Optional: Add floating spheres with depth */
+.sphere {
+    position: absolute;
+    width: var(--sphere-size, 100px);
+    height: var(--sphere-size, 100px);
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 30% 30%,
+        rgba(255, 255, 255, 0.8) 0%,
+        var(--sphere-color, #ff0000) 50%,
+        rgba(0, 0, 0, 0.5) 100%
+    );
+    filter: blur(var(--sphere-blur, 2px));
+    animation: floatSphere 20s infinite linear;
+    opacity: 0.3;
+    transform-style: preserve-3d;
+}
+
+@keyframes floatSphere {
+    0% {
+        transform: translate3d(var(--start-x, 0), var(--start-y, 0), 0) scale(1)
+            rotate(0deg);
+    }
+    50% {
+        transform: translate3d(
+                calc(var(--start-x, 0) + 100px),
+                calc(var(--start-y, 0) + 50px),
+                -500px
+            )
+            scale(0.8) rotate(180deg);
+    }
+    100% {
+        transform: translate3d(var(--start-x, 0), var(--start-y, 0), 0) scale(1)
+            rotate(360deg);
+    }
+}
+
+/* JavaScript would dynamically create spheres with random positions */
