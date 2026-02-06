@@ -4,8 +4,8 @@
 
 // Grid Parameters
 const GRID_PARAMS = {
-  SIZE: 5, // Grid size (cubes per dimension): 6x6x6 = 216 cubes
-  SPACING: 2.0, // Distance between cubes in grid
+  SIZE: 6, // Grid size (cubes per dimension): 6x6x6 = 216 cubes
+  SPACING: 1.0, // Distance between cubes in grid
   CENTER_OFFSET: 2.5, // How much to offset to center the grid
 };
 
@@ -18,13 +18,13 @@ const CUBE_PARAMS = {
 // Animation Parameters
 const ANIMATION_PARAMS = {
   SPEED: 0.0001, // Overall animation speed multiplier
-  ROTATION_SPEED: 1.0, // Speed of cube rotation
-  MOVEMENT_RANGE: 5.0, // Range of random movement in animation
+  ROTATION_SPEED: 0.1, // Speed of cube rotation
+  MOVEMENT_RANGE: 1.0, // Range of random movement in animation
   EASING_POWER: 16, // Power of easing function (higher = more dramatic)
   EASING_MULTIPLIER: 0.5, // Easing intensity multiplier
   EASING_OFFSET: 0.5, // Easing offset for sine wave
   ORBIT_SPEED: 0.1, // Camera orbit speed
-  ORBIT_AMPLITUDE: 10.0, // Camera orbit radius
+  ORBIT_AMPLITUDE: 7.0, // Camera orbit radius
 };
 
 // Lighting Parameters
