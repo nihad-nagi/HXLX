@@ -1,0 +1,35 @@
+/* Background element - this creates your animated gradient */
+.el {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0; /* Behind the glass container */
+
+    background: linear-gradient(
+        135deg,
+        /* 45deg would be top-left to bottom-right direction */ #ff0000 0%,
+        /* Red - top-left */ #ff7f00 16.666%,
+        /* Orange */ #ffff00 33.333%,
+        /* Yellow */ #00ff00 50%,
+        /* Green */ #0000ff 66.666%,
+        /* Blue */ #4b0082 83.333%,
+        /* Indigo */ #8b00ff 100% /* Violet - bottom-right */
+    );
+
+    mask:
+        radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50%
+            50% / var(--size) var(--size),
+        url("../img/noise-mask.png") 256px 50% / 256px 256px;
+    mask-composite: intersect;
+    animation: flicker 90s infinite linear;
+    pointer-events: none; /* Allow clicks to pass through */
+}
+@keyframes flicker {
+    to {
+        mask-position:
+            50% 50%,
+            0 50%;
+    }
+}

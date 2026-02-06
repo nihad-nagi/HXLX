@@ -34,42 +34,6 @@ body {
     /* Remove the mask from body - this was hiding everything! */
 }
 
-/* Background element - this creates your animated gradient */
-.el {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1; /* Behind the glass container */
-
-    background: conic-gradient(
-        from 180deg at 50% 70%,
-        hsla(0, 0%, 98%, 1) 0deg,
-        #eec32d 72.0000010728836deg,
-        #ec4b4b 144.0000021457672deg,
-        #709ab9 216.00000858306885deg,
-        #4dffbf 288.0000042915344deg,
-        hsla(0, 0%, 98%, 1) 1turn
-    );
-
-    mask:
-        radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px) 50%
-            50% / var(--size) var(--size),
-        url("../img/noise-mask.png") 256px 50% / 256px 256px;
-    mask-composite: intersect;
-    animation: flicker 90s infinite linear;
-    pointer-events: none; /* Allow clicks to pass through */
-}
-
-@keyframes flicker {
-    to {
-        mask-position:
-            50% 50%,
-            0 50%;
-    }
-}
-
 main {
     width: 100%;
     display: flex;
@@ -78,41 +42,10 @@ main {
     min-height: 100vh;
     padding: 1rem;
     position: relative;
-    z-index: 2; /* Above the .el background */
+    z-index: 10; /* Above the .el background */
 }
 
 /* Glassmorphic container - INCREASE Z-INDEX */
-
-.glass-container {
-    position: absolute;
-    width: 100%;
-    max-width: 1200px;
-    min-height: 99vh;
-    padding: 0rem;
-    z-index: 20;
-
-    /* Keep transparency for clear background */
-    background: transparent;
-
-    /* Minimal blur for slight distortion like real glass */
-    backdrop-filter: blur(1px);
-    -webkit-backdrop-filter: blur(1px);
-
-    /* Subtle glass border */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-
-    /* Enhanced shadows for depth while keeping transparency */
-    box-shadow:
-        /* Main depth shadow */
-        0 10px 30px rgba(0, 0, 0, 0.25),
-        /* Inner highlights for glass edge */ inset 0 1px 0
-            rgba(255, 255, 255, 0.15),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.05),
-        /* Glass edge reflection */ 0 0 0 1px rgba(255, 255, 255, 0.1);
-
-    border-radius: 24px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
-}
 
 /* Headers - use Roman variant */
 h1,
