@@ -1,11 +1,15 @@
 // ==================== PARAMETERS SECTION ====================
 // All adjustable parameters in one place for easy tuning
 
-// Grid Parameters
+// Grid Parameters - NOW RECTANGULAR
 const GRID_PARAMS = {
-  SIZE: 6, // Grid size (cubes per dimension): 6x6x6 = 216 cubes
+  SIZE_X: 8, // Cubes along X dimension
+  SIZE_Y: 8, // Cubes along Y dimension
+  SIZE_Z: 10, // Cubes along Z dimension
   SPACING: 1.0, // Distance between cubes in grid
-  CENTER_OFFSET: 2.5, // How much to offset to center the grid
+  CENTER_OFFSET_X: 3.5, // Center offset for X dimension
+  CENTER_OFFSET_Y: 1.5, // Center offset for Y dimension
+  CENTER_OFFSET_Z: 6, // Center offset for Z dimension
 };
 
 // Cube Parameters
@@ -62,7 +66,7 @@ const TRANSPARENCY_PARAMS = {
 
 // Camera Motion Parameters (MISSING – now explicit)
 const CAMERA_MOTION_PARAMS = {
-  DISTANCE: 10.0, // Base camera distance from center
+  DISTANCE: 15.0, // Base camera distance from center
   ELEVATION: 0.0, // Vertical camera offset
   LOOK_AT_OFFSET: [0, 0, 0], // Look-at point offset
   DRIFT_STRENGTH: 0.0, // Subtle forward/back drift (0 = off)
@@ -70,10 +74,10 @@ const CAMERA_MOTION_PARAMS = {
 
 // Animation Time Parameters (MISSING – decouples motion types)
 const TIME_PARAMS = {
-  GLOBAL_TIME_SCALE: 1.0, // Master time scaler
-  POSITION_TIME_SCALE: 1.0, // Position interpolation timing
-  ROTATION_TIME_SCALE: 1.0, // Rotation timing
-  CAMERA_TIME_SCALE: 1.0, // Camera motion timing
+  GLOBAL_TIME_SCALE: 0.1, // Master time scaler
+  POSITION_TIME_SCALE: 0.1, // Position interpolation timing
+  ROTATION_TIME_SCALE: 0.1, // Rotation timing
+  CAMERA_TIME_SCALE: 0.1, // Camera motion timing
 };
 
 // ==================== END PARAMETERS SECTION ====================
@@ -83,7 +87,6 @@ const regl = createREGL({
 });
 const { mat4 } = glMatrix;
 
-// Cube geometry (unchanged)
 // Cube geometry with proper vertices for each face
 // Each face is made of 2 triangles (6 vertices)
 const cubeVertices = [
@@ -244,20 +247,20 @@ const cube = {
   uvs: regl.buffer(cubeUvs),
   count: cubeVertices.length,
 };
-
-// Use parameters
-const SIZE = GRID_PARAMS.SIZE;
-const count = Math.pow(SIZE, 3);
+// Use rectangular grid parameters
+const SIZE_X = GRID_PARAMS.SIZE_X;
+const SIZE_Y = GRID_PARAMS.SIZE_Y;
+const SIZE_Z = GRID_PARAMS.SIZE_Z;
+const count = SIZE_X * SIZE_Y * SIZE_Z; // Total number of cubes
 
 const getPos = (i) => {
-  const size = SIZE;
-  const x = i % size;
-  const y = Math.floor(i / size) % size;
-  const z = Math.floor(i / (size * size));
+  const x = i % SIZE_X;
+  const y = Math.floor(i / SIZE_X) % SIZE_Y;
+  const z = Math.floor(i / (SIZE_X * SIZE_Y));
   return [
-    (x - GRID_PARAMS.CENTER_OFFSET) * GRID_PARAMS.SPACING,
-    (y - GRID_PARAMS.CENTER_OFFSET) * GRID_PARAMS.SPACING,
-    (z - GRID_PARAMS.CENTER_OFFSET) * GRID_PARAMS.SPACING,
+    (x - GRID_PARAMS.CENTER_OFFSET_X) * GRID_PARAMS.SPACING,
+    (y - GRID_PARAMS.CENTER_OFFSET_Y) * GRID_PARAMS.SPACING,
+    (z - GRID_PARAMS.CENTER_OFFSET_Z) * GRID_PARAMS.SPACING,
   ];
 };
 
@@ -447,7 +450,6 @@ const drawCubes = regl({
     animationScale: CUBE_PARAMS.ANIMATION_SCALE,
     alphaMultiplier: TRANSPARENCY_PARAMS.ALPHA_MULTIPLIER,
 
-    // time: () => performance.now() * ANIMATION_PARAMS.SPEED,
     time: () =>
       performance.now() *
       ANIMATION_PARAMS.SPEED *
