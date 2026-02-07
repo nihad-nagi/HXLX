@@ -1,4 +1,3 @@
-// ==================== END PARAMETERS SECTION ====================
 // ==================== PARAMETERS SECTION ====================
 // All adjustable parameters in one place for easy tuning
 
@@ -59,6 +58,22 @@ const TRANSPARENCY_PARAMS = {
   CENTER_DIST_MULTIPLIER: 2, // Multiplier for UV center distance
   CENTER_DIST_OFFSET: 0.5, // Offset for center distance effect
   ALPHA_MULTIPLIER: 1.0, // Overall alpha multiplier
+};
+
+// Camera Motion Parameters (MISSING – now explicit)
+const CAMERA_MOTION_PARAMS = {
+  DISTANCE: 10.0, // Base camera distance from center
+  ELEVATION: 0.0, // Vertical camera offset
+  LOOK_AT_OFFSET: [0, 0, 0], // Look-at point offset
+  DRIFT_STRENGTH: 0.0, // Subtle forward/back drift (0 = off)
+};
+
+// Animation Time Parameters (MISSING – decouples motion types)
+const TIME_PARAMS = {
+  GLOBAL_TIME_SCALE: 1.0, // Master time scaler
+  POSITION_TIME_SCALE: 1.0, // Position interpolation timing
+  ROTATION_TIME_SCALE: 1.0, // Rotation timing
+  CAMERA_TIME_SCALE: 1.0, // Camera motion timing
 };
 
 // ==================== END PARAMETERS SECTION ====================
@@ -432,23 +447,56 @@ const drawCubes = regl({
     animationScale: CUBE_PARAMS.ANIMATION_SCALE,
     alphaMultiplier: TRANSPARENCY_PARAMS.ALPHA_MULTIPLIER,
 
-    time: () => performance.now() * ANIMATION_PARAMS.SPEED,
+    // time: () => performance.now() * ANIMATION_PARAMS.SPEED,
+    time: () =>
+      performance.now() *
+      ANIMATION_PARAMS.SPEED *
+      TIME_PARAMS.GLOBAL_TIME_SCALE,
 
-    view: ({ tick }) => {
-      const t = performance.now() * ANIMATION_PARAMS.SPEED;
-      const a =
-        Math.pow(Math.sin(t) + 0.5 * 0.5, CAMERA_PARAMS.ORBIT_POWER) *
+    // view: ({ tick }) => {
+    //   const t = performance.now() * ANIMATION_PARAMS.SPEED;
+    //   const a =
+    //     Math.pow(Math.sin(t) + 0.5 * 0.5, CAMERA_PARAMS.ORBIT_POWER) *
+    //       CAMERA_PARAMS.ORBIT_MULTIPLIER +
+    //     t * ANIMATION_PARAMS.ORBIT_SPEED;
+
+    //   return mat4.lookAt(
+    //     mat4.create(),
+    //     [
+    //       ANIMATION_PARAMS.ORBIT_AMPLITUDE * Math.cos(a),
+    //       ANIMATION_PARAMS.ORBIT_AMPLITUDE * Math.cos(a),
+    //       ANIMATION_PARAMS.ORBIT_AMPLITUDE * Math.sin(a),
+    //     ],
+    //     [0, 0, 0],
+    //     [0, 1, 0],
+    //   );
+    // },
+    view: () => {
+      const rawTime =
+        performance.now() *
+        ANIMATION_PARAMS.SPEED *
+        TIME_PARAMS.CAMERA_TIME_SCALE;
+
+      const orbitPhase =
+        Math.pow(
+          Math.sin(rawTime) + ANIMATION_PARAMS.EASING_OFFSET,
+          CAMERA_PARAMS.ORBIT_POWER,
+        ) *
           CAMERA_PARAMS.ORBIT_MULTIPLIER +
-        t * ANIMATION_PARAMS.ORBIT_SPEED;
+        rawTime * ANIMATION_PARAMS.ORBIT_SPEED;
+
+      const drift = Math.sin(rawTime) * CAMERA_MOTION_PARAMS.DRIFT_STRENGTH;
+
+      const distance = CAMERA_MOTION_PARAMS.DISTANCE + drift;
 
       return mat4.lookAt(
         mat4.create(),
         [
-          ANIMATION_PARAMS.ORBIT_AMPLITUDE * Math.cos(a),
-          ANIMATION_PARAMS.ORBIT_AMPLITUDE * Math.cos(a),
-          ANIMATION_PARAMS.ORBIT_AMPLITUDE * Math.sin(a),
+          distance * Math.cos(orbitPhase),
+          CAMERA_MOTION_PARAMS.ELEVATION,
+          distance * Math.sin(orbitPhase),
         ],
-        [0, 0, 0],
+        CAMERA_MOTION_PARAMS.LOOK_AT_OFFSET,
         [0, 1, 0],
       );
     },
@@ -475,7 +523,12 @@ const drawCubes = regl({
 });
 
 regl.frame(({ tick }) => {
-  const t = performance.now() * 0.001 * ANIMATION_PARAMS.ROTATION_SPEED;
+  // const t = performance.now() * 0.001 * ANIMATION_PARAMS.ROTATION_SPEED;
+  const t =
+    performance.now() *
+    0.001 *
+    ANIMATION_PARAMS.ROTATION_SPEED *
+    TIME_PARAMS.ROTATION_TIME_SCALE;
 
   instances.forEach((inst, i) => {
     inst.rotation[1] = t + i * 0.01; // Optional: add slight per-cube offset
