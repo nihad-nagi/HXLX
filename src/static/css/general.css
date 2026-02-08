@@ -29,20 +29,42 @@ body {
     position: relative;
 
     /* Dark background instead of gradient on body */
-    background: hsl(0 0% 6%);
+    background: hsla(0 0% 6% 0%);
 
     /* Remove the mask from body - this was hiding everything! */
 }
 
 main {
-    width: 100%;
+    position: relative;
+    z-index: 1;
+
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 1rem;
-    position: relative;
-    z-index: 10; /* Above the .el background */
+}
+
+#frame {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: min(100vw, calc(100vh * 16 / 9));
+    height: min(100vh, calc(100vw * 9 / 16));
+
+    background: url("../img/hx-frame.png") center / 100% 100% no-repeat;
+
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.screen {
+    width: min(100vw, calc(100vh * 16 / 9));
+    aspect-ratio: 16 / 9;
+
+    padding: 6rem 8rem; /* frame thickness */
+    box-sizing: border-box;
 }
 
 #display {
@@ -50,6 +72,22 @@ main {
     inset: 0;
 }
 
+/* Optional: Add black bars for any letterboxing on the body */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: hsl(0 0% 6%);
+    z-index: 9998;
+}
+
+#display {
+    /* You might want to position this relative now */
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 100vh;
+}
 /* Headers - use Roman variant */
 h1,
 h2,
