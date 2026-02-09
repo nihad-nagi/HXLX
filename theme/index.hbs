@@ -26,12 +26,12 @@
         {{#if favicon_png}}
         <link rel="shortcut icon" href="static/img/favicon.png">
         {{/if}}
-        <link rel="stylesheet" href="static/css/background.css">
-        <link rel="stylesheet" href="static/css/glass.css">
-        <link rel="stylesheet" href="static/css/hxlx-variables.css">
+        {{!-- <link rel="stylesheet" href="static/css/background.css"> --}}
+        {{!-- <link rel="stylesheet" href="static/css/glass.css"> --}}
+        {{!-- <link rel="stylesheet" href="static/css/hxlx-variables.css"> --}}
         <link rel="stylesheet" href="static/css/general.css">
-        <link rel="stylesheet" href="static/css/chrome.css">
-        <link rel="stylesheet" href="static/css/panzoom.css">
+        {{!-- <link rel="stylesheet" href="static/css/chrome.css"> --}}
+        {{!-- <link rel="stylesheet" href="static/css/panzoom.css"> --}}
         {{!-- <link rel="stylesheet" href="static/css/toc.css"> --}}
         {{!-- <link rel="stylesheet" href="{{ resource "css/catppuccin.css" }}"> --}}
         {{#if print_enable}}
@@ -52,8 +52,10 @@
         {{/each}}
 
         <!-- Scripts -->
-        <script src="static/js/regl.min.js" defer></script>
-        <script src="static/js/gl-matrix-min.js" defer></script>
+        {{!-- <script src="static/js/regl.min.js" defer></script> --}}
+        <script src="static/js/three-min.js" defer></script>
+
+        {{!-- <script src="static/js/gl-matrix-min.js" defer></script> --}}
         <script src="static/js/svgpanzoom.min.js"></script>
         <script src="static/js/mermaid.min.js"></script>
         <script src="static/js/mermaid-panzoom.js"></script>
@@ -61,8 +63,9 @@
         {{!-- <script src="static/js/alpine-init.js"></script> --}}
 
         <!-- ✅ LOAD YOUR WEB COMPONENT HERE -->
-        <script src="static/js/color-table.js"></script>
-        <script src="static/js/display.js" defer></script>
+        {{!-- <script src="static/js/color-table.js"></script> --}}
+        {{!-- <script src="static/js/display.js" defer></script> --}}
+        <script src="static/js/three-init.js" defer></script>
         {{#if mathjax_support}}
         <!-- MathJax -->
         <script src="static/js/MathJax.js"></script>
@@ -81,10 +84,11 @@
         <script src="{{ resource "toc.js" }}"></script>
     </head>
     <body>
-        <div id="frame"></div>
-        <main>
+        <div id="hx-canvas"></div>
 
-            {{!-- <div id="display"></div> --}}
-        </main>
+        <!-- Frame overlay -->
+        <div id="frame">
+            <div class="frame-image"></div>
+        </div>
     </body>
 </html>
