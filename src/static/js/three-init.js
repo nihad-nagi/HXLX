@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const scene = new THREE.Scene();
 
   // Set background color (visible through transparent frame)
-  scene.background = new THREE.Color(0x111122); // Dark blue
+  scene.background = new THREE.Color(0x1a1a1a); // Dark blue
 
   // 5. Add test objects (visible through frame)
 
