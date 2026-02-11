@@ -10,6 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("✅ THREE.js loaded (v" + THREE.REVISION + ")");
 
+  // Check if CSS3DRenderer is available
+  if (typeof THREE.CSS3DRenderer === "undefined") {
+    console.warn("⚠️ CSS3DRenderer not loaded - HTML in 3D space unavailable");
+  } else {
+    console.log("✅ CSS3DRenderer loaded");
+  }
+
   // 2. Get container
   const container = document.getElementById("hx-canvas");
   if (!container) {
@@ -20,13 +27,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // 3. Create canvas element
   const canvas = document.createElement("canvas");
 
-  // Apply essential styles
-  canvas.style.cssText = `
-        display: block;
-        width: 100%;
-        height: 100%;
-        background-color: transparent;
-    `;
+  // // Apply essential styles
+  // canvas.style.cssText = `
+  //       display: block;
+  //       width: 93.3%;
+  //       height: 85.2%;
+  //       background-color: red;
+  //   `;
 
   // Append to container
   container.appendChild(canvas);
@@ -36,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const scene = new THREE.Scene();
 
   // Set background color (visible through transparent frame)
-  scene.background = new THREE.Color(0x1a1a1a); // Dark blue
+  scene.background = new THREE.Color(0xffffff); // Dark blue
 
   // 5. Add test objects (visible through frame)
 
@@ -205,5 +212,5 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 500);
 
   console.log("🎉 Three.js scene fully initialized!");
-  console.log("👉 Look for rotating 3D objects behind the frame overlay");
+  console.log("👉 HALLELUJAH");
 });

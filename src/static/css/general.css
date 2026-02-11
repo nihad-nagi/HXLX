@@ -56,15 +56,15 @@ body {
     display: block;
 
     /* Scale to fit while maintaining aspect ratio */
-    width: auto;
-    height: auto;
+    width: 93%;
+    height: 93%;
 
     /* Use contain to maintain aspect ratio, fill as much as possible */
     object-fit: contain;
 
     /* Maximum size (actual 1920x1080 or scaled) */
-    max-width: 1920px;
-    max-height: 1080px;
+    max-width: 92.7%;
+    max-height: 92.7%;
 
     /* Scale up to fill available space */
     width: min(1920px, 100vw, calc(100vh * 16 / 9));
