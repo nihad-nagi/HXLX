@@ -53,8 +53,9 @@
 
         <!-- Scripts -->
         {{!-- <script src="static/js/regl.min.js" defer></script> --}}
-        <script src="static/js/three-min.js" defer></script>
-
+        <script src="static/js/three-min.js"></script>
+        <script src="static/js/CSS3DRenderer.js"></script>
+        <script src="static/js/CSS2DRenderer.js"></script>
         {{!-- <script src="static/js/gl-matrix-min.js" defer></script> --}}
         <script src="static/js/svgpanzoom.min.js"></script>
         <script src="static/js/mermaid.min.js"></script>
@@ -65,7 +66,7 @@
         <!-- ✅ LOAD YOUR WEB COMPONENT HERE -->
         {{!-- <script src="static/js/color-table.js"></script> --}}
         {{!-- <script src="static/js/display.js" defer></script> --}}
-        <script src="static/js/three-init.js" defer></script>
+        <script type="module" src="static/js/three-init2.js" defer></script>
         {{#if mathjax_support}}
         <!-- MathJax -->
         <script src="static/js/MathJax.js"></script>
