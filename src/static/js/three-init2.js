@@ -1,3 +1,8 @@
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
 // ===== three-init.js =====
 document.addEventListener("DOMContentLoaded", function () {
   console.log("🚀 Three.js Scene Initialization");
@@ -10,17 +15,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("✅ THREE.js loaded (v" + THREE.REVISION + ")");
 
-  // Check if CSS3DRenderer is available
-  if (typeof THREE.CSS3DRenderer === "undefined") {
-    console.warn("⚠️ CSS3DRenderer not loaded - HTML in 3D space unavailable");
+  // Check if RoomEnvironment is available
+  if (typeof RoomEnvironment === "undefined") {
+    console.warn("⚠️ Room Environment not loaded");
   } else {
-    console.log("✅ CSS3DRenderer loaded");
+    console.log("✅ Room Environment loaded");
   }
 
-  if (typeof THREE.CSS2DRenderer === "undefined") {
-    console.warn("⚠️ CSS2DRenderer not loaded - 2D labels unavailable");
+  // Check if RoundedBoxGeometry is available
+  if (typeof RoundedBoxGeometry === "undefined") {
+    console.warn("⚠️ RoundedBoxGeometry not loaded");
   } else {
-    console.log("✅ CSS2DRenderer loaded");
+    console.log("✅ RoundedBoxGeometry loaded");
   }
 
   // 2. Get container
@@ -32,68 +38,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 3. Create canvas element
   const canvas = document.createElement("canvas");
-
-  // Apply essential styles
-  canvas.style.cssText = `
-        display: block;
-        width: 100%;
-        height: 100%;
-        background-color: transparent;
-    `;
-
-  // Append to container
   container.appendChild(canvas);
   console.log("✅ Canvas created and appended");
 
   // 4. Create Three.js scene
   const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x111111); // Dark background like example
 
-  // Set background color (visible through transparent frame)
-  scene.background = new THREE.Color(0x1a1a1a);
-
-  // 5. Add test objects
-  const cubeGeometry = new THREE.BoxGeometry(2, 2, 2);
-  const cubeMaterial = new THREE.MeshBasicMaterial({
-    color: 0xff0000,
-    wireframe: false,
-  });
-  const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-  cube.position.set(0, 1, 0);
-  scene.add(cube);
-
-  const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-  const sphereMaterial = new THREE.MeshBasicMaterial({
-    color: 0x00ff00,
-    wireframe: false,
-  });
-  const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-  sphere.position.set(-3, 0, 0);
-  scene.add(sphere);
-
-  const torusGeometry = new THREE.TorusGeometry(1.5, 0.5, 16, 100);
-  const torusMaterial = new THREE.MeshBasicMaterial({
-    color: 0x0088ff,
-    wireframe: false,
-  });
-  const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-  torus.position.set(3, 0, 0);
-  scene.add(torus);
-
-  const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
-  gridHelper.position.y = -2;
-  scene.add(gridHelper);
-
-  // 6. Create camera
+  // 5. Create camera
   const camera = new THREE.PerspectiveCamera(
-    60,
+    50, // FOV like example
     container.clientWidth / container.clientHeight,
     0.1,
-    1000,
+    10, // Reduced far plane like example
   );
-  camera.position.set(0, 3, 10);
+  camera.position.set(0, 0.5, 2.5);
   camera.lookAt(0, 0, 0);
 
-  // 7. Create WebGL renderer
+  // 6. Create renderer
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true,
@@ -101,181 +63,128 @@ document.addEventListener("DOMContentLoaded", function () {
     powerPreference: "high-performance",
   });
 
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.shadowMap.enabled = true; // Enable shadows for better quality
+  updateRendererSize();
 
-  // --- CREATE CSS3D RENDERER (if available) ---
-  let css3DRenderer = null;
-  if (typeof THREE.CSS3DRenderer !== "undefined") {
-    css3DRenderer = new THREE.CSS3DRenderer();
-    css3DRenderer.domElement.style.position = "absolute";
-    css3DRenderer.domElement.style.top = "0";
-    css3DRenderer.domElement.style.left = "0";
-    css3DRenderer.domElement.style.pointerEvents = "none";
-    css3DRenderer.domElement.style.zIndex = "5";
-    container.appendChild(css3DRenderer.domElement);
-    console.log("✅ CSS3D renderer created");
-  }
+  console.log("✅ Renderer created");
 
-  // --- CREATE CSS2D RENDERER (if available) ---
-  let css2DRenderer = null;
-  if (typeof THREE.CSS2DRenderer !== "undefined") {
-    css2DRenderer = new THREE.CSS2DRenderer();
-    css2DRenderer.domElement.style.position = "absolute";
-    css2DRenderer.domElement.style.top = "0";
-    css2DRenderer.domElement.style.left = "0";
-    css2DRenderer.domElement.style.pointerEvents = "none";
-    css2DRenderer.domElement.style.zIndex = "10";
-    container.appendChild(css2DRenderer.domElement);
-    console.log("✅ CSS2D renderer created");
-  }
+  // 7. Setup Room Environment (from example)
+  const environment = new RoomEnvironment();
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmremGenerator.fromScene(environment).texture;
 
-  // --- ADD CSS3D ELEMENTS (if renderer available) ---
-  if (typeof THREE.CSS3DObject !== "undefined" && css3DRenderer) {
-    try {
-      const div1 = document.createElement("div");
-      div1.textContent = "CSS3D Element";
-      div1.style.cssText = `
-        width: 200px;
-        height: 100px;
-        background: rgba(255, 255, 0, 0.9);
-        border: 2px solid black;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: Arial;
-        font-size: 16px;
-        color: black;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      `;
+  // 8. Add OrbitControls with auto-rotate (from example)
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.autoRotate = false;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.rotateSpeed = 1.0;
+  controls.enableZoom = true;
+  controls.target.set(0, 0, 0);
+  controls.update();
 
-      const css3dObject = new THREE.CSS3DObject(div1);
-      css3dObject.position.set(0, 3, -2);
-      scene.add(css3dObject);
-      console.log("✅ CSS3D element added");
-    } catch (e) {
-      console.error("❌ Error adding CSS3D element:", e);
-    }
-  }
+  // 9. Create Rounded Cube (like example)
+  const geometry = new RoundedBoxGeometry(1, 1, 1, 7, 0.1); // width, height, depth, segments, radius
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x4a90e2, // Nice blue color
+    roughness: 0.2,
+    metalness: 0.3,
+    emissive: new THREE.Color(0x0),
+    emissiveIntensity: 0,
+    flatShading: false,
+  });
 
-  // --- ADD CSS2D LABELS (if renderer available) ---
-  if (typeof THREE.CSS2DObject !== "undefined" && css2DRenderer) {
-    try {
-      const label1 = document.createElement("div");
-      label1.textContent = "Cube";
-      label1.style.cssText = `
-        color: white;
-        background: rgba(0,0,0,0.8);
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-family: Arial;
-        font-size: 14px;
-        pointer-events: none;
-        border: 1px solid white;
-      `;
+  const roundedCube = new THREE.Mesh(geometry, material);
+  roundedCube.castShadow = true;
+  roundedCube.receiveShadow = true;
+  roundedCube.position.set(0, 0, 0);
+  scene.add(roundedCube);
 
-      const css2dLabel1 = new THREE.CSS2DObject(label1);
-      css2dLabel1.position.set(0, 2.5, 0);
-      cube.add(css2dLabel1);
+  console.log("✅ Rounded cube created");
 
-      const label2 = document.createElement("div");
-      label2.textContent = "Sphere";
-      label2.style.cssText = `
-        color: white;
-        background: rgba(0,0,0,0.8);
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-family: Arial;
-        font-size: 14px;
-        pointer-events: none;
-        border: 1px solid white;
-      `;
+  // 10. Add lighting (enhanced for RoomEnvironment)
+  const mainLight = new THREE.DirectionalLight(0xffeedd, 1);
+  mainLight.position.set(2, 3, 4);
+  mainLight.castShadow = true;
+  mainLight.receiveShadow = true;
+  scene.add(mainLight);
 
-      const css2dLabel2 = new THREE.CSS2DObject(label2);
-      css2dLabel2.position.set(0, 1.5, 0);
-      sphere.add(css2dLabel2);
+  const fillLight = new THREE.DirectionalLight(0xaaccff, 0.6);
+  fillLight.position.set(-3, 1, 2);
+  scene.add(fillLight);
 
-      console.log("✅ CSS2D labels added");
-    } catch (e) {
-      console.error("❌ Error adding CSS2D labels:", e);
-    }
-  }
+  const backLight = new THREE.DirectionalLight(0xffaa66, 0.4);
+  backLight.position.set(0, 1, -4);
+  scene.add(backLight);
 
-  // NOW set the initial size after all renderers are created
+  // 11. Add subtle ambient light
+  const ambientLight = new THREE.AmbientLight(0x404060);
+  scene.add(ambientLight);
+
+  // 12. Add grid helper (adjusted for better visibility)
+  const gridHelper = new THREE.GridHelper(5, 20, 0x888888, 0x444444);
+  gridHelper.position.y = -0.5;
+  scene.add(gridHelper);
+
+  // 13. Add simple axis helper for orientation
+  const axesHelper = new THREE.AxesHelper(2);
+  // scene.add(axesHelper); // Uncomment if needed
+
+  // 14. Handle window resize
   function updateRendererSize() {
     const width = container.clientWidth;
     const height = container.clientHeight;
-
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-
     renderer.setSize(width, height);
-
-    if (css3DRenderer) {
-      css3DRenderer.setSize(width, height);
-    }
-
-    if (css2DRenderer) {
-      css2DRenderer.setSize(width, height);
-    }
   }
 
-  // Call this AFTER all renderers are defined
-  updateRendererSize();
-  console.log("✅ WebGL renderer created and sized");
+  window.addEventListener("resize", () => {
+    updateRendererSize();
+  });
 
-  // 8. Handle window resize
-  let resizeTimeout;
-  function handleResize() {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(updateRendererSize, 100);
-  }
-
-  window.addEventListener("resize", handleResize);
-
-  // 9. Animation loop
+  // 15. Animation loop
   let animationId;
   function animate() {
     animationId = requestAnimationFrame(animate);
 
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+    // Auto-rotate is handled by OrbitControls
+    controls.update();
 
-    sphere.rotation.x += 0.005;
-    sphere.rotation.y += 0.005;
-
-    torus.rotation.x += 0.01;
-    torus.rotation.y += 0.01;
+    // Optional: Add subtle floating animation to the cube
+    // roundedCube.rotation.y += 0.001;
+    // roundedCube.rotation.x += 0.0005;
+    // roundedCube.rotation.z += 0.0005;
 
     renderer.render(scene, camera);
-
-    if (css3DRenderer) {
-      css3DRenderer.render(scene, camera);
-    }
-
-    if (css2DRenderer) {
-      css2DRenderer.render(scene, camera);
-    }
   }
 
   animate();
-  console.log("✅ Animation started");
-
-  // 10. Cleanup
+  // renderer.render(scene, camera);
+  // 16. Cleanup
   window.addEventListener("beforeunload", function () {
     if (animationId) {
       cancelAnimationFrame(animationId);
     }
-    if (renderer) {
-      renderer.dispose();
-    }
-    if (css3DRenderer && css3DRenderer.domElement) {
-      css3DRenderer.domElement.remove();
-    }
-    if (css2DRenderer && css2DRenderer.domElement) {
-      css2DRenderer.domElement.remove();
-    }
+    renderer.dispose();
+    pmremGenerator.dispose();
   });
 
-  console.log("🎉 Three.js scene fully initialized with CSS renderers!");
+  // 17. Debug info
+  setTimeout(() => {
+    console.log("=== FINAL DEBUG INFO ===");
+    console.log("Scene type: Room Environment");
+    console.log("Cube geometry: RoundedBox");
+    console.log("Controls: OrbitControls with auto-rotate");
+    console.log("Canvas dimensions:", canvas.width, "x", canvas.height);
+    console.log(
+      "Container dimensions:",
+      container.clientWidth,
+      "x",
+      container.clientHeight,
+    );
+    console.log("Aspect ratio:", camera.aspect.toFixed(4));
+    console.log("🎉 Three.js scene fully initialized with best practices!");
+  }, 500);
 });
