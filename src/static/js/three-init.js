@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const scene = new THREE.Scene();
 
   // Set background color (visible through transparent frame)
-  scene.background = new THREE.Color(0xffffff); // Dark blue
+  scene.background = new THREE.Color(0x202020); // Dark blue
 
   // 5. Add test objects (visible through frame)
 
@@ -53,6 +53,29 @@ document.addEventListener("DOMContentLoaded", function () {
     color: 0xff0000,
     wireframe: false,
   });
+  // Create the glass material
+  const matGlass = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff,
+    metalness: 0,
+    roughness: 0.1,
+    transparent: true,
+    opacity: 0.5,
+    envMapIntensity: 1.5,
+    clearcoat: 1,
+    clearcoatRoughness: 0.1,
+    side: THREE.DoubleSide,
+  });
+  const glassMaterial = {
+    roughness: 0.08, // Smooth like glass
+    metalness: 0, // Non-metallic
+    envMapIntensity: 1.2, // Strong reflections
+    color: 0xffffff, // White base
+    emissive: 0x000000, // No emission
+    emissiveIntensity: 0,
+    flatShading: false,
+    side: THREE.DoubleSide, // See through edges
+  };
+
   const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
   cube.position.set(0, 1, 0);
   scene.add(cube);
@@ -63,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
     color: 0x00ff00,
     wireframe: false,
   });
-  const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+  const sphere = new THREE.Mesh(sphereGeometry, matGlass);
   sphere.position.set(-3, 0, 0);
   scene.add(sphere);
 
@@ -77,8 +100,26 @@ document.addEventListener("DOMContentLoaded", function () {
   torus.position.set(3, 0, 0);
   scene.add(torus);
 
+  // 2. Main directional light - bright white from top right
+  const directionalLight = new THREE.DirectionalLight(0xffeedd, 1);
+  directionalLight.position.set(2, 7, 4);
+  directionalLight.lookAt(0, 0, 0);
+  directionalLight.castShadow = true;
+  directionalLight.receiveShadow = true;
+
+  // 3. Fill directional light - cool blue from left
+  const fillLight = new THREE.DirectionalLight(0xaaccff, 0.8);
+  fillLight.position.set(-3, 1, 2);
+  fillLight.lookAt(0, 0, 0);
+  scene.add(fillLight);
+
+  const backLight = new THREE.DirectionalLight(0xffaa66, 0.6);
+  backLight.position.set(-1, 3, -4);
+  backLight.lookAt(0, 0, 0);
+  scene.add(backLight);
+
   // Grid helper for orientation
-  const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
+  const gridHelper = new THREE.GridHelper(20, 20, 0x101010, 0x1a1a1a);
   gridHelper.position.y = -2;
   scene.add(gridHelper);
 
@@ -163,13 +204,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     torus.rotation.x += 0.01;
     torus.rotation.y += 0.01;
-
     // Render scene
     renderer.render(scene, camera);
   }
 
   // Start animation
   animate();
+
+  // Render scene
+  renderer.render(scene, camera);
   console.log("✅ Animation started");
 
   // 10. Cleanup on page unload
