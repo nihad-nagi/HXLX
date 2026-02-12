@@ -1,3 +1,7 @@
+import * as THREE from "three"; // Changed from "./three.module.js"
+import { OrbitControls } from "three/addons/controls/OrbitControls.js"; // Changed from "./addons/..."
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
 // ===== three-init.js =====
 document.addEventListener("DOMContentLoaded", function () {
   console.log("🚀 Three.js Scene Initialization");
@@ -11,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("✅ THREE.js loaded (v" + THREE.REVISION + ")");
 
   // Check if CSS3DRenderer is available
-  if (typeof THREE.CSS3DRenderer === "undefined") {
+  if (typeof CSS3DRenderer === "undefined") {
     console.warn("⚠️ CSS3DRenderer not loaded - HTML in 3D space unavailable");
   } else {
     console.log("✅ CSS3DRenderer loaded");

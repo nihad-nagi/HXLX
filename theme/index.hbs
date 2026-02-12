@@ -26,21 +26,12 @@
         {{#if favicon_png}}
         <link rel="shortcut icon" href="static/img/favicon.png">
         {{/if}}
-        {{!-- <link rel="stylesheet" href="static/css/background.css"> --}}
-        {{!-- <link rel="stylesheet" href="static/css/glass.css"> --}}
-        {{!-- <link rel="stylesheet" href="static/css/hxlx-variables.css"> --}}
         <link rel="stylesheet" href="static/css/general.css">
-        {{!-- <link rel="stylesheet" href="static/css/chrome.css"> --}}
-        {{!-- <link rel="stylesheet" href="static/css/panzoom.css"> --}}
-        {{!-- <link rel="stylesheet" href="static/css/toc.css"> --}}
-        {{!-- <link rel="stylesheet" href="{{ resource "css/catppuccin.css" }}"> --}}
         {{#if print_enable}}
         <link rel="stylesheet" href="static/css/print.css" media="print">
         {{/if}}
-
         <!-- Fonts -->
         <link rel="stylesheet" href="static/fonts/fonts.css">
-
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" id="mdbook-highlight-css" href="static/css/highlight.css">
         <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="{{ resource "tomorrow-night.css" }}">
@@ -50,13 +41,16 @@
         {{#each additional_css}}
         <link rel="stylesheet" href="{{ resource this }}">
         {{/each}}
+        <script type="importmap">
+        {
+          "imports": {
+            "three": "/static/js/three.module.min.js",
+            "three/addons/": "/static/js/addons/"
+          }
+        }
+        </script>
 
         <!-- Scripts -->
-        {{!-- <script src="static/js/regl.min.js" defer></script> --}}
-        <script src="static/js/three-min.js"></script>
-        <script src="static/js/CSS3DRenderer.js"></script>
-        <script src="static/js/CSS2DRenderer.js"></script>
-        {{!-- <script src="static/js/gl-matrix-min.js" defer></script> --}}
         <script src="static/js/svgpanzoom.min.js"></script>
         <script src="static/js/mermaid.min.js"></script>
         <script src="static/js/mermaid-panzoom.js"></script>
