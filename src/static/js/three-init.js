@@ -2,6 +2,7 @@ import * as THREE from "three"; // Changed from "./three.module.js"
 import { OrbitControls } from "three/addons/controls/OrbitControls.js"; // Changed from "./addons/..."
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
+import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 // ===== three-init.js =====
 document.addEventListener("DOMContentLoaded", function () {
   console.log("🚀 Three.js Scene Initialization");
@@ -21,6 +22,21 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ CSS3DRenderer loaded");
   }
 
+  // Check if CSS2DRenderer is available
+  if (typeof CSS2DRenderer === "undefined") {
+    console.warn("⚠️ CSS2DRenderer not loaded - HTML in 2D space unavailable");
+  } else {
+    console.log("✅ CSS2DRenderer loaded");
+  }
+
+  if (typeof RoomEnvironment === "undefined") {
+    console.warn(
+      "⚠️ Room Environment not loaded - HTML in 3D space unavailable",
+    );
+  } else {
+    console.log("✅ Room Environment loaded");
+  }
+
   // 2. Get container
   const container = document.getElementById("hx-canvas");
   if (!container) {
@@ -30,14 +46,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 3. Create canvas element
   const canvas = document.createElement("canvas");
-
-  // // Apply essential styles
-  // canvas.style.cssText = `
-  //       display: block;
-  //       width: 93.3%;
-  //       height: 85.2%;
-  //       background-color: red;
-  //   `;
 
   // Append to container
   container.appendChild(canvas);
@@ -92,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   const sphere = new THREE.Mesh(sphereGeometry, matGlass);
   sphere.position.set(-3, 0, 0);
-  scene.add(sphere);
+  // scene.add(sphere);
 
   // Blue torus
   const torusGeometry = new THREE.TorusGeometry(1.5, 0.5, 16, 100);
@@ -102,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   const torus = new THREE.Mesh(torusGeometry, torusMaterial);
   torus.position.set(3, 0, 0);
-  scene.add(torus);
+  // scene.add(torus);
 
   // 2. Main directional light - bright white from top right
   const directionalLight = new THREE.DirectionalLight(0xffeedd, 1);
