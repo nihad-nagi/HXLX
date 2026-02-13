@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 4. Create Three.js scene
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x111111);
+  scene.background = new THREE.Color(0x1a1a1a);
 
   // 5. Create camera
   const camera = new THREE.PerspectiveCamera(

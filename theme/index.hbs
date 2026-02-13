@@ -80,14 +80,22 @@
         <script src="{{ resource "toc.js" }}"></script>
     </head>
     <body>
-        <div id="hx-canvas"></div>
+        <!-- Main container that preserves 16:9 aspect ratio -->
+        <div id="hx-wrapper">
+            <!-- Outer frame (full 1920x1080 area) -->
+            <div class="frame-outer">
+                <!-- Inner content area (92.6% of outer) -->
+                <div class="frame-inner">
+                    <!-- Canvas element -->
+                    <div id="hx-canvas"></div>
 
-        <!-- Frame overlay -->
-        <div id="frame">
-        <!-- Glass display layer - sits between canvas and frame border -->
-            <div class="glass-display"></div>
-            <!-- Decorative frame border on top -->
-            <div class="frame-image"></div>
+                    <!-- Glass overlay effect -->
+                    <div class="glass"></div>
+                </div>
+
+                <!-- Decorative frame border (sits on top) -->
+                <div class="frame-border"></div>
+            </div>
         </div>
     </body>
 </html>
