@@ -75,42 +75,6 @@ body {
 }
 
 /* ===== GLASS SCREEN ===== */
-.glass-screen {
-    position: absolute;
-    top: 4%;
-    left: 0%;
-    width: 100%;
-    height: 92%;
-
-    /* Glass effect - transparent to reveal canvas */
-    background: rgba(20, 30, 40, 0.02);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    border-radius: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    /* 3D inset border shadows - creates the beveled glass edge */
-    box-shadow:
-            /* Top-left inner light (bevel highlight) */
-        inset 3px 3px 8px rgba(255, 255, 255, 0.25),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
-        /* Bottom-right inner shadows (depth/inset) */ inset -4px -4px 10px
-            rgba(0, 0, 0, 0.3),
-        inset -2px -2px 6px rgba(0, 0, 0, 0.25),
-        /* Subtle outer glow on the glass edge */ 0 0 0 1px
-            rgba(255, 255, 255, 0.1);
-
-    /* Optional: Very subtle gradient for depth */
-    background: radial-gradient(
-        circle at 50% 50%,
-        rgba(255, 255, 255, 0.03) 0%,
-        rgba(0, 0, 0, 0.01) 100%
-    );
-
-    /* Ensure glass is above canvas but below frame border */
-    z-index: 2;
-    pointer-events: none; /* Allow clicks to pass through to canvas */
-}
-
 .glass {
     position: absolute;
     top: 3.9%;
@@ -165,78 +129,62 @@ body {
     pointer-events: none; /* Allow clicks to pass through to canvas */
 }
 
-/* ===== HOVER/INTERACTION EFFECTS ===== */
-/*.frame-inner:hover .glass-screen {
-    box-shadow:
-        inset 4px 4px 12px rgba(255, 255, 255, 0.3),
-        inset 3px 3px 6px rgba(255, 255, 255, 0.3),
-        inset -5px -5px 14px rgba(0, 0, 0, 0.35),
-        inset -3px -3px 8px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(1px);
+@keyframes move {
+    from,
+    to {
+        transform: rotate(-45deg);
+    }
+    25%,
+    75% {
+        transform: translateX(30px) translateY(10px) rotate(30deg);
+    }
+    50% {
+        transform: translateX(60px) translateY(20px);
+    }
 }
 
-.glass-screen:active {
-    box-shadow:
-        inset 5px 5px 15px rgba(0, 0, 0, 0.25),
-        inset 4px 4px 10px rgba(0, 0, 0, 0.2),
-        inset -3px -3px 8px rgba(255, 255, 255, 0.15),
-        inset -2px -2px 4px rgba(255, 255, 255, 0.1);
-}*/
+/* ===== GLASS BANNER OVERLAY - Fully Responsive ===== */
+.glass-banner {
+    position: absolute;
+    top: 15vh; /* Use viewport height for vertical positioning */
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(80%, 1200px); /* Responsive width with max limit */
+    min-height: min(8vh, 80px); /* Responsive min height */
+    max-height: 20vh; /* Prevent banner from getting too tall */
+    padding: clamp(1rem, 3vh, 3rem) clamp(2rem, 5vw, 6rem); /* Responsive padding */
 
-/* Remove any conflicting pseudo-elements */
-body::before,
-body::after {
-    content: none !important;
-}
-
-.glass-3d {
-    /* Base glass effect */
-    background: rgba(255, 255, 255, 0.15);
+    /* Glass morphism effect */
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: 16px;
+    border-radius: min(2vw, 20px); /* Responsive border radius */
+    border: 1px solid rgba(255, 255, 255, 0.3);
 
-    /* 3D inset border shadows */
+    /* Shadow for depth */
     box-shadow:
-    /* Top-left inner light (bevel effect) */
-        inset 2px 2px 4px rgba(255, 255, 255, 0.3),
-        inset 3px 3px 8px rgba(255, 255, 255, 0.2),
-        /* Bottom-right inner shadows (depth) */ inset -3px -3px 8px
-            rgba(0, 0, 0, 0.2),
-        inset -2px -2px 4px rgba(0, 0, 0, 0.1),
-        /* Outer glow for glass edge */ 0 0 0 1px rgba(255, 255, 255, 0.1),
-        /* Subtle outer shadow for depth */ 0 8px 32px rgba(0, 0, 0, 0.1);
+        0 8px 32px 0 rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 
-    /* Optional: Add a subtle gradient overlay for extra glass effect */
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.2) 0%,
-        rgba(255, 255, 255, 0.05) 50%,
-        rgba(255, 255, 255, 0) 100%
-    );
-
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 24px;
+    /* Text styling - responsive font sizes */
     color: white;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
+    font-size: clamp(1.4rem, 2vh, 2rem); /* Responsive font size */
+    text-align: center;
+    letter-spacing: 0.5px;
 
-/* Optional: Visual debugging class */
-.debug #hx-canvas canvas {
-    border: 2px solid rgba(255, 0, 0, 0.5);
-}
+    /* Flex for content alignment */
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1rem, 2vw, 3rem); /* Responsive gap */
 
-.debug .frame-image {
-    border: 2px solid rgba(0, 255, 0, 0.5);
-    background-color: rgba(0, 255, 0, 0.1) !important;
-}
+    /* Ensure it appears above glass but below frame border */
+    z-index: 2;
+    pointer-events: none;
 
-#display {
-    position: relative;
-    z-index: 20; /* Make sure content is above canvas */
-    width: 100%;
-    min-height: 100vh;
+    /* Smooth transitions */
+    transition: all 0.3s ease;
 }
 
 /* Headers - use Roman variant */

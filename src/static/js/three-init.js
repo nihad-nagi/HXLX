@@ -64,11 +64,11 @@ document.addEventListener("DOMContentLoaded", function () {
   pmremGenerator.compileCubemapShader();
   scene.environment = pmremGenerator.fromScene(environment).texture;
 
-  // 8. Add OrbitControls with auto-rotate
+  // 8. Add OrbitControls with auto-rotate DISABLED
   const controls = new OrbitControls(camera, renderer.domElement);
-  controls.autoRotate = false;
-  controls.autoRotateSpeed = 1.5;
-  controls.enableDamping = true;
+  controls.autoRotate = false; // Explicitly disabled
+  controls.autoRotateSpeed = 0; // Set to 0 to ensure no rotation
+  controls.enableDamping = true; // Keep damping for smooth user interaction
   controls.dampingFactor = 0.05;
   controls.rotateSpeed = 1.0;
   controls.enableZoom = true;
@@ -200,18 +200,21 @@ document.addEventListener("DOMContentLoaded", function () {
     lottieContainer.style.left = "-9999px";
     document.body.appendChild(lottieContainer);
 
-    // Load Lottie animation
+    // Load Lottie animation with autoplay DISABLED
     const animation = lottie.loadAnimation({
       container: lottieContainer,
       animType: "canvas",
-      loop: true,
-      autoplay: true,
+      loop: false, // Disable loop
+      autoplay: false, // Disable autoplay
       animationData: data,
       rendererSettings: {
         dpr: dpr,
         preserveAspectRatio: "xMidYMid slice",
       },
     });
+
+    // Stop at first frame
+    animation.goToAndStop(0, true);
 
     // Create Three.js texture from Lottie canvas
     const texture = new THREE.CanvasTexture(animation.container);
@@ -222,10 +225,9 @@ document.addEventListener("DOMContentLoaded", function () {
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
 
-    // Update texture on each frame
-    animation.addEventListener("enterFrame", function () {
-      texture.needsUpdate = true;
-    });
+    // No need to update texture on frame since animation is stopped
+    // But we still update once
+    texture.needsUpdate = true;
 
     // Create the final rounded cube with Lottie texture
     const geometry = new RoundedBoxGeometry(1, 1, 1, 7, 0.2);
@@ -245,74 +247,76 @@ document.addEventListener("DOMContentLoaded", function () {
     lottieCube.position.set(0, 0, 0);
     scene.add(lottieCube);
 
-    console.log("✅ Lottie cube created and added to scene!");
+    console.log(
+      "✅ Lottie cube created and added to scene with animation stopped!",
+    );
 
-    // Setup scrubber controls
-    setupScrubber(animation);
+    // Optional: Remove or comment out scrubber if not needed
+    // setupScrubber(animation);
   }
 
   // Start loading Lottie with correct paths
   tryLoadLottie();
 
-  // 15. Setup scrubber control
-  function setupScrubber(animation) {
-    let scrubber = document.getElementById("scrubber");
-
-    if (!scrubber) {
-      let infoDiv = document.getElementById("info");
-      if (!infoDiv) {
-        infoDiv = document.createElement("div");
-        infoDiv.id = "info";
-        infoDiv.style.position = "absolute";
-        infoDiv.style.bottom = "20px";
-        infoDiv.style.left = "0";
-        infoDiv.style.width = "100%";
-        infoDiv.style.textAlign = "center";
-        infoDiv.style.zIndex = "1000";
-        infoDiv.style.pointerEvents = "none";
-        document.body.appendChild(infoDiv);
-      }
-
-      scrubber = document.createElement("input");
-      scrubber.id = "scrubber";
-      scrubber.type = "range";
-      scrubber.value = "0";
-      scrubber.style.width = "300px";
-      scrubber.style.pointerEvents = "auto";
-      scrubber.style.cursor = "pointer";
-      infoDiv.appendChild(scrubber);
-
-      const label = document.createElement("span");
-      label.textContent = "Animation Timeline ";
-      label.style.color = "white";
-      label.style.fontFamily = "Arial, sans-serif";
-      label.style.marginRight = "10px";
-      infoDiv.insertBefore(label, scrubber);
-    }
-
-    // Wait for animation to be ready
-    setTimeout(() => {
-      scrubber.max = animation.totalFrames || 100;
-
-      scrubber.addEventListener("pointerdown", function () {
-        animation.pause();
-      });
-
-      scrubber.addEventListener("pointerup", function () {
-        animation.play();
-      });
-
-      scrubber.addEventListener("input", function () {
-        animation.goToAndStop(parseFloat(scrubber.value), true);
-      });
-
-      animation.addEventListener("enterFrame", function () {
-        scrubber.value = animation.currentFrame;
-      });
-
-      console.log("✅ Scrubber controls setup");
-    }, 1000);
-  }
+  // 15. Setup scrubber control (commented out as animation is stopped)
+  // function setupScrubber(animation) {
+  //   let scrubber = document.getElementById("scrubber");
+  //
+  //   if (!scrubber) {
+  //     let infoDiv = document.getElementById("info");
+  //     if (!infoDiv) {
+  //       infoDiv = document.createElement("div");
+  //       infoDiv.id = "info";
+  //       infoDiv.style.position = "absolute";
+  //       infoDiv.style.bottom = "20px";
+  //       infoDiv.style.left = "0";
+  //       infoDiv.style.width = "100%";
+  //       infoDiv.style.textAlign = "center";
+  //       infoDiv.style.zIndex = "1000";
+  //       infoDiv.style.pointerEvents = "none";
+  //       document.body.appendChild(infoDiv);
+  //     }
+  //
+  //     scrubber = document.createElement("input");
+  //     scrubber.id = "scrubber";
+  //     scrubber.type = "range";
+  //     scrubber.value = "0";
+  //     scrubber.style.width = "300px";
+  //     scrubber.style.pointerEvents = "auto";
+  //     scrubber.style.cursor = "pointer";
+  //     infoDiv.appendChild(scrubber);
+  //
+  //     const label = document.createElement("span");
+  //     label.textContent = "Animation Timeline ";
+  //     label.style.color = "white";
+  //     label.style.fontFamily = "Arial, sans-serif";
+  //     label.style.marginRight = "10px";
+  //     infoDiv.insertBefore(label, scrubber);
+  //   }
+  //
+  //   // Wait for animation to be ready
+  //   setTimeout(() => {
+  //     scrubber.max = animation.totalFrames || 100;
+  //
+  //     scrubber.addEventListener("pointerdown", function () {
+  //       animation.pause();
+  //     });
+  //
+  //     scrubber.addEventListener("pointerup", function () {
+  //       animation.play();
+  //     });
+  //
+  //     scrubber.addEventListener("input", function () {
+  //       animation.goToAndStop(parseFloat(scrubber.value), true);
+  //     });
+  //
+  //     animation.addEventListener("enterFrame", function () {
+  //       scrubber.value = animation.currentFrame;
+  //     });
+  //
+  //     console.log("✅ Scrubber controls setup");
+  //   }, 1000);
+  // }
 
   // 16. UI Helpers
   function showLoadingIndicator() {
@@ -376,11 +380,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   window.addEventListener("resize", updateRendererSize);
 
-  // 18. Animation loop
+  // 18. Animation loop - now just renders static scene
   let animationId;
   function animate() {
     animationId = requestAnimationFrame(animate);
-    controls.update();
+    controls.update(); // Keep this for user interaction
     renderer.render(scene, camera);
   }
 
@@ -395,5 +399,7 @@ document.addEventListener("DOMContentLoaded", function () {
     pmremGenerator.dispose();
   });
 
-  console.log("🎉 Three.js scene initialized with proper asset loading!");
+  console.log(
+    "🎉 Three.js scene initialized with animation and auto-rotation stopped!",
+  );
 });
