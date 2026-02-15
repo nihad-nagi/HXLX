@@ -252,6 +252,70 @@ body {
 .glass-navbar .front.space-between::before {
     display: none; /* Remove spacer when using space-between */
 }
+/* ----------------SIDEBAR--------------*/
+.glass-sidebar {
+    position: absolute;
+    top: 15vh;
+    left: 25%;
+    transform: translateX(-50%);
+    width: min(30%, 300px);
+    min-height: min(8vh, 80px);
+    max-height: 5vh;
+}
+/* Base styles for both back and front */
+.glass-sidebar .back,
+.glass-sidebar .front {
+    position: absolute; /* Both positioned absolutely within glass-navbar */
+    /*top: 0;*/
+    /*left: 0;*/
+    width: 100%;
+    height: 100%;
+    border-radius: min(2vw, 20px);
+    transition: all 0.3s ease;
+}
+
+/* Back glass effect */
+.glass-sidebar .back {
+    /* Glass morphism effect */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* Shadow for depth */
+    box-shadow:
+        0 8px 32px 0 rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+
+    /* Text styling */
+    color: white;
+    font-size: clamp(1.4rem, 2vh, 2rem);
+    text-align: center;
+    letter-spacing: 0.5px;
+
+    /* Ensure it appears below front */
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* Front container for buttons */
+.glass-sidebar .front {
+    /* Position exactly over back */
+    z-index: 7;
+    pointer-events: none; /* Container doesn't capture clicks, but buttons inside will */
+
+    /* Flex for button layout */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: clamp(1rem, 2vw, 2rem);
+    padding: 0 clamp(1.5rem, 3vw, 3rem);
+
+    /* No background - lets back show through */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
 
 /* ===== HOVER/INTERACTION EFFECTS ===== */
 .frame-inner:hover .glass {
