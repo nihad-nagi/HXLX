@@ -137,20 +137,32 @@ body {
 /* ===== GLASS BANNER OVERLAY - Fully Responsive ===== */
 .glass-navbar {
     position: absolute;
-    top: 5vh; /* Use viewport height for vertical positioning */
+    top: 5vh;
     left: 50%;
     transform: translateX(-50%);
-    width: min(80%, 1200px); /* Responsive width with max limit */
-    min-height: min(8vh, 80px); /* Responsive min height */
-    max-height: 20vh; /* Prevent banner from getting too tall */
-    padding: clamp(1rem, 3vh, 3rem) clamp(2rem, 5vw, 6rem); /* Responsive padding */
+    width: min(80%, 1200px);
+    min-height: min(8vh, 80px);
+    max-height: 20vh;
 }
+
+/* Base styles for both back and front */
+.glass-navbar .back,
+.glass-navbar .front {
+    position: absolute; /* Both positioned absolutely within glass-navbar */
+    /*top: 0;*/
+    /*left: 0;*/
+    width: 100%;
+    height: 100%;
+    border-radius: min(2vw, 20px);
+    transition: all 0.3s ease;
+}
+
+/* Back glass effect */
 .glass-navbar .back {
     /* Glass morphism effect */
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: min(2vw, 20px); /* Responsive border radius */
     border: 1px solid rgba(255, 255, 255, 0.3);
 
     /* Shadow for depth */
@@ -158,34 +170,87 @@ body {
         0 8px 32px 0 rgba(0, 0, 0, 0.2),
         inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 
-    /* Text styling - responsive font sizes */
+    /* Text styling */
     color: white;
-    font-size: clamp(1.4rem, 2vh, 2rem); /* Responsive font size */
+    font-size: clamp(1.4rem, 2vh, 2rem);
     text-align: center;
     letter-spacing: 0.5px;
 
-    /* Flex for content alignment */
-    display: flex;
-    flex-wrap: wrap; /* Allow wrapping on small screens */
-    align-items: center;
-    justify-content: center;
-    gap: clamp(1rem, 2vw, 3rem); /* Responsive gap */
-
-    /* Ensure it appears above glass but below frame border */
+    /* Ensure it appears below front */
     z-index: 4;
     pointer-events: none;
-
-    /* Smooth transitions */
-    transition: all 0.3s ease;
 }
 
+/* Front container for buttons */
 .glass-navbar .front {
-    /* Ensure it appears above glass but below frame border */
+    /* Position exactly over back */
     z-index: 7;
-    pointer-events: auto;
+    pointer-events: none; /* Container doesn't capture clicks, but buttons inside will */
 
-    /* Smooth transitions */
+    /* Flex for button layout */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: clamp(1rem, 2vw, 2rem);
+    padding: 0 clamp(1.5rem, 3vw, 3rem);
+
+    /* No background - lets back show through */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* Button styling */
+.glass-navbar .front .nav-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    width: clamp(40px, 6vh, 50px);
+    height: clamp(40px, 6vh, 50px);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto; /* Buttons themselves are clickable */
     transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: white;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+.glass-navbar .front .nav-btn svg {
+    width: clamp(18px, 3vh, 24px);
+    height: clamp(18px, 3vh, 24px);
+    stroke: currentColor;
+    transition: transform 0.3s ease;
+}
+
+/* Hover effects */
+.glass-navbar .front .nav-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+}
+
+.glass-navbar .front .nav-btn:active {
+    transform: scale(0.95);
+}
+
+/* Add a left spacer to push buttons to the right if needed */
+.glass-navbar .front::before {
+    content: "";
+    flex: 1; /* Takes up available space, pushing buttons to the right */
+}
+
+/* If you want to remove the spacer and have buttons on both sides later */
+.glass-navbar .front.space-between {
+    justify-content: space-between;
+}
+
+.glass-navbar .front.space-between::before {
+    display: none; /* Remove spacer when using space-between */
 }
 
 /* ===== HOVER/INTERACTION EFFECTS ===== */

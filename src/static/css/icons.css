@@ -1,0 +1,107 @@
+/* icons.css */
+:root {
+    /* Define SVG icons as CSS variables */
+    --icon-fullscreen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3'/%3E%3C/svg%3E");
+
+    --icon-print: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2'/%3E%3Cpath d='M6 9V3h12v6'/%3E%3Crect x='6' y='15' width='12' height='6' rx='2'/%3E%3C/svg%3E");
+
+    /* Optional: Add more icons for later use */
+    --icon-settings: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M19.4 15a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H5.78a1.65 1.65 0 0 0-1.51 1 1.65 1.65 0 0 0 .33 1.82l.06.06a10 10 0 0 0 14.68 0z'/%3E%3Cpath d='M4.5 9.5 2 7h4l2-5 2 5h4l-2.5 2.5'/%3E%3C/svg%3E");
+
+    /* Default icon size and color */
+    --icon-size: 24px;
+    --icon-color: currentColor;
+}
+
+/* Base icon styles using mask technique for better color control */
+.icon {
+    display: inline-block;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    background-color: var(--icon-color);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+/* Icon-specific mask images */
+.icon-fullscreen {
+    -webkit-mask-image: var(--icon-fullscreen);
+    mask-image: var(--icon-fullscreen);
+}
+
+.icon-print {
+    -webkit-mask-image: var(--icon-print);
+    mask-image: var(--icon-print);
+}
+
+.icon-settings {
+    -webkit-mask-image: var(--icon-settings);
+    mask-image: var(--icon-settings);
+}
+
+/* Alternative: Background-image method (simpler but harder to recolor) */
+.icon-bg {
+    display: inline-block;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-bg-fullscreen {
+    background-image: var(--icon-fullscreen);
+}
+
+.icon-bg-print {
+    background-image: var(--icon-print);
+}
+
+/* Size variants */
+.icon-xs {
+    --icon-size: 16px;
+}
+.icon-sm {
+    --icon-size: 20px;
+}
+.icon-md {
+    --icon-size: 24px;
+}
+.icon-lg {
+    --icon-size: 32px;
+}
+.icon-xl {
+    --icon-size: 48px;
+}
+
+/* Color variants (for mask method) */
+.icon-primary {
+    --icon-color: #3b82f6;
+}
+.icon-secondary {
+    --icon-color: #6b7280;
+}
+.icon-success {
+    --icon-color: #10b981;
+}
+.icon-danger {
+    --icon-color: #ef4444;
+}
+.icon-warning {
+    --icon-color: #f59e0b;
+}
+.icon-white {
+    --icon-color: #ffffff;
+}
+.icon-black {
+    --icon-color: #000000;
+}
+
+/* Custom colors via inline style */
+[style*="--icon-color"] {
+    --icon-color: var(--icon-color);
+}

@@ -27,6 +27,7 @@
         <link rel="shortcut icon" href="static/img/favicon.png">
         {{/if}}
         <link rel="stylesheet" href="static/css/general.css">
+        <link rel="stylesheet" href="static/css/icons.css">
         {{#if print_enable}}
         <link rel="stylesheet" href="static/css/print.css" media="print">
         {{/if}}
@@ -95,9 +96,20 @@
                         <div class="glass-overlay"></div>
                         <div class="glass-specular"></div>
                     </div>
-                    <div class="glass-navbar">
+                    {{!-- <div class="glass-navbar">
                     <div class="glass-navbar back"></div>
-                    <div class="glass-navbar front"></div>
+                    <div class="glass-navbar front"></div> --}}
+                    <div class="glass-navbar">
+                        <div class="glass-navbar back"></div>
+                        <div class="glass-navbar front">
+                            <button class="nav-btn print-btn" aria-label="Print">
+                                <span class="icon icon-print"></span>
+                            </button>
+                            <button class="nav-btn fullscreen-btn" aria-label="Toggle fullscreen">
+                                <span class="icon icon-fullscreen"></span>
+                            </button>
+                        </div>
+                    </div>
                     </div>
 
                 </div>
