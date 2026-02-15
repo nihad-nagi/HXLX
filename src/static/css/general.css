@@ -75,6 +75,33 @@ body {
 }
 
 /* ===== GLASS SCREEN ===== */
+
+.glass-filter {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    backdrop-filter: blur(0px);
+    filter: url(#lg-dist);
+    isolation: isolate;
+}
+.glass-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.glass-specular {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border-radius: inherit;
+    overflow: hidden;
+    /*box-shadow:*/
+    /*inset 1px 1px 0 rgb(255 255 255 / 5%),*/
+    /*inset 0 0 5px rgb(255 255 255 / 5%);*/
+}
+
 .glass {
     position: absolute;
     top: 3.9%;
@@ -106,79 +133,19 @@ body {
     z-index: 5;
     pointer-events: none; /* Allow clicks to pass through to canvas */
 }
-.glass-filter {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    backdrop-filter: blur(0px);
-    filter: url(#lg-dist);
-    isolation: isolate;
-}
-.glass-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.glass-specular {
-    position: absolute;
-    inset: 0;
-    z-index: 4;
-    border-radius: inherit;
-    overflow: hidden;
-    /*box-shadow:*/
-    /*inset 1px 1px 0 rgb(255 255 255 / 5%),*/
-    /*inset 0 0 5px rgb(255 255 255 / 5%);*/
-}
-
-/* ===== HOVER/INTERACTION EFFECTS ===== */
-.frame-inner:hover .glass {
-    backdrop-filter: blur(1px);
-}
-
-/* ===== DECORATIVE FRAME BORDER ===== */
-.frame-border {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
-    /* Frame border image */
-    background: url("../img/hx-frame.png") center center / contain no-repeat
-        transparent;
-
-    /* Frame sits on top of everything */
-    z-index: 3;
-    pointer-events: none; /* Allow clicks to pass through to canvas */
-}
-
-@keyframes move {
-    from,
-    to {
-        transform: rotate(-45deg);
-    }
-    25%,
-    75% {
-        transform: translateX(30px) translateY(10px) rotate(30deg);
-    }
-    50% {
-        transform: translateX(60px) translateY(20px);
-    }
-}
 
 /* ===== GLASS BANNER OVERLAY - Fully Responsive ===== */
 .glass-navbar {
     position: absolute;
-    top: 15vh; /* Use viewport height for vertical positioning */
+    top: 5vh; /* Use viewport height for vertical positioning */
     left: 50%;
     transform: translateX(-50%);
     width: min(80%, 1200px); /* Responsive width with max limit */
     min-height: min(8vh, 80px); /* Responsive min height */
     max-height: 20vh; /* Prevent banner from getting too tall */
     padding: clamp(1rem, 3vh, 3rem) clamp(2rem, 5vw, 6rem); /* Responsive padding */
-
+}
+.glass-navbar .back {
     /* Glass morphism effect */
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -211,6 +178,52 @@ body {
     /* Smooth transitions */
     transition: all 0.3s ease;
 }
+
+.glass-navbar .front {
+    /* Ensure it appears above glass but below frame border */
+    z-index: 7;
+    pointer-events: auto;
+
+    /* Smooth transitions */
+    transition: all 0.3s ease;
+}
+
+/* ===== HOVER/INTERACTION EFFECTS ===== */
+.frame-inner:hover .glass {
+    backdrop-filter: blur(1px);
+}
+
+/* ===== DECORATIVE FRAME BORDER ===== */
+.frame-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    /* Frame border image */
+    background: url("../img/hx-frame.png") center center / contain no-repeat
+        transparent;
+
+    /* Frame sits on top of everything */
+    z-index: 10;
+    pointer-events: none; /* Allow clicks to pass through to canvas */
+}
+
+@keyframes move {
+    from,
+    to {
+        transform: rotate(-45deg);
+    }
+    25%,
+    75% {
+        transform: translateX(30px) translateY(10px) rotate(30deg);
+    }
+    50% {
+        transform: translateX(60px) translateY(20px);
+    }
+}
+/* -------------------------------------- */
 
 /* Headers - use Roman variant */
 h1,
