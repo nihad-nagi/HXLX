@@ -74,8 +74,40 @@ body {
     background-color: transparent !important;
 }
 
-/* ===== GLASS SCREEN ===== */
+/* ===== DECORATIVE FRAME BORDER ===== */
+.frame-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 
+    /* Frame border image */
+    background: url("../img/hx-frame.png") center center / contain no-repeat
+        transparent;
+
+    /* Frame sits on top of everything */
+    z-index: 10;
+    pointer-events: none; /* Allow clicks to pass through to canvas */
+}
+
+@keyframes move {
+    from,
+    to {
+        transform: rotate(-45deg);
+    }
+    25%,
+    75% {
+        transform: translateX(30px) translateY(10px) rotate(30deg);
+    }
+    50% {
+        transform: translateX(60px) translateY(20px);
+    }
+}
+
+/*===========   GLASS STYLES ================*/
+
+/* ===== BASE GLASS LAYER ===== */
 .glass-filter {
     position: absolute;
     inset: 0;
@@ -84,6 +116,7 @@ body {
     filter: url(#lg-dist);
     isolation: isolate;
 }
+
 .glass-overlay {
     position: absolute;
     inset: 0;
@@ -97,9 +130,6 @@ body {
     z-index: 4;
     border-radius: inherit;
     overflow: hidden;
-    /*box-shadow:*/
-    /*inset 1px 1px 0 rgb(255 255 255 / 5%),*/
-    /*inset 0 0 5px rgb(255 255 255 / 5%);*/
 }
 
 .glass {
@@ -122,38 +152,34 @@ body {
         /* Right */ -1px 0 0 0 rgba(255, 255, 255, 0.1) inset,
         /* Left */ 0 1px 0 0 rgba(255, 255, 255, 0.1) inset,
         /* Bottom */ 0 -1px 0 0 rgba(255, 255, 255, 0.1) inset; /* Top */
-    /* Optional: Very subtle gradient for depth */
-    /*background: radial-gradient(
-        circle at 50% 50%,
-        rgba(255, 255, 255, 0.03) 0%,
-        rgba(0, 0, 0, 0.01) 100%
-    );*/
 
     /* Ensure glass is above canvas but below frame border */
     z-index: 5;
     pointer-events: none; /* Allow clicks to pass through to canvas */
 }
 
-/* ===== GLASS BANNER OVERLAY - Fully Responsive ===== */
+/* ===== GLASS NAVBAR ===== */
 .glass-navbar {
     position: absolute;
-    top: 5vh;
+    top: 2%; /* Relative to frame-inner */
     left: 50%;
     transform: translateX(-50%);
-    width: min(80%, 1200px);
-    min-height: min(8vh, 80px);
-    max-height: 20vh;
+    width: min(90%, 1000px);
+    height: 60px;
+    min-height: 50px;
+    max-height: 70px;
+    z-index: 6;
 }
 
 /* Base styles for both back and front */
 .glass-navbar .back,
 .glass-navbar .front {
-    position: absolute; /* Both positioned absolutely within glass-navbar */
-    /*top: 0;*/
-    /*left: 0;*/
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    border-radius: min(2vw, 20px);
+    border-radius: 30px;
     transition: all 0.3s ease;
 }
 
@@ -185,7 +211,7 @@ body {
 .glass-navbar .front {
     /* Position exactly over back */
     z-index: 7;
-    pointer-events: none; /* Container doesn't capture clicks, but buttons inside will */
+    pointer-events: none;
 
     /* Flex for button layout */
     display: flex;
@@ -205,24 +231,24 @@ body {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 50%;
-    width: clamp(40px, 6vh, 50px);
-    height: clamp(40px, 6vh, 50px);
+    width: 42px;
+    height: 42px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    pointer-events: auto; /* Buttons themselves are clickable */
+    pointer-events: auto;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     color: white;
-    flex-shrink: 0; /* Prevent buttons from shrinking */
+    flex-shrink: 0;
 }
 
 .glass-navbar .front .nav-btn svg {
-    width: clamp(18px, 3vh, 24px);
-    height: clamp(18px, 3vh, 24px);
+    width: 20px;
+    height: 20px;
     stroke: currentColor;
     transition: transform 0.3s ease;
 }
@@ -238,121 +264,181 @@ body {
     transform: scale(0.95);
 }
 
-/* Add a left spacer to push buttons to the right if needed */
+/* Add a left spacer to push buttons to the right */
 .glass-navbar .front::before {
     content: "";
-    flex: 1; /* Takes up available space, pushing buttons to the right */
+    flex: 1;
 }
 
-/* If you want to remove the spacer and have buttons on both sides later */
-.glass-navbar .front.space-between {
-    justify-content: space-between;
-}
-
-.glass-navbar .front.space-between::before {
-    display: none; /* Remove spacer when using space-between */
-}
-/* ----------------SIDEBAR--------------*/
+/* ===== GLASS SIDEBAR ===== */
 .glass-sidebar {
     position: absolute;
-    top: 15vh;
-    left: 25%;
-    transform: translateX(-50%);
-    width: min(30%, 300px);
-    min-height: min(8vh, 80px);
-    max-height: 5vh;
+    top: calc(60px + 3%); /* Below navbar with spacing */
+    left: 2%; /* Left margin from frame-inner edge */
+    width: 240px;
+    width: min(240px, 22%);
+    bottom: 3%; /* Bottom margin from frame-inner edge */
+    height: auto;
+    min-height: 300px;
+    z-index: 6;
 }
+
 /* Base styles for both back and front */
 .glass-sidebar .back,
 .glass-sidebar .front {
-    position: absolute; /* Both positioned absolutely within glass-navbar */
-    /*top: 0;*/
-    /*left: 0;*/
-    width: 100%;
-    height: 100%;
-    border-radius: min(2vw, 20px);
-    transition: all 0.3s ease;
-}
-
-/* Back glass effect */
-.glass-sidebar .back {
-    /* Glass morphism effect */
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-
-    /* Shadow for depth */
-    box-shadow:
-        0 8px 32px 0 rgba(0, 0, 0, 0.2),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-
-    /* Text styling */
-    color: white;
-    font-size: clamp(1.4rem, 2vh, 2rem);
-    text-align: center;
-    letter-spacing: 0.5px;
-
-    /* Ensure it appears below front */
-    z-index: 4;
-    pointer-events: none;
-}
-
-/* Front container for buttons */
-.glass-sidebar .front {
-    /* Position exactly over back */
-    z-index: 7;
-    pointer-events: none; /* Container doesn't capture clicks, but buttons inside will */
-
-    /* Flex for button layout */
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: clamp(1rem, 2vw, 2rem);
-    padding: 0 clamp(1.5rem, 3vw, 3rem);
-
-    /* No background - lets back show through */
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-/* ===== HOVER/INTERACTION EFFECTS ===== */
-.frame-inner:hover .glass {
-    backdrop-filter: blur(1px);
-}
-
-/* ===== DECORATIVE FRAME BORDER ===== */
-.frame-border {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-
-    /* Frame border image */
-    background: url("../img/hx-frame.png") center center / contain no-repeat
-        transparent;
-
-    /* Frame sits on top of everything */
-    z-index: 10;
-    pointer-events: none; /* Allow clicks to pass through to canvas */
+    border-radius: 24px;
+    transition: all 0.3s ease;
 }
 
-@keyframes move {
-    from,
-    to {
-        transform: rotate(-45deg);
+/* Back glass effect */
+.glass-sidebar .back {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 8px 32px 0 rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* Front container */
+.glass-sidebar .front {
+    z-index: 7;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 20px 12px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* ===== GLASS MAIN ===== */
+.glass-main {
+    position: absolute;
+    top: calc(60px + 3%); /* Align with sidebar top */
+    left: calc(2% + min(240px, 22%) + 2%); /* Right of sidebar with gap */
+    right: 2%; /* Right margin from frame-inner edge */
+    bottom: 3%; /* Bottom margin from frame-inner edge */
+    width: auto;
+    height: auto;
+    min-width: 280px;
+    min-height: 300px;
+    z-index: 6;
+}
+
+/* Base styles for both back and front */
+.glass-main .back,
+.glass-main .front {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 24px;
+    transition: all 0.3s ease;
+}
+
+/* Back glass effect */
+.glass-main .back {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 8px 32px 0 rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* Front container */
+.glass-main .front {
+    z-index: 7;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 20px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: white;
+    overflow-y: auto;
+}
+
+/* Main content title */
+.glass-main .front .main-title {
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    text-align: left;
+    letter-spacing: 0.5px;
+}
+
+/* Content grid for main area */
+.glass-main .front .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.glass-main .front .content-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+    color: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.glass-main .front .content-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+    .glass-sidebar {
+        left: 2%;
+        width: 200px;
     }
-    25%,
-    75% {
-        transform: translateX(30px) translateY(10px) rotate(30deg);
-    }
-    50% {
-        transform: translateX(60px) translateY(20px);
+
+    .glass-main {
+        left: calc(2% + 200px + 2%);
+        right: 2%;
     }
 }
-/* -------------------------------------- */
+
+@media (max-width: 600px) {
+    .glass-sidebar {
+        display: none;
+    }
+
+    .glass-main {
+        left: 2%;
+        right: 2%;
+    }
+
+    .glass-navbar {
+        width: 96%;
+    }
+}
 
 /* Headers - use Roman variant */
 h1,

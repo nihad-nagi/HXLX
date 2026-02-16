@@ -28,6 +28,7 @@
         {{/if}}
         <link rel="stylesheet" href="static/css/general.css">
         <link rel="stylesheet" href="static/css/icons.css">
+        {{!-- <link rel="stylesheet" href="static/css/glass.css"> --}}
         {{#if print_enable}}
         <link rel="stylesheet" href="static/css/print.css" media="print">
         {{/if}}
@@ -96,9 +97,8 @@
                         <div class="glass-overlay"></div>
                         <div class="glass-specular"></div>
                     </div>
-                    {{!-- <div class="glass-navbar">
-                    <div class="glass-navbar back"></div>
-                    <div class="glass-navbar front"></div> --}}
+
+                    <!-- Glass Navigation Bar -->
                     <div class="glass-navbar">
                         <div class="glass-navbar back"></div>
                         <div class="glass-navbar front">
@@ -110,10 +110,32 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Glass Sidebar -->
                     <div class="glass-sidebar">
                         <div class="glass-sidebar back"></div>
                         <div class="glass-sidebar front">
+                            <!-- Sidebar content will go here -->
+                        </div>
                     </div>
+
+                    <!-- Glass Main Content Area -->
+                    <div class="glass-main">
+                        <div class="glass-main back"></div>
+                        <div class="glass-main front">
+                            <h2 class="main-title">Main Content</h2>
+                            <div class="content-grid">
+                                <div class="content-card">Content Item 1</div>
+                                <div class="content-card">Content Item 2</div>
+                                <div class="content-card">Content Item 3</div>
+                                <div class="content-card">Content Item 4</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decorative frame border (sits on top) -->
+                <div class="frame-border"></div>
             </div>
         </div>
 
