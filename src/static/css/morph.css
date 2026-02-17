@@ -24,41 +24,98 @@ body {
     right: 0;
     bottom: 0;
     left: 0;
-    border: 3px solid white; /* Add white border to see each box edge */
+    border: 3px solid white;
+    border-radius: 15px;
 }
 
 /* Using margins approach */
 #hardware {
-    background: rgba(0, 0, 255, 0.3); /* Blue with transparency */
-    margin: 5%;
+    background: rgba(0, 0, 255, 0.3);
+    margin: 1%;
     z-index: 1;
-    border-color: blue;
 }
 
 #component1 {
-    background: rgba(255, 0, 0, 0.3); /* Red with transparency */
-    margin: 10%;
+    background: rgba(255, 0, 0, 0.3);
+    margin: 3%;
     z-index: 2;
-    border-color: red;
 }
 
 #component2 {
-    background: rgba(0, 255, 0, 0.3); /* Green with transparency */
-    margin: 15%;
+    background: rgba(0, 255, 0, 0.3);
+    margin: 5%;
     z-index: 3;
-    border-color: green;
 }
 
 #component3 {
-    background: rgba(255, 255, 0, 0.3); /* Yellow with transparency */
-    margin: 20%;
+    background: rgba(255, 255, 0, 0.3);
+    margin: 8%;
     z-index: 4;
-    border-color: yellow;
 }
 
-#component4 {
-    background: rgba(128, 0, 128, 0.3); /* Purple with transparency */
-    margin: 25%;
+#software {
+    background: rgba(128, 0, 128, 0.6);
+    margin: 11%;
     z-index: 5;
-    border-color: purple;
+    border: 3px solid white;
+
+    /* Grid layout properties */
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    gap: 4px;
+
+    /* Define grid areas */
+    grid-template-areas:
+        "header header header header header header header header header header header header"
+        "header header header header header header header header header header header header"
+        "sidebar sidebar sidebar main main main main main main main main main"
+        "sidebar sidebar sidebar main main main main main main main main main"
+        "sidebar sidebar sidebar main main main main main main main main main"
+        "sidebar sidebar sidebar main main main main main main main main main"
+        "sidebar sidebar sidebar main main main main main main main main main"
+        "sidebar sidebar sidebar main main main main main main main main main"
+        "sidebar sidebar sidebar main main main main main main main main main"
+        "footer footer footer footer footer footer footer footer footer footer footer footer"
+        "footer footer footer footer footer footer footer footer footer footer footer footer"
+        "footer footer footer footer footer footer footer footer footer footer footer footer";
+
+    padding: 5px;
+}
+
+/* Inner grid items for the software div */
+.grid-item {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px black;
+    transition: background-color 0.3s;
+}
+
+.grid-item:hover {
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+}
+
+/* Assign grid areas */
+.header-area {
+    grid-area: header;
+}
+
+.sidebar-area {
+    grid-area: sidebar;
+}
+
+.main-area {
+    grid-area: main;
+}
+
+.footer-area {
+    grid-area: footer;
 }
