@@ -10,14 +10,39 @@
             <div id="component2"></div>
             <div id="component3"></div>
             <div id="software">
-                <div class="grid-item header-area">Header (spans 12 cols)</div>
-                <div class="grid-item sidebar-area">
-                    Sidebar (spans 3 cols, 7 rows)
+                <!-- Header with nested grid -->
+                <div class="header">
+                    <div class="grid-item header-left">🔍 Search</div>
+                    <div class="grid-item header-logo">LOGO</div>
+                    <div class="grid-item header-right">👤 Profile</div>
                 </div>
-                <div class="grid-item main-area">
-                    Main Content (spans 9 cols, 7 rows)
+
+                <!-- Sidebar with nested items -->
+                <div class="sidebar">
+                    <div class="grid-item sidebar-item">🏠 Home</div>
+                    <div class="grid-item sidebar-item">📁 Files</div>
+                    <div class="grid-item sidebar-item">⚙️ Settings</div>
+                    <div class="grid-item sidebar-item">📊 Analytics</div>
+                    <div class="grid-item sidebar-item">👥 Users</div>
+                    <div class="grid-item sidebar-item">📅 Calendar</div>
                 </div>
-                <div class="grid-item footer-area">Footer (spans 12 cols)</div>
+
+                <!-- Main content with nested grid -->
+                <div class="main-content">
+                    <div class="grid-item main-item">Card 1</div>
+                    <div class="grid-item main-item">Card 2</div>
+                    <div class="grid-item main-item">Card 3</div>
+                    <div class="grid-item main-item">Card 4</div>
+                    <div class="grid-item main-item">Card 5</div>
+                </div>
+
+                <!-- Footer with nested grid -->
+                <!--<div class="footer">
+                    <div class="grid-item footer-item">About</div>
+                    <div class="grid-item footer-item">Contact</div>
+                    <div class="grid-item footer-item">Privacy</div>
+                    <div class="grid-item footer-item">Terms</div>
+                </div>-->
             </div>
         </div>
     </body>
